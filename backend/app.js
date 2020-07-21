@@ -24,8 +24,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/mypage', myPageRouter);
-app.use('./reward', rewardRouter);
-app.use('./qrCode', qrCodeRouter);
+app.use('/reward', rewardRouter);
+app.use('/qrCode', qrCodeRouter);
 
 
 // catch 404 and forward to error handler
