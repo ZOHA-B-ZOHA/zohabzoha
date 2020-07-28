@@ -12,6 +12,8 @@ const myPageRouter = require('./routes/myPage');
 const rewardRouter = require('./routes/reward');
 const qrCodeRouter = require('./routes/qrCode');
 
+const app = express();
+
 const corsOption = {
   origin: true,
   credentials: true
@@ -31,8 +33,6 @@ app.use(session({
 }))
 
 require('console-stamp')(console, 'yyyy/mm/dd HH:MM:ss.l');
-
-const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
