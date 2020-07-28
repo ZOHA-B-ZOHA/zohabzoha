@@ -3,12 +3,34 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const session = require('express-session');
+const FileStore = require('session-file-store')(session);
+const cors = require('cors');
 
 const indexRouter = require('./routes/index');
 const myPageRouter = require('./routes/myPage');
 const rewardRouter = require('./routes/reward');
 const qrCodeRouter = require('./routes/qrCode');
 
+const corsOption = {
+  origin: true,
+  credentials: true
+}
+app.use(cors(corsOption));
+
+app.use(session({
+  secret: 'zohabzoha!',
+    resave: false,
+    saveUninitialized: true,
+    store: new FileStore({logFn: function(){}}),
+    cookie: {
+        // 나중에 true로 바꾸기
+        httpOnly: false,
+        secure: false
+    }
+}))
+
+require('console-stamp')(console, 'yyyy/mm/dd HH:MM:ss.l');
 
 const app = express();
 
