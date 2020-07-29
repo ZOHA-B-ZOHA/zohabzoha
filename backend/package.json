@@ -15,8 +15,11 @@
     "express-session": "^1.17.1",
     "forever-monitor": "^3.0.1",
     "http-errors": "~1.6.3",
+    "mariadb": "^2.4.2",
     "morgan": "~1.9.1",
+    "mysql": "^2.18.1",
     "path": "^0.12.7",
+    "request": "^2.88.2",
     "session-file-store": "^1.4.0"
   }
 }
