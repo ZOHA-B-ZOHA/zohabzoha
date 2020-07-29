@@ -1,7 +1,7 @@
 const mariadb = require('mariadb');
 
 const pool = mariadb.createPool({
-    host: '52.78.6.243',
+    host: 'localhost',
     port: 1823,
     user: 'root',
     password: '1234',
@@ -89,7 +89,7 @@ async function getRankForFirstRound() {
     try {
         conn = await pool.getConnection();
         conn.query('USE nodejs');
-        result = await conn.query('SELECT RANK() OVER (ORDER BY quantity desc) as ranking, phoneNumber, address FROM (SELECT phoneNumber, address, SUM(quantity) FROM users GROUP BY phoneNumber) WHERE round=1');
+        result = await conn.query('SELECT sum_quantity, phoneNumber FROM (SELECT phoneNumber, SUM(quantity) AS sum_quantity, round FROM users WHERE round=1 GROUP BY phoneNumber)t ORDER BY sum_quantity desc limit 3');
     } catch (err) {
         throw err;
     } finally {
@@ -104,7 +104,7 @@ async function getRankForSecondRound() {
     try {
         conn = await pool.getConnection();
         conn.query('USE nodejs');
-        result = await conn.query('SELECT RANK() OVER (ORDER BY quantity desc) as ranking, phoneNumber, address FROM (SELECT phoneNumber, address, SUM(quantity) FROM users GROUP BY phoneNumber) WHERE round=2');
+        result = await conn.query('SELECT sum_quantity, phoneNumber FROM (SELECT phoneNumber, SUM(quantity) AS sum_quantity, round FROM users WHERE round=2 GROUP BY phoneNumber)t ORDER BY sum_quantity desc limit 3');
     } catch (err) {
         throw err;
     } finally {
@@ -142,8 +142,6 @@ async function setWalletAddress(phoneNumber, address, publicKey) {
         return result;
     }
 } 
-
-getRankForFirstRound();
 
 module.exports = { 
     getAllQuantaties, getWalletAddress, getUserInfoForFirstRound, 
