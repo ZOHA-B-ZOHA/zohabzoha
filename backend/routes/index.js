@@ -13,7 +13,6 @@ router.get('/', function(req, res, next) {
 
 // 전화번호 입력 후 접속
 router.post('/api/authenticate', (req, res, next) => {
-  let quantity, address, publicKey, token1_free, token1_plus, token2_free, token2_plus, round;
   // 전화번호에 지갑주소 있는지 확인
   db.getWalletAddress(req.phoneNumber)
     .then((result) => {
@@ -21,7 +20,6 @@ router.post('/api/authenticate', (req, res, next) => {
         // 전체 구매 수 측정
         db.getAllQuantaties().then((response) => {
           console.log('get all quantities', response);
-          quantity = response.quantity;
         }, (err) => {
           console.log('get quantaties error', err)
         });
@@ -41,9 +39,11 @@ router.post('/api/authenticate', (req, res, next) => {
         if (error) {
           throw new Error(error);
         } else if (response.statusCode == 200) {
-          response.body.result.address = address;
-          response.body.result.public_key = publicKey;
-          db.setWalletAddress(req.phoneNumber, address, publicKey)
+          //response.body.result.address = address;
+          //response.body.result.public_key = publicKey;
+        console.log('wallet kas response', response.body);
+	console.log(Object.keys(response.body));  
+	db.setWalletAddress(req.phoneNumber, response.body.result.address, response.body.result.public_key)
             .then((err) => {
               console.log('set wallet address error', err);
             })
