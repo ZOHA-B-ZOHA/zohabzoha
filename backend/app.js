@@ -68,7 +68,6 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-http.createServer(app).listen(app.get('port'))
-  .then(console.log('server start'));
+http.createServer(app).listen(app.get('port'));
 
 module.exports = app;
