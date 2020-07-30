@@ -1,11 +1,11 @@
 const mariadb = require('mariadb');
 
 const pool = mariadb.createPool({
-    host: 'localhost',
-    port: 1823,
+    host: '172.31.9.255',
     user: 'root',
     password: '1234',
-    connectionLimit: 5    
+    database: 'nodejs',
+    port: '1823'  
 });
 
 // 총 구매 수량 체크

@@ -2,7 +2,7 @@
 node_modules
 /dist
 package-lock.json
-
+sessions/
 
 # local env files
 .env.local

@@ -68,6 +68,10 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-http.createServer(app).listen(app.get('port'));
+//http.createServer(app).listen(app.get('port'), () => {
+//	console.log('express server start')
+//});
+
+app.listen(3000, console.log('express server running!'));
 
 module.exports = app;

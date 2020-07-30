@@ -8,6 +8,7 @@ const db = require('../config/db');
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.sendFile(path.join(__dirname, "../public", "index.html"));
+	console.log('index page is open');
 });
 
 // 전화번호 입력 후 접속
