@@ -6,6 +6,7 @@ const logger = require('morgan');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const cors = require('cors');
+const http = require('http');
 
 const indexRouter = require('./routes/index');
 const myPageRouter = require('./routes/myPage');
@@ -13,6 +14,7 @@ const rewardRouter = require('./routes/reward');
 const qrCodeRouter = require('./routes/qrCode');
 
 const app = express();
+app.set('port', process.env.PORT || 3000);
 
 const corsOption = {
   origin: true,
@@ -66,6 +68,7 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-app.listen(3000);
+http.createServer(app).listen(app.get('port'))
+  .then(console.log('server start'));
 
 module.exports = app;
