@@ -19,9 +19,9 @@ router.post('/api/authenticate', (req, res, next) => {
       if (result) {
         // 전체 구매 수 측정
         db.getAllQuantaties().then((response) => {
-          console.log('get all quantities', response);
+          console.log('get all quantities ', response);
         }, (err) => {
-          console.log('get quantaties error', err)
+          console.log('get quantaties error ', err)
         });
   // 1회차 유저정보 호출
   db.getUserInfoForFirstRound(req.phoneNumber)
@@ -34,27 +34,49 @@ router.post('/api/authenticate', (req, res, next) => {
           console.log(result);
         });
     // 전화번호 존재하지 않으면      
-    } else {
-      request(creatingWalletOptions, (error, response, body) => {
-        if (error) {
-          throw new Error(error);
-        } else if (response.statusCode == 200) {
-          //response.body.result.address = address;
-          //response.body.result.public_key = publicKey;
-        console.log('wallet kas response', response.body);
-	console.log(Object.keys(response.body));  
-	db.setWalletAddress(req.phoneNumber, response.body.result.address, response.body.result.public_key)
-            .then((err) => {
-              console.log('set wallet address error', err);
-            })
-        } else {
-          console.log('fail to request creating wallet ', response);
-        }
-      })
-    }
+    } //else {
+    //   request(creatingWalletOptions, (error, response, body) => {
+    //     if (error) {
+    //       throw new Error(error);
+    //     } else if (response.statusCode == 200) {
+    //       //response.body.result.address = address;
+    //       //response.body.result.public_key = publicKey;
+    //     console.log('wallet kas response ', response.body);
+	  //     console.log(Object.keys(response.body));  
+	  //     db.setWalletAddress(req.phoneNumber, response.body.result.address, response.body.result.public_key)
+    //         .then((err) => {
+    //           console.log('set wallet address error ', err);
+    //         });
+    //     } else {
+    //       console.log('fail to request creating wallet ', response);
+    //     }
+    //   });
+    // }
   }, (err) => {
-    console.log('get wallet address error', err);
+    console.log('get wallet address error ', err);
   });
+});
+
+// 적립하는 api
+router.post('/api/verify', (req, res, next) => {
+  if (res.verificationCode == 'corgi') { // 여기에 qr code 값을 넣장
+    db.setBuying(res.phoneNumber, res.purchaseQuantity, res.branch, '라운드 값?')
+      .then((result) => {
+
+      })
+  } else {
+    req.json({msg: 'invalid password'});
+  }
+});
+
+// 쿠폰 사용
+router.post('/api/redeem', (req, res, next) => {
+
+});
+
+// 토큰 발급 시스템
+router.post('', (req, res, next) => {
+
 });
 
 // request options
