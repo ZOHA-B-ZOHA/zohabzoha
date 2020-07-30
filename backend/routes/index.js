@@ -3,6 +3,7 @@ const router = express.Router();
 const path = require("path");
 const request = require('request');
 const config = require('../config/config.json');
+const db = require('../config/db');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -11,37 +12,48 @@ router.get('/', function(req, res, next) {
 
 // 전화번호 입력 후 접속
 router.post('/api/authenticate', (req, res, next) => {
-  
+  let quantity, address, publicKey, token1_free, token1_plus, token2_free, token2_plus, round;
   // 전화번호에 지갑주소 있는지 확인
-  if (req.phoneNumber) {
-    res.json({
-      data: {
-        achievement: 10,
-        justEarned: false,
-        currentUser: {
-          phoneNumber: req.phoneNumber,
-          purchaseQuantity: {
-            firstRound: 1,
-            secondRound: 2
-          },
-          rewards: [
-            {
-              round: 'first',
-              type: 'free'
-            }
-          ]
+  db.getWalletAddress(req.phoneNumber)
+    .then((result) => {
+      if (result) {
+        // 전체 구매 수 측정
+        db.getAllQuantaties().then((response) => {
+          console.log('get all quantities', response);
+          quantity = response.quantity;
+        }, (err) => {
+          console.log('get quantaties error', err)
+        });
+  // 1회차 유저정보 호출
+  db.getUserInfoForFirstRound(req.phoneNumber)
+        .then((result) => {
+          console.log(result);
+        });
+  // 2회차 유저정보 호출
+  db.getUserInfoForSecondRound(req.phoneNumber)
+        .then((result) => {
+          console.log(result);
+        });
+    // 전화번호 존재하지 않으면      
+    } else {
+      request(creatingWalletOptions, (error, response, body) => {
+        if (error) {
+          throw new Error(error);
+        } else if (response.statusCode == 200) {
+          response.body.result.address = address;
+          response.body.result.public_key = publicKey;
+          db.setWalletAddress(req.phoneNumber, address, publicKey)
+            .then((err) => {
+              console.log('set wallet address error', err);
+            })
+        } else {
+          console.log('fail to request creating wallet ', response);
         }
-      }
-    })
-  } else {
-    request(creatingWalletOptions, (err, res) => {
-      if (err) {
-        console.log('creating wallet error', err)
-      } else {
-        console.log('creating wallet succeess', res.body)
-      }
-    })
-  }
+      })
+    }
+  }, (err) => {
+    console.log('get wallet address error', err);
+  });
 });
 
 // request options
