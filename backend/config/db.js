@@ -13,11 +13,10 @@ async function getAllQuantaties() {
     try {
         connection.connect();
         connection.query('SELECT SUM(quantity) FROM users');
-        connection.end();
     } catch (err) {
         throw err;
     } finally {
-        if (conn) conn.end();
+        if (connection) connection.end();
         return result;
     }
 }
@@ -27,11 +26,10 @@ async function getWalletAddress(phoneNumber) {
     try {
         connection.connect();
         connection.query('SELECT address FROM wallet WHERE phoneNumber=?', [phoneNumber]);
-        connection.end();
     } catch (err) {
         throw err;
     } finally {
-        if (conn) conn.end();
+        if (connection) connection.end();
         return result;
     }
 }
@@ -41,11 +39,10 @@ async function getUserInfoForFirstRound(phoneNumber) {
     try {
         connection.connect();
         connection.query('SELECT * FROM users WHERE phoneNumber=? AND round=1', [phoneNumber]);
-        connection.end();
     } catch (err) {
         throw err;
     } finally {
-        if (conn) conn.end();
+        if (connection) connection.end();
         return result;
     }
 }
@@ -55,11 +52,10 @@ async function getUserInfoForSecondRound(phoneNumber) {
     try {
         connection.connect();
         connection.query('SELECT * FROM users WHERE phoneNumber=? AND round=2', [phoneNumber]);
-        connection.end();
     } catch (err) {
         throw err;
     } finally {
-        if (conn) conn.end();
+        if (connection) connection.end();
         return result;
     }
 } 
@@ -69,11 +65,10 @@ async function checkNumberOfPurchased(phoneNumber) {
     try {
         connection.connect();
         connection.query('SELECT COUNT(phoneNumber) FROM users WHERE phoneNumber=?', [phoneNumber]);
-        connection.end();
     } catch (err) {
         throw err;
     } finally {
-        if (conn) conn.end();
+        if (connection) connection.end();
         return result;
     }
 }
@@ -83,11 +78,10 @@ async function getRankForFirstRound() {
     try {
         connection.connect();
         connection.query('SELECT sum_quantity, phoneNumber FROM (SELECT phoneNumber, SUM(quantity) AS sum_quantity, round FROM users WHERE round=1 GROUP BY phoneNumber)t ORDER BY sum_quantity desc limit 3');
-        connection.end();
     } catch (err) {
         throw err;
     } finally {
-        if (conn) conn.end();
+        if (connection) connection.end();
         return result;
     }
 }
@@ -97,11 +91,10 @@ async function getRankForSecondRound() {
     try {
         connection.connect();
         connection.query('SELECT sum_quantity, phoneNumber FROM (SELECT phoneNumber, SUM(quantity) AS sum_quantity, round FROM users WHERE round=2 GROUP BY phoneNumber)t ORDER BY sum_quantity desc limit 3');
-        connection.end();
     } catch (err) {
         throw err;
     } finally {
-        if (conn) conn.end();
+        if (connection) connection.end();
         return result;
     }
 }
@@ -111,11 +104,10 @@ async function setBuying(phoneNumber, quantity, place, round) {
     try {
         connection.connect();
         connection.query('INSERT INTO nodejs.users(phoneNumber, quantity, place, round)', [phoneNumber, quantity, place, round]);
-        connection.end();
     } catch (err) {
         throw err;
     } finally {
-        if (conn) conn.end();
+        if (connection) connection.end();
         return result;
     }
 }
@@ -125,11 +117,10 @@ async function setWalletAddress(phoneNumber, address, publicKey) {
     try {
         connection.connect();
         connection.query('INSERT INTO nodejs.wallet(phoneNumber, address, publicKey)', [phoneNumber, address, publicKey]);
-        connection.end();
     } catch (err) {
         throw err;
     } finally {
-        if (conn) conn.end();
+        if (connection) connection.end();
         return result;
     }
 } 
