@@ -83,7 +83,7 @@ router.post('/api/verify', async(req, res, next) => {
     // get achievement
     let responseAchievment = await getAllAchievement();
     
-    if (res.body.verificationCode == 'zohabzohafighting') { // 여기에 qr code 값을 넣장
+    if (req.body.verificationCode == 'zohabzohafighting') { // 여기에 qr code 값을 넣장
       // db에 구매내역 기록
       db.conn.query('INSERT INTO users VALUES (?, ?, ?, ?)', [req.body.phoneNumber, req.body.purchaseQuantity, req.body.branch, req.body.round], (err, rows, fields) => {
         if (!err) {
