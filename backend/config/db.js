@@ -156,7 +156,7 @@ async function setBuying(phoneNumber, quantity, place, round) {
 async function setWalletAddress(phoneNumber, address, publicKey) {
     let result;
     try {
-        conn.query('INSERT INTO nodejs.wallet(phoneNumber, address, publicKey)', [phoneNumber, address, publicKey], (err, rows, fields) => {
+        conn.query('INSERT INTO wallet(phoneNumber, address, publicKey)', [phoneNumber, address, publicKey], (err, rows, fields) => {
             if (!err) {
                 result = rows;
             } else {
