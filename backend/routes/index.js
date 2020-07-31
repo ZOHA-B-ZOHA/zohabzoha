@@ -31,7 +31,7 @@ router.post('/api/authenticate', async (req, res, next) => {
         console.log('get wallet address error ', err);
       }
       // 등록된 전화번호가 없으면
-      else if (!rows || rows == undefined) {
+      else if (rows[0] == null) {
         console.log('rows ', rows);
         // KAS로 wallet 생성
         request(creatingWalletOptions, (error, response, body) => {
@@ -69,7 +69,8 @@ router.post('/api/authenticate', async (req, res, next) => {
       }
       // 등록된 전화번호가 존재하면
       else {
-        res.json({
+        console.log(rows);
+	res.json({
           "achievement": responseAchievment,
           "justEarned": false,
           "currentUser": {
