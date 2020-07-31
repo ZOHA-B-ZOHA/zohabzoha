@@ -5,7 +5,7 @@ const conn = mysql.createConnection({
     user: 'root',
     password: '1234',
     database: 'nodejs',
-    port: '1823'  
+    port: '1823'
 });
 
 
@@ -16,37 +16,33 @@ async function getAllQuantaties() {
         conn.query('SELECT SUM(quantity) FROM users', (err, rows, fields) => {
             if (!err) {
                 result = rows;
-		console.log('quantities ', result);
-		return result;
+                console.log('quantities ', result);
+                return result;
             } else {
                 console.log(err);
             }
         });
     } catch (err) {
         throw err;
-    } finally {
-	return result;
     }
 }
 
 // 휴대폰 번호로 지갑주소 가져오기
 async function getWalletAddress(phoneNumber) {
-let result;   
- try {
+    let result;
+    try {
         conn.query('SELECT address FROM wallet WHERE phoneNumber=?', [phoneNumber], (err, rows, fields) => {
             if (!err) {
-          	result = rows;
-		 console.log('address ', rows[0]);
-		return result;
+                result = rows;
+                console.log('address ', rows[0]);
+                return result;
             } else {
                 console.log(err);
             }
         });
     } catch (err) {
         throw err;
-    } finally {
-		return result;
-	}
+    }
 }
 
 // 1회차 유저정보 가져오기
@@ -56,16 +52,14 @@ async function getUserInfoForFirstRound(phoneNumber) {
         conn.query('SELECT SUM(quantity) FROM users WHERE phoneNumber=? AND round=1', [phoneNumber], (err, rows, fields) => {
             if (!err) {
                 result = rows;
-		console.log('1st user info ', result);
-		return result;
+                console.log('1st user info ', result);
+                return result;
             } else {
                 console.log(err);
             }
         });
     } catch (err) {
         throw err;
-    } finally {
-	return result;
     }
 }
 
@@ -76,18 +70,16 @@ async function getUserInfoForSecondRound(phoneNumber) {
         conn.query('SELECT SUM(quantity) FROM users WHERE phoneNumber=? AND round=2', [phoneNumber], (err, rows, fields) => {
             if (!err) {
                 result = rows;
-		console.log('2nd user info ', result);
-		return result;
+                console.log('2nd user info ', result);
+                return result;
             } else {
                 console.log(err);
             }
         });
     } catch (err) {
         throw err;
-    } finally {
-	return result;
     }
-} 
+}
 
 // 몇번째 구매인지
 async function checkNumberOfPurchased(phoneNumber) {
@@ -96,16 +88,14 @@ async function checkNumberOfPurchased(phoneNumber) {
         conn.query('SELECT COUNT(phoneNumber) FROM users WHERE phoneNumber=?', [phoneNumber], (err, rows, fields) => {
             if (!err) {
                 result = rows;
-		console.log('achievment ', result);
-		return result;
+                console.log('achievment ', result);
+                return result;
             } else {
                 console.log(err);
             }
         });
     } catch (err) {
         throw err;
-    } finally {
-	return result;
     }
 }
 
@@ -116,16 +106,14 @@ async function getRankForFirstRound() {
         conn.query('SELECT sum_quantity, phoneNumber FROM (SELECT phoneNumber, SUM(quantity) AS sum_quantity, round FROM users WHERE round=1 GROUP BY phoneNumber)t ORDER BY sum_quantity desc limit 3', (err, rows, fields) => {
             if (!err) {
                 result = rows;
-		console.log('1st ranking ', result);
-		return result;
+                console.log('1st ranking ', result);
+                return result;
             } else {
                 console.log(err);
             }
         });
     } catch (err) {
         throw err;
-    } finally {
-	return result;
     }
 }
 
@@ -136,16 +124,14 @@ async function getRankForSecondRound() {
         conn.query('SELECT sum_quantity, phoneNumber FROM (SELECT phoneNumber, SUM(quantity) AS sum_quantity, round FROM users WHERE round=2 GROUP BY phoneNumber)t ORDER BY sum_quantity desc limit 3', (err, rows, fields) => {
             if (!err) {
                 result = rows;
-		console.log('2nd ranking ', result);
-		return result;
+                console.log('2nd ranking ', result);
+                return result;
             } else {
                 console.log(err);
             }
         });
     } catch (err) {
         throw err;
-    } finally {
-	return result;
     }
 }
 
@@ -156,16 +142,14 @@ async function setBuying(phoneNumber, quantity, place, round) {
         conn.query('INSERT INTO users VALUES (phoneNumber, quantity, place, round)', [phoneNumber, quantity, place, round], (err, rows, fields) => {
             if (!err) {
                 result = rows;
-		console.log('insert buying ', result);
-		return result;
+                console.log('insert buying ', result);
+                return result;
             } else {
                 console.log(err);
             }
         });
     } catch (err) {
         throw err;
-    } finally {
-	return result;
     }
 }
 
@@ -176,21 +160,19 @@ async function setWalletAddress(phoneNumber, address, publicKey) {
         conn.query('INSERT INTO wallet VALUES (phoneNumber, address, publicKey)', [phoneNumber, address, publicKey], (err, rows, fields) => {
             if (!err) {
                 result = rows;
-		console.log('insert wallet ', result);
-		return result;
+                console.log('insert wallet ', result);
+                return result;
             } else {
                 console.log(err);
             }
         });
     } catch (err) {
         throw err;
-    } finally {
-	return result;
     }
-} 
+}
 
-module.exports = { 
-    getAllQuantaties, getWalletAddress, getUserInfoForFirstRound, 
-    getUserInfoForSecondRound, checkNumberOfPurchased, getRankForFirstRound, 
+module.exports = {
+    getAllQuantaties, getWalletAddress, getUserInfoForFirstRound,
+    getUserInfoForSecondRound, checkNumberOfPurchased, getRankForFirstRound,
     getRankForSecondRound, setBuying, setWalletAddress, conn
 }
