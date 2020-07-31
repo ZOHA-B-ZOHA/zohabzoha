@@ -14,51 +14,54 @@ router.get('/', function (req, res, next) {
 // 전화번호 입력 후 접속
 router.post('/api/authenticate', (req, res, next) => {
   console.log(req.body);
-  // 전화번호에 지갑주소 있는지 확인
-  db.getWalletAddress(req.body.phoneNumber)
-    .then((result) => {
-      console.log(result);
-      if (result) {
-        console.log('get wallet success result ', result);
-        // 전체 구매 수 측정
-        db.getAllQuantaties().then((response) => {
-          console.log('get all quantities ', response);
-        }, (err) => {
-          console.log('get quantaties error ', err)
-        });
-        // 1회차 유저정보 호출
-        db.getUserInfoForFirstRound(req.body.phoneNumber)
-          .then((result) => {
-            console.log(result);
-          });
-        // 2회차 유저정보 호출
-        db.getUserInfoForSecondRound(req.body.phoneNumber)
-          .then((result) => {
-            console.log(result);
-          });
-        // 전화번호 존재하지 않으면      
-      } else {
-        request(creatingWalletOptions, (error, response, body) => {
-          let address, publicKey;
-          if (error) {
-            throw new Error(error);
-          } else if (response.statusCode == 200) {
-            JSON.parse(body).result.address = address;
-            JSON.parse(body).result.public_key = publicKey
-            db.setWalletAddress(req.phoneNumber, address, publicKey)
-              .then((err) => {
-                console.log('set wallet address error ', err);
-              }, (result) => {
-                console.log('set wallet address result', result);
-              });
-          } else {
-            console.log('fail to request creating wallet ', response);
-          }
-        });
-      }
-    }, (err) => {
-      console.log('get wallet address error ', err);
-    });
+  db.getWalletAddress(req.body.phoneNumber, (err, rows) => {
+    console.log(rows);
+  })
+  // // 전화번호에 지갑주소 있는지 확인
+  // db.getWalletAddress(req.body.phoneNumber)
+  //   .then((result) => {
+  //     console.log(result);
+  //     if (result) {
+  //       console.log('get wallet success result ', result);
+  //       // 전체 구매 수 측정
+  //       db.getAllQuantaties().then((response) => {
+  //         console.log('get all quantities ', response);
+  //       }, (err) => {
+  //         console.log('get quantaties error ', err)
+  //       });
+  //       // 1회차 유저정보 호출
+  //       db.getUserInfoForFirstRound(req.body.phoneNumber)
+  //         .then((result) => {
+  //           console.log(result);
+  //         });
+  //       // 2회차 유저정보 호출
+  //       db.getUserInfoForSecondRound(req.body.phoneNumber)
+  //         .then((result) => {
+  //           console.log(result);
+  //         });
+  //       // 전화번호 존재하지 않으면      
+  //     } else {
+  //       request(creatingWalletOptions, (error, response, body) => {
+  //         let address, publicKey;
+  //         if (error) {
+  //           throw new Error(error);
+  //         } else if (response.statusCode == 200) {
+  //           JSON.parse(body).result.address = address;
+  //           JSON.parse(body).result.public_key = publicKey
+  //           db.setWalletAddress(req.phoneNumber, address, publicKey)
+  //             .then((err) => {
+  //               console.log('set wallet address error ', err);
+  //             }, (result) => {
+  //               console.log('set wallet address result', result);
+  //             });
+  //         } else {
+  //           console.log('fail to request creating wallet ', response);
+  //         }
+  //       });
+  //     }
+  //   }, (err) => {
+  //     console.log('get wallet address error ', err);
+  //   });
 });
 
 // 적립하는 api
