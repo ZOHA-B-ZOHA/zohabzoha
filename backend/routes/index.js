@@ -65,6 +65,9 @@ router.post('/api/authenticate', async (req, res, next) => {
         else if (response.statusCode == 200) {
           JSON.parse(body).result.address = address;
           JSON.parse(body).result.public_key = publicKey
+	console.log('들어옴')
+	console.log(address);
+	console.log(publicKey);
           // db 에 새 지갑주소 등록
           db.setWalletAddress(req.phoneNumber, address, publicKey, (err, rows) => {
             if (err) {

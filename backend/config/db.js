@@ -17,6 +17,7 @@ async function getAllQuantaties() {
             if (!err) {
                 result = rows;
 		console.log('quantities ', result);
+		return result;
             } else {
                 console.log(err);
             }
@@ -24,7 +25,7 @@ async function getAllQuantaties() {
     } catch (err) {
         throw err;
     } finally {
-        return result;
+	return result;
     }
 }
 
@@ -36,6 +37,7 @@ let result;
             if (!err) {
           	result = rows;
 		 console.log('address ', rows[0]);
+		return result;
             } else {
                 console.log(err);
             }
@@ -43,9 +45,8 @@ let result;
     } catch (err) {
         throw err;
     } finally {
-        return result;
-	conn.end();
-    }
+		return result;
+	}
 }
 
 // 1회차 유저정보 가져오기
@@ -56,6 +57,7 @@ async function getUserInfoForFirstRound(phoneNumber) {
             if (!err) {
                 result = rows;
 		console.log('1st user info ', result);
+		return result;
             } else {
                 console.log(err);
             }
@@ -63,7 +65,7 @@ async function getUserInfoForFirstRound(phoneNumber) {
     } catch (err) {
         throw err;
     } finally {
-        return result;
+	return result;
     }
 }
 
@@ -75,6 +77,7 @@ async function getUserInfoForSecondRound(phoneNumber) {
             if (!err) {
                 result = rows;
 		console.log('2nd user info ', result);
+		return result;
             } else {
                 console.log(err);
             }
@@ -82,7 +85,7 @@ async function getUserInfoForSecondRound(phoneNumber) {
     } catch (err) {
         throw err;
     } finally {
-        return result;
+	return result;
     }
 } 
 
@@ -94,6 +97,7 @@ async function checkNumberOfPurchased(phoneNumber) {
             if (!err) {
                 result = rows;
 		console.log('achievment ', result);
+		return result;
             } else {
                 console.log(err);
             }
@@ -101,7 +105,7 @@ async function checkNumberOfPurchased(phoneNumber) {
     } catch (err) {
         throw err;
     } finally {
-        return result;
+	return result;
     }
 }
 
@@ -113,6 +117,7 @@ async function getRankForFirstRound() {
             if (!err) {
                 result = rows;
 		console.log('1st ranking ', result);
+		return result;
             } else {
                 console.log(err);
             }
@@ -120,7 +125,7 @@ async function getRankForFirstRound() {
     } catch (err) {
         throw err;
     } finally {
-        return result;
+	return result;
     }
 }
 
@@ -132,6 +137,7 @@ async function getRankForSecondRound() {
             if (!err) {
                 result = rows;
 		console.log('2nd ranking ', result);
+		return result;
             } else {
                 console.log(err);
             }
@@ -139,7 +145,7 @@ async function getRankForSecondRound() {
     } catch (err) {
         throw err;
     } finally {
-        return result;
+	return result;
     }
 }
 
@@ -151,6 +157,7 @@ async function setBuying(phoneNumber, quantity, place, round) {
             if (!err) {
                 result = rows;
 		console.log('insert buying ', result);
+		return result;
             } else {
                 console.log(err);
             }
@@ -158,7 +165,7 @@ async function setBuying(phoneNumber, quantity, place, round) {
     } catch (err) {
         throw err;
     } finally {
-        return result;
+	return result;
     }
 }
 
@@ -170,6 +177,7 @@ async function setWalletAddress(phoneNumber, address, publicKey) {
             if (!err) {
                 result = rows;
 		console.log('insert wallet ', result);
+		return result;
             } else {
                 console.log(err);
             }
@@ -177,7 +185,7 @@ async function setWalletAddress(phoneNumber, address, publicKey) {
     } catch (err) {
         throw err;
     } finally {
-        return result;
+	return result;
     }
 } 
 
