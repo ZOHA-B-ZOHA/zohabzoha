@@ -15,12 +15,13 @@ router.get('/', function (req, res, next) {
 router.post('/api/authenticate', (req, res, next) => {
   console.log(req.body);
   db.getWalletAddress(req.body.phoneNumber, (err, rows) => {
-    if (err) {
+    let data;
+	if (err) {
       console.log(err);
       throw err;
     } else {
-      console.log(rows);
-      console.log(rows.address);
+      data = rows[0];
+	console.log('data');
     }
   })
   // // 전화번호에 지갑주소 있는지 확인
