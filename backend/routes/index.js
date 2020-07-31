@@ -13,15 +13,15 @@ router.get('/', function (req, res, next) {
 
 /* 전화번호 입력 후 접속 */
 router.post('/api/authenticate', async (req, res, next) => {
-  let responseAchievment, responseRoundOneUserInfo, responseRoundTwoUserInfo; 
-  
+  let responseAchievment, responseRoundOneUserInfo, responseRoundTwoUserInfo;
+
   // get achievement
   await db.getAllQuantaties((err, rows) => {
     if (err) {
       console.log('get achievment error ', err);
     }
     else {
-      rows[0].quantity = responseAchievment;
+      rows[0].SUM(quantity) = responseAchievment;
       console.log('responseAchivement ', responseAchievment);
     }
   });
@@ -32,7 +32,7 @@ router.post('/api/authenticate', async (req, res, next) => {
       console.log('get user info first round error ', err);
     }
     else {
-      rows[0].quantity = responseRoundOneUserInfo;
+      rows[0].SUM(quantity) = responseRoundOneUserInfo;
       console.log('1st user info ', responseRoundOneUserInfo);
     }
   });
@@ -40,10 +40,10 @@ router.post('/api/authenticate', async (req, res, next) => {
   // round 2 quantity
   await db.getUserInfoForSecondRound(req.body.phoneNumber, (err, rows) => {
     if (err) {
-      console.log('get user info second round error ',  err);
+      console.log('get user info second round error ', err);
     }
     else {
-      rows[0].quantity = responseRoundTwoUserInfo;
+      rows[0].SUM(quantity) = responseRoundTwoUserInfo;
       console.log('2nd user info ', responseRoundTwoUserInfo);
     }
   });
@@ -66,7 +66,7 @@ router.post('/api/authenticate', async (req, res, next) => {
           JSON.parse(body).result.address = address;
           JSON.parse(body).result.public_key = publicKey
           // db 에 새 지갑주소 등록
-          db.setWalletAddress(req.phoneNumber, address, publicKey, (err, rows) => {
+          await db.setWalletAddress(req.phoneNumber, address, publicKey, (err, rows) => {
             if (err) {
               console.log('set wallet address error ', err);
             }
@@ -74,12 +74,33 @@ router.post('/api/authenticate', async (req, res, next) => {
               console.log('set address success ', rows);
             }
           });
+          res.json({
+            "achievement": responseAchievment,
+            "justEarned": false,
+            "currentUser": {
+              "phoneNumber": req.phoneNumber,
+              "purchaseQuantity": {
+                "firstRound": responseRoundOneUserInfo,
+                "secondRound": responseRoundTwoUserInfo
+              }
+            }
+          });
         }
       });
     }
     // 전화번호 데이터가 있을 때
     else {
-      
+      res.json({
+        "achievement": responseAchievment,
+        "justEarned": false,
+        "currentUser": {
+          "phoneNumber": req.phoneNumber,
+          "purchaseQuantity": {
+            "firstRound": responseRoundOneUserInfo,
+            "secondRound": responseRoundTwoUserInfo
+          }
+        }
+      });
     }
   });
 });
