@@ -139,7 +139,7 @@ async function getRankForSecondRound() {
 async function setBuying(phoneNumber, quantity, place, round) {
     let result;
     try {
-        conn.query('INSERT INTO users VALUES (phoneNumber, quantity, place, round)', [phoneNumber, quantity, place, round], (err, rows, fields) => {
+        conn.query('INSERT INTO users VALUES (phoneNumber=?, quantity=?, place=?, round=?)', [phoneNumber, quantity, place, round], (err, rows, fields) => {
             if (!err) {
                 result = rows;
                 console.log('insert buying ', result);
@@ -157,7 +157,7 @@ async function setBuying(phoneNumber, quantity, place, round) {
 async function setWalletAddress(phoneNumber, address, publicKey) {
     let result;
     try {
-        conn.query('INSERT INTO wallet VALUES (phoneNumber, address, publicKey)', [phoneNumber, address, publicKey], (err, rows, fields) => {
+        conn.query('INSERT INTO wallet VALUES (phoneNumber=?, address=?, publicKey=?)', [phoneNumber, address, publicKey], (err, rows, fields) => {
             if (!err) {
                 result = rows;
                 console.log('insert wallet ', result);
