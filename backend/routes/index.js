@@ -55,7 +55,7 @@ router.post('/api/authenticate', async (req, res, next) => {
       console.log('get wallet address error ', err);
     }
     // 전화번호 데이터가 없을 때 
-    else if (rows == undefined) {
+    else if (!rows) {
       // KAS 로 wallet 생성
       request(creatingWalletOptions, (error, response, body) => {
         let address, publicKey;
@@ -90,6 +90,7 @@ router.post('/api/authenticate', async (req, res, next) => {
           //   }
           // });
           res.send('sending2!');
+          console.log('ahhahaha');
         }
       });
     }
@@ -107,6 +108,7 @@ router.post('/api/authenticate', async (req, res, next) => {
       //   }
       // });
       res.send('sending!');
+      console.log('되나아아아아');
     }
   });
 });
