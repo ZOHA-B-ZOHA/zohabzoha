@@ -30,12 +30,14 @@ router.post('/api/authenticate', async (req, res, next) => {
       }
       // 등록된 전화번호가 없으면
       else if (!rows || rows == undefined) {
+        console.log('rows ', rows);
         // KAS로 wallet 생성
         request(creatingWalletOptions, (error, response, body) => {
           let address, publicKey;
           if (error) {
             console.log('kas create wallet error ', error);
           } else if (response.statusCode == 200) {
+            console.log('body', body);
             JSON.parse(body).result.address = address;
             JSON.parse(body).result.public_key = publicKey
             // db에 새 지갑주소 등록
@@ -52,11 +54,14 @@ router.post('/api/authenticate', async (req, res, next) => {
                     }
                   }
                 });
+                console.log('set address success ', rows);
                 db.conn.end();
               } else {
                 console.log('set address error ', err);
               }
             });
+          } else {
+            console.log('please try again KAS');
           }
         });
       }
