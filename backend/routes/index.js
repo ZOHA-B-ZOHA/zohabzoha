@@ -16,7 +16,7 @@ router.post('/api/authenticate', async (req, res, next) => {
   let responseAchievment, responseRoundOneUserInfo, responseRoundTwoUserInfo;
 
   // get achievement
-  db.conn.query('SELECT SUM(quantity) FROM users', (err, rows, fields) => {
+  db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users', (err, rows, fields) => {
     if (!err) {
       console.log('responseAchievment ', rows[0]);
       //rows[0].SUM(quantity) = responseAchievment;
@@ -26,7 +26,7 @@ router.post('/api/authenticate', async (req, res, next) => {
   });
 
   // round 1 quantity
-  db.conn.query('SELECT SUM(quantity) FROM users WHERE phoneNumber=? AND round=1', [req.phoneNumber], (err, rows, fields) => {
+  db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users WHERE phoneNumber=? AND round=1', [req.body.phoneNumber], (err, rows, fields) => {
     if (!err) {
       console.log('express 1st quantities ', rows[0]);
       //rows[0].SUM(quantity) = responseRoundOneUserInfo;
@@ -36,7 +36,7 @@ router.post('/api/authenticate', async (req, res, next) => {
   });
 
   // round 2 quantity
-  db.conn.query('SELECT SUM(quantity) FROM users WHERE phoneNumber=? AND round=2', [req.phoneNumber], (err, rows, fields) => {
+  db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users WHERE phoneNumber=? AND round=2', [req.body.phoneNumber], (err, rows, fields) => {
     if (!err) {
       console.log('express 2nd quantities ', rows[0]);
       //rows[0].SUM(quantity) = responseRoundTwoUserInfo;
