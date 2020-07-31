@@ -20,6 +20,7 @@ router.post('/api/authenticate', (req, res, next) => {
       throw err;
     } else {
       console.log(rows);
+      console.log(rows.address);
     }
   })
   // // 전화번호에 지갑주소 있는지 확인
