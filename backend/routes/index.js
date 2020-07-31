@@ -119,25 +119,29 @@ async function getAllAchievement () {
 
 /* 유저가 구매한 1라운드 잔 수 */
 async function getRoundOneQuantities(phoneNumber) {
-  db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users WHERE phoneNumber=? AND round=1', [phoneNumber], (err, rows, fields) => {
-    if (!err) {
-      console.log('express 1st quantities ', rows[0].sumQuantities);
-      return rows[0].sumQuantities
-    } else {
-      console.log('get 1st userinfo error ', err);
-    }
+  return new Promise((resolve, reject) => {
+    db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users WHERE phoneNumber=? AND round=1', [phoneNumber], (err, rows, fields) => {
+      if (!err) {
+        console.log('express 1st quantities ', rows[0].sumQuantities);
+        resolve(rows[0].sumQuantities)
+      } else {
+        reject('get 1st userinfo error ', err);
+      }
+    });
   });
 };
 
 /* 유저가 구매한 2라운드 잔 수 */
 async function getRoundTwoQuantities(phoneNumber) {
-  db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users WHERE phoneNumber=? AND round=2', [phoneNumber], (err, rows, fields) => {
-    if (!err) {
-      console.log('express 2nd quantities ', rows[0].sumQuantities);
-      return rows[0].sumQuantities
-    } else {
-      console.log('get 2nd userinfo error ', err);
-    }
+  return new Promise((resolve, reject) => {
+    db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users WHERE phoneNumber=? AND round=2', [phoneNumber], (err, rows, fields) => {
+      if (!err) {
+        console.log('express 2nd quantities ', rows[0].sumQuantities);
+        resolve(rows[0].sumQuantities)
+      } else {
+        reject('get 2nd userinfo error ', err);
+      }
+    });
   });
 };
 
