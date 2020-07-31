@@ -35,7 +35,7 @@ let result;
         conn.query('SELECT address FROM wallet WHERE phoneNumber=?', [phoneNumber], (err, rows, fields) => {
             if (!err) {
           	result = rows;
-		 console.log('address ', rows[0].address);
+		 console.log('address ', rows[0]);
             } else {
                 console.log(err);
             }

@@ -72,19 +72,21 @@ router.post('/api/authenticate', async (req, res, next) => {
             }
             else {
               console.log('set address success ', rows);
+              res.send('sending3!');
             }
           });
-          res.json({
-            "achievement": responseAchievment,
-            "justEarned": false,
-            "currentUser": {
-              "phoneNumber": req.phoneNumber,
-              "purchaseQuantity": {
-                "firstRound": responseRoundOneUserInfo,
-                "secondRound": responseRoundTwoUserInfo
-              }
-            }
-          });
+          // res.json({
+          //   "achievement": responseAchievment,
+          //   "justEarned": false,
+          //   "currentUser": {
+          //     "phoneNumber": req.phoneNumber,
+          //     "purchaseQuantity": {
+          //       "firstRound": responseRoundOneUserInfo,
+          //       "secondRound": responseRoundTwoUserInfo
+          //     }
+          //   }
+          // });
+          res.send('sending2!');
         }
       });
     }
