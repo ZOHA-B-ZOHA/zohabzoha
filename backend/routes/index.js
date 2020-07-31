@@ -4,8 +4,6 @@ const path = require("path");
 const request = require('request');
 const config = require('../config/config.json');
 const db = require('../config/db');
-let responseAchievment, responseRoundOneUserInfo, responseRoundTwoUserInfo;
-
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -15,17 +13,20 @@ router.get('/', function (req, res, next) {
 
 /* 전화번호 입력 후 접속 */
 router.post('/api/authenticate', async (req, res, next) => {
-
+	var responseAchievment = 0;
+	var responseRoundOneUserInfo = 0;
+	var responseRoundTwoUserInfo = 0;
   // get achievement
   db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users', (err, rows, fields) => {
     if (!err) {
       console.log('responseAchievment ', rows[0]);
       rows[0].sumQuantities = responseAchievment;
+	console.log('in a function ', responseAchievment);
     } else {
       console.log('get achievement error ', err);
     }
   });
-
+	console.log('global? ', responseAchievment);
   // round 1 quantity
   db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users WHERE phoneNumber=? AND round=1', [req.body.phoneNumber], (err, rows, fields) => {
     if (!err) {
