@@ -16,10 +16,11 @@ router.get('/', function (req, res, next) {
 
 /* 전화번호 입력 후 접속 */
 router.post('/api/authenticate', async (req, res, next) => {
-
+  
+    console.log('hi1')
     // get achievement
-    await getAllAchievement();    
-
+    await getAllAchievement();
+    
     // round 1 quantity
     await getRoundOneQuantities(req.body.phoneNumber);
 
@@ -65,8 +66,7 @@ router.post('/api/authenticate', async (req, res, next) => {
       }
       // 등록된 전화번호가 존재하면
       else {
-        console.log(responseAchievment);
-        console.log(responseRoundOneUserInfo);
+        console.log('hi5')
         res.json({
           "achievement": responseAchievment,
           "justEarned": false,
@@ -111,6 +111,7 @@ async function getAllAchievement () {
     if (!err) {
       console.log('responseAchievment ', rows[0]);
       rows[0].sumQuantities = responseAchievment;
+      console.log('hi2')
     }
     else {
       console.log('get achievement error ', err);
@@ -124,6 +125,7 @@ async function getRoundOneQuantities(phoneNumber) {
     if (!err) {
       console.log('express 1st quantities ', rows[0].sumQuantities);
       rows[0].sumQuantities = responseRoundOneUserInfo;
+      console.log('hi3')
     } else {
       console.log('get 1st userinfo error ', err);
     }
@@ -136,6 +138,7 @@ async function getRoundTwoQuantities(phoneNumber) {
     if (!err) {
       console.log('express 2nd quantities ', rows[0].sumQuantities);
       rows[0].sumQuantities = responseRoundTwoUserInfo;
+      console.log('hi4')
     } else {
       console.log('get 2nd userinfo error ', err);
     }
