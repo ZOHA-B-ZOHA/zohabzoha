@@ -104,14 +104,16 @@ router.post('', (req, res, next) => {
 
 /* 현재 총 잔 수 */
 async function getAllAchievement () {
-  db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users', (err, rows, fields) => {
-    if (!err) {
-      console.log('responseAchievment ', rows[0]);
-      return rows[0].sumQuantities
-    }
-    else {
-      console.log('get achievement error ', err);
-    }
+  return new Promise((resolve, reject) => {
+    db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users', (err, rows, fields) => {
+      if (!err) {
+        console.log('responseAchievment ', rows[0]);
+        resolve(rows[0].sumQuantities)
+      }
+      else {
+        reject('get achievement error ', err);
+      }
+    });
   });
 };
 
