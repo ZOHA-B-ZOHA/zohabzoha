@@ -90,17 +90,18 @@ router.post('/api/authenticate', async (req, res, next) => {
     }
     // 전화번호 데이터가 있을 때
     else {
-      res.json({
-        "achievement": responseAchievment,
-        "justEarned": false,
-        "currentUser": {
-          "phoneNumber": req.phoneNumber,
-          "purchaseQuantity": {
-            "firstRound": responseRoundOneUserInfo,
-            "secondRound": responseRoundTwoUserInfo
-          }
-        }
-      });
+      // res.json({
+      //   "achievement": responseAchievment,
+      //   "justEarned": false,
+      //   "currentUser": {
+      //     "phoneNumber": req.phoneNumber,
+      //     "purchaseQuantity": {
+      //       "firstRound": responseRoundOneUserInfo,
+      //       "secondRound": responseRoundTwoUserInfo
+      //     }
+      //   }
+      // });
+      res.send('sending!');
     }
   });
 });
