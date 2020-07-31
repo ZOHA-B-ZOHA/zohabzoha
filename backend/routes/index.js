@@ -13,11 +13,10 @@ router.get('/', function (req, res, next) {
 
 /* 전화번호 입력 후 접속 */
 router.post('/api/authenticate', async (req, res, next) => {
-  
-    console.log('hi1')
+  try {
     // get achievement
     let responseAchievment = await getAllAchievement();
-    
+
     // round 1 quantity
     let responseRoundOneUserInfo = await getRoundOneQuantities(req.body.phoneNumber);
 
@@ -63,7 +62,6 @@ router.post('/api/authenticate', async (req, res, next) => {
       }
       // 등록된 전화번호가 존재하면
       else {
-        console.log('hi5')
         res.json({
           "achievement": responseAchievment,
           "justEarned": false,
@@ -78,6 +76,9 @@ router.post('/api/authenticate', async (req, res, next) => {
         db.conn.end();
       }
     });
+  } catch (e) {
+    throw e
+  }
 });
 
 /* 적립하는 api */
@@ -103,7 +104,7 @@ router.post('', (req, res, next) => {
 });
 
 /* 현재 총 잔 수 */
-async function getAllAchievement () {
+async function getAllAchievement() {
   return new Promise((resolve, reject) => {
     db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users', (err, rows, fields) => {
       if (!err) {
