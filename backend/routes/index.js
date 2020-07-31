@@ -4,9 +4,6 @@ const path = require("path");
 const request = require('request');
 const config = require('../config/config.json');
 const db = require('../config/db');
-let responseAchievment = 0;
-let responseRoundOneUserInfo = 0;
-let responseRoundTwoUserInfo = 0;
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -19,13 +16,13 @@ router.post('/api/authenticate', async (req, res, next) => {
   
     console.log('hi1')
     // get achievement
-    await getAllAchievement();
+    let responseAchievment = await getAllAchievement();
     
     // round 1 quantity
-    await getRoundOneQuantities(req.body.phoneNumber);
+    let responseRoundOneUserInfo = await getRoundOneQuantities(req.body.phoneNumber);
 
     // round 2 quantity
-    await getRoundTwoQuantities(req.body.phoneNumber);
+    let responseRoundTwoUserInfo = await getRoundTwoQuantities(req.body.phoneNumber);
 
     // get wallet address
     db.conn.query('SELECT address FROM wallet WHERE phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
@@ -110,8 +107,7 @@ async function getAllAchievement () {
   db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users', (err, rows, fields) => {
     if (!err) {
       console.log('responseAchievment ', rows[0]);
-      rows[0].sumQuantities = responseAchievment;
-      console.log(responseAchievment)
+      return rows[0].sumQuantities
     }
     else {
       console.log('get achievement error ', err);
@@ -124,8 +120,7 @@ async function getRoundOneQuantities(phoneNumber) {
   db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users WHERE phoneNumber=? AND round=1', [phoneNumber], (err, rows, fields) => {
     if (!err) {
       console.log('express 1st quantities ', rows[0].sumQuantities);
-      rows[0].sumQuantities = responseRoundOneUserInfo;
-      console.log(responseRoundOneUserInfo)
+      return rows[0].sumQuantities
     } else {
       console.log('get 1st userinfo error ', err);
     }
@@ -137,8 +132,7 @@ async function getRoundTwoQuantities(phoneNumber) {
   db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users WHERE phoneNumber=? AND round=2', [phoneNumber], (err, rows, fields) => {
     if (!err) {
       console.log('express 2nd quantities ', rows[0].sumQuantities);
-      rows[0].sumQuantities = responseRoundTwoUserInfo;
-      console.log(responseRoundTwoUserInfo)
+      return rows[0].sumQuantities
     } else {
       console.log('get 2nd userinfo error ', err);
     }
