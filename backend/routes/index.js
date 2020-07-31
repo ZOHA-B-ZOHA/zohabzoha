@@ -24,66 +24,65 @@ router.post('/api/authenticate', async (req, res, next) => {
     let responseRoundTwoUserInfo = await getRoundTwoQuantities(req.body.phoneNumber);
 
     // get wallet address
-    let resultGetWalletAddress = await getWalletAddress(req.body.phoneNumber);
-
-    console.log(resultGetWalletAddress);
-    // db.conn.query('SELECT address FROM wallet WHERE phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
-    //   if (err) {
-    //     console.log('get wallet address error ', err);
-    //   }
-    //   // 등록된 전화번호가 없으면
-    //   else if (!rows || rows == undefined) {
-    //     console.log('rows ', rows);
-    //     // KAS로 wallet 생성
-    //     request(creatingWalletOptions, (error, response, body) => {
-    //       let address, publicKey;
-    //       if (error) {
-    //         console.log('kas create wallet error ', error);
-    //       } else if (response.statusCode == 200) {
-    //         console.log('body', body);
-    //         JSON.parse(body).result.address = address;
-    //         JSON.parse(body).result.public_key = publicKey;
-    //         // db에 새 지갑주소 등록
-    //         db.conn.query('INSERT INTO wallet VALUES (phoneNumber=?, address=?, publicKey=?)', [req.body.phoneNumber, address, publicKey], (err, rows, fields) => {
-    //           if (!err) {
-    //             res.json({
-    //               "achievement": responseAchievment,
-    //               "justEarned": false,
-    //               "currentUser": {
-    //                 "phoneNumber": req.body.phoneNumber,
-    //                 "purchaseQuantity": {
-    //                   "firstRound": responseRoundOneUserInfo,
-    //                   "secondRound": responseRoundTwoUserInfo
-    //                 }
-    //               }
-    //             });
-    //             console.log('set address success ', rows);
-    //             db.conn.end();
-    //           } else {
-    //             console.log('set address error ', err);
-    //           }
-    //         });
-    //       } else {
-    //         console.log('please try again KAS');
-    //       }
-    //     });
-    //   }
-    //   // 등록된 전화번호가 존재하면
-    //   else {
-    //     res.json({
-    //       "achievement": responseAchievment,
-    //       "justEarned": false,
-    //       "currentUser": {
-    //         "phoneNumber": req.body.phoneNumber,
-    //         "purchaseQuantity": {
-    //           "firstRound": responseRoundOneUserInfo,
-    //           "secondRound": responseRoundTwoUserInfo
-    //         }
-    //       }
-    //     });
-    //     db.conn.end();
-    //   }
-    // });
+    // let resultGetWalletAddress = await getWalletAddress(req.body.phoneNumber);
+    // console.log(resultGetWalletAddress);
+    db.conn.query('SELECT address FROM wallet WHERE phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
+      if (err) {
+        console.log('get wallet address error ', err);
+      }
+      // 등록된 전화번호가 없으면
+      else if (!rows || rows == undefined) {
+        console.log('rows ', rows);
+        // KAS로 wallet 생성
+        request(creatingWalletOptions, (error, response, body) => {
+          let address, publicKey;
+          if (error) {
+            console.log('kas create wallet error ', error);
+          } else if (response.statusCode == 200) {
+            console.log('body', body);
+            JSON.parse(body).result.address = address;
+            JSON.parse(body).result.public_key = publicKey;
+            // db에 새 지갑주소 등록
+            db.conn.query('INSERT INTO wallet VALUES (phoneNumber=?, address=?, publicKey=?)', [req.body.phoneNumber, address, publicKey], (err, rows, fields) => {
+              if (!err) {
+                res.json({
+                  "achievement": responseAchievment,
+                  "justEarned": false,
+                  "currentUser": {
+                    "phoneNumber": req.body.phoneNumber,
+                    "purchaseQuantity": {
+                      "firstRound": responseRoundOneUserInfo,
+                      "secondRound": responseRoundTwoUserInfo
+                    }
+                  }
+                });
+                console.log('set address success ', rows);
+                db.conn.end();
+              } else {
+                console.log('set address error ', err);
+              }
+            });
+          } else {
+            console.log('please try again KAS');
+          }
+        });
+      }
+      // 등록된 전화번호가 존재하면
+      else {
+        res.json({
+          "achievement": responseAchievment,
+          "justEarned": false,
+          "currentUser": {
+            "phoneNumber": req.body.phoneNumber,
+            "purchaseQuantity": {
+              "firstRound": responseRoundOneUserInfo,
+              "secondRound": responseRoundTwoUserInfo
+            }
+          }
+        });
+        db.conn.end();
+      }
+    });
   } catch (e) {
     throw e
   }
@@ -154,45 +153,45 @@ async function getRoundTwoQuantities(phoneNumber) {
   });
 };
 
-/* 유저 지갑 주소 */
-async function getWalletAddress(phoneNumber) {
-  return new Promise((resolve, reject) => {
-    db.conn.query('SELECT address FROM wallet WHERE phoneNumber=?', [phoneNumber], (err, rows, fields) => {
-      if (err) {
-        reject('get wallet address error ', err);
-      } else if (!rows || rows == undefined) {
-        let walletResult = createWallet(creatingWalletOptions);
-        console.log(walletResult);
-      } else {
-        resolve('already get wallet');
-      }
-    });
-  });
-};
+// /* 유저 지갑 주소 */
+// async function getWalletAddress(phoneNumber) {
+//   return new Promise((resolve, reject) => {
+//     db.conn.query('SELECT address FROM wallet WHERE phoneNumber=?', [phoneNumber], (err, rows, fields) => {
+//       if (err) {
+//         reject('get wallet address error ', err);
+//       } else if (!rows || rows == undefined) {
+//         let walletResult = createWallet(creatingWalletOptions);
+//         console.log(walletResult);
+//       } else {
+//         resolve('already get wallet');
+//       }
+//     });
+//   });
+// };
 
-/* request KAS create wallet */
-async function createWallet(options) {
-  return new Promise((resolve, reject) => {
-    let kasResult = {};
-    request(options, (error, response, body) => {
-      if (error) {
-        reject('KAS wallet error ', error);
-      } else if (response.statusCode == 200) {
-        JSON.parse(body).result.address = kasResult.address;
-        JSON.parse(body).result.public_key = kasResult.publicKey;
-        console.log('kas result ', kasResult);
-        resolve(kasResult);
-      } else {
-        reject('please try agian kas');
-      }
-    });
-  });
-};
+// /* request KAS create wallet */
+// async function createWallet(options) {
+//   return new Promise((resolve, reject) => {
+//     let kasResult = {};
+//     request(options, (error, response, body) => {
+//       if (error) {
+//         reject('KAS wallet error ', error);
+//       } else if (response.statusCode == 200) {
+//         JSON.parse(body).result.address = kasResult.address;
+//         JSON.parse(body).result.public_key = kasResult.publicKey;
+//         console.log('kas result ', kasResult);
+//         resolve(kasResult);
+//       } else {
+//         reject('please try agian kas');
+//       }
+//     });
+//   });
+// };
 
-/* 새 지갑주소 등록 */
-async function setWalletAddress(phoneNumber, address, publicKey) {
+// /* 새 지갑주소 등록 */
+// async function setWalletAddress(phoneNumber, address, publicKey) {
 
-};
+// };
 
 /* request options */
 const creatingWalletOptions = {
