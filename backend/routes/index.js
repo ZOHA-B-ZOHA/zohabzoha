@@ -63,7 +63,6 @@ router.post('/api/authenticate', async (req, res, next) => {
           // db에 새 지갑주소 등록
           db.conn.query('INSERT INTO wallet VALUES (phoneNumber=?, address=?, publicKey=?)', [req.body.phoneNumber, address, publicKey], (err, rows, fields) => {
             if (!err) {
-              console.log('set address success ', rows);
               res.json({
                 "achievement": responseAchievment,
                 "justEarned": false,
@@ -85,6 +84,8 @@ router.post('/api/authenticate', async (req, res, next) => {
     }
     // 등록된 전화번호가 존재하면
     else {
+      console.log(responseAchievment);
+      console.log(responseRoundOneUserInfo);
       res.json({
         "achievement": responseAchievment,
         "justEarned": false,
