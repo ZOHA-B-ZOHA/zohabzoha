@@ -11,89 +11,106 @@ router.get('/', function (req, res, next) {
   console.log('index page is open');
 });
 
-// 전화번호 입력 후 접속
+/* 전화번호 입력 후 접속 */
 router.post('/api/authenticate', (req, res, next) => {
-  console.log(req.body);
-  db.getWalletAddress(req.body.phoneNumber, (err, rows) => {
-    let data;
-	if (err) {
-      console.log(err);
-      throw err;
-    } else {
-      data = rows[0];
-	console.log('data');
+  let responseAchievment, responseRoundOneUserInfo, responseRoundTwoUserInfo; 
+  
+  // get achievement
+  db.getAllQuantaties((err, rows) => {
+    if (err) {
+      console.log('get achievment error ', err);
     }
-  })
-  // // 전화번호에 지갑주소 있는지 확인
-  // db.getWalletAddress(req.body.phoneNumber)
-  //   .then((result) => {
-  //     console.log(result);
-  //     if (result) {
-  //       console.log('get wallet success result ', result);
-  //       // 전체 구매 수 측정
-  //       db.getAllQuantaties().then((response) => {
-  //         console.log('get all quantities ', response);
-  //       }, (err) => {
-  //         console.log('get quantaties error ', err)
-  //       });
-  //       // 1회차 유저정보 호출
-  //       db.getUserInfoForFirstRound(req.body.phoneNumber)
-  //         .then((result) => {
-  //           console.log(result);
-  //         });
-  //       // 2회차 유저정보 호출
-  //       db.getUserInfoForSecondRound(req.body.phoneNumber)
-  //         .then((result) => {
-  //           console.log(result);
-  //         });
-  //       // 전화번호 존재하지 않으면      
-  //     } else {
-  //       request(creatingWalletOptions, (error, response, body) => {
-  //         let address, publicKey;
-  //         if (error) {
-  //           throw new Error(error);
-  //         } else if (response.statusCode == 200) {
-  //           JSON.parse(body).result.address = address;
-  //           JSON.parse(body).result.public_key = publicKey
-  //           db.setWalletAddress(req.phoneNumber, address, publicKey)
-  //             .then((err) => {
-  //               console.log('set wallet address error ', err);
-  //             }, (result) => {
-  //               console.log('set wallet address result', result);
-  //             });
-  //         } else {
-  //           console.log('fail to request creating wallet ', response);
-  //         }
-  //       });
-  //     }
-  //   }, (err) => {
-  //     console.log('get wallet address error ', err);
-  //   });
+    else {
+      rows[0].quantity = responseAchievment;
+      console.log('responseAchivement ', responseAchievment);
+      db.conn.end();
+    }
+  });
+
+  // round 1 quantity
+  db.getUserInfoForFirstRound(req.body.phoneNumber, (err, rows) => {
+    if (err) {
+      console.log('get user info first round error ', err);
+    }
+    else {
+      rows[0].quantity = responseRoundOneUserInfo;
+      console.log('1st user info ', responseRoundOneUserInfo);
+      db.conn.end();
+    }
+  });
+
+  // round 2 quantity
+  db.getUserInfoForSecondRound(req.body.phoneNumber, (err, rows) => {
+    if (err) {
+      console.log('get user info second round error ',  err);
+    }
+    else {
+      rows[0].quantity = responseRoundTwoUserInfo;
+      console.log('2nd user info ', responseRoundTwoUserInfo);
+      db.conn.end();
+    }
+  });
+
+  // get wallet address
+  db.getWalletAddress(req.body.phoneNumber, (err, rows) => {
+    // get address error
+    if (err) {
+      console.log('get wallet address error ', err);
+    }
+    // 전화번호 데이터가 없을 때 
+    else if (rows == undefined) {
+      // KAS 로 wallet 생성
+      request(creatingWalletOptions, (error, response, body) => {
+        let address, publicKey;
+        if (error) {
+          throw new Error(error);
+        }
+        else if (response.statusCode == 200) {
+          JSON.parse(body).result.address = address;
+          JSON.parse(body).result.public_key = publicKey
+          // db 에 새 지갑주소 등록
+          db.setWalletAddress(req.phoneNumber, address, publicKey, (err, rows) => {
+            if (err) {
+              console.log('set wallet address error ', err);
+            }
+            else {
+              console.log('set address success ', rows);
+              db.conn.end();
+            }
+          });
+        }
+      });
+    }
+    // 전화번호 데이터가 있을 때
+    else {
+      
+    }
+  });
 });
 
-// 적립하는 api
+/* 적립하는 api */
 router.post('/api/verify', (req, res, next) => {
-  if (res.verificationCode == 'corgi') { // 여기에 qr code 값을 넣장
+  if (res.verificationCode == 'zohabzohafighting') { // 여기에 qr code 값을 넣장
     db.setBuying(res.phoneNumber, res.purchaseQuantity, res.branch, '라운드 값?')
       .then((result) => {
 
       })
   } else {
-    req.json({ msg: 'invalid password' });
+    res.json({ msg: 'invalid password' });
   }
 });
 
-// 쿠폰 사용
+/* 쿠폰 사용 */
 router.post('/api/redeem', (req, res, next) => {
 
 });
 
-// 토큰 발급 시스템
+/* 토큰 발급 시스템 */
 router.post('', (req, res, next) => {
 
 });
 
-// request options
+/* request options */
 const creatingWalletOptions = {
   method: "POST",
   preambleCRLF: true,
@@ -106,7 +123,7 @@ const creatingWalletOptions = {
   }
 };
 
-// check date
+/* check date */
 function checkDate() {
   let today = new Date();
   let month = today.getUTCMonth;

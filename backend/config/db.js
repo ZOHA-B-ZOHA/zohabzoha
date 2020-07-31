@@ -48,7 +48,7 @@ async function getWalletAddress(phoneNumber) {
 async function getUserInfoForFirstRound(phoneNumber) {
     let result;
     try {
-        conn.query('SELECT * FROM users WHERE phoneNumber=? AND round=1', [phoneNumber], (err, rows, fields) => {
+        conn.query('SELECT SUM(quantity) FROM users WHERE phoneNumber=? AND round=1', [phoneNumber], (err, rows, fields) => {
             if (!err) {
                 result = rows;
             } else {
@@ -66,7 +66,7 @@ async function getUserInfoForFirstRound(phoneNumber) {
 async function getUserInfoForSecondRound(phoneNumber) {
     let result;
     try {
-        conn.query('SELECT * FROM users WHERE phoneNumber=? AND round=2', [phoneNumber], (err, rows, fields) => {
+        conn.query('SELECT SUM(quantity) FROM users WHERE phoneNumber=? AND round=2', [phoneNumber], (err, rows, fields) => {
             if (!err) {
                 result = rows;
             } else {
@@ -138,7 +138,7 @@ async function getRankForSecondRound() {
 async function setBuying(phoneNumber, quantity, place, round) {
     let result;
     try {
-        conn.query('INSERT INTO nodejs.users(phoneNumber, quantity, place, round)', [phoneNumber, quantity, place, round], (err, rows, fields) => {
+        conn.query('INSERT INTO users VALUES (phoneNumber, quantity, place, round)', [phoneNumber, quantity, place, round], (err, rows, fields) => {
             if (!err) {
                 result = rows;
             } else {
@@ -173,5 +173,5 @@ async function setWalletAddress(phoneNumber, address, publicKey) {
 module.exports = { 
     getAllQuantaties, getWalletAddress, getUserInfoForFirstRound, 
     getUserInfoForSecondRound, checkNumberOfPurchased, getRankForFirstRound, 
-    getRankForSecondRound, setBuying, setWalletAddress
+    getRankForSecondRound, setBuying, setWalletAddress, conn
 }
