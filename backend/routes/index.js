@@ -12,11 +12,11 @@ router.get('/', function (req, res, next) {
 });
 
 /* 전화번호 입력 후 접속 */
-router.post('/api/authenticate', (req, res, next) => {
+router.post('/api/authenticate', async (req, res, next) => {
   let responseAchievment, responseRoundOneUserInfo, responseRoundTwoUserInfo; 
   
   // get achievement
-  db.getAllQuantaties((err, rows) => {
+  await db.getAllQuantaties((err, rows) => {
     if (err) {
       console.log('get achievment error ', err);
     }
@@ -28,7 +28,7 @@ router.post('/api/authenticate', (req, res, next) => {
   });
 
   // round 1 quantity
-  db.getUserInfoForFirstRound(req.body.phoneNumber, (err, rows) => {
+  await db.getUserInfoForFirstRound(req.body.phoneNumber, (err, rows) => {
     if (err) {
       console.log('get user info first round error ', err);
     }
@@ -40,7 +40,7 @@ router.post('/api/authenticate', (req, res, next) => {
   });
 
   // round 2 quantity
-  db.getUserInfoForSecondRound(req.body.phoneNumber, (err, rows) => {
+  await db.getUserInfoForSecondRound(req.body.phoneNumber, (err, rows) => {
     if (err) {
       console.log('get user info second round error ',  err);
     }
@@ -52,7 +52,7 @@ router.post('/api/authenticate', (req, res, next) => {
   });
 
   // get wallet address
-  db.getWalletAddress(req.body.phoneNumber, (err, rows) => {
+  await db.getWalletAddress(req.body.phoneNumber, (err, rows) => {
     // get address error
     if (err) {
       console.log('get wallet address error ', err);
