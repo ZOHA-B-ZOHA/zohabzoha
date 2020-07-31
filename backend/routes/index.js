@@ -37,7 +37,7 @@ router.post('/api/authenticate', async (req, res, next) => {
           } else if (response.statusCode == 200) {
             console.log('body', JSON.parse(body));
             // db에 새 지갑주소 등록
-            db.conn.query('INSERT INTO wallet VALUES (phoneNumber=?, address=?, publicKey=?)', [req.body.phoneNumber, JSON.parse(body).result.address, JSON.parse(body).result.public_key], (err, rows, fields) => {
+            db.conn.query('INSERT INTO wallet VALUES (?, ?, ?)', [req.body.phoneNumber, JSON.parse(body).result.address, JSON.parse(body).result.public_key], (err, rows, fields) => {
               if (!err) {
                 res.json({
                   "achievement": responseAchievment,
@@ -51,7 +51,6 @@ router.post('/api/authenticate', async (req, res, next) => {
                   }
                 });
                 console.log('set address success ', rows);
-                db.conn.end();
               } else {
                 console.log('set address error ', err);
               }
@@ -75,7 +74,6 @@ router.post('/api/authenticate', async (req, res, next) => {
           }
         });
         console.log('sending remain data success');
-        db.conn.end();
       }
     });
   } catch (e) {
