@@ -85,10 +85,10 @@ router.post('/api/verify', async(req, res, next) => {
     
     if (req.body.verificationCode == 'zohabzohafighting') { // 여기에 qr code 값을 넣장
       // db에 구매내역 기록
-      db.conn.query('INSERT INTO users VALUES (?, ?, ?, ?)', [req.body.phoneNumber, req.body.purchaseQuantity, req.body.branch, req.body.round], (err, rows, fields) => {
+      db.conn.query('INSERT INTO users (phoneNumber, quantity, place, round) VALUES (?, ?, ?, ?)', [req.body.phoneNumber, req.body.purchaseQuantity, req.body.branch, req.body.round], (err, rows, fields) => {
         if (!err) {
           // 기록 후 지금까지의 구매 횟수 출력
-          db.conn.query('SELECT COUNT(phoneNumber) AS countNumber FROM users WHERE phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
+          db.conn.query('SELECT SUM(quantity) AS countNumber FROM users WHERE phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
             if (!err) {
               console.log('count rows ', rows[0]);
               // 기록하고 구매내역 출력했으면
