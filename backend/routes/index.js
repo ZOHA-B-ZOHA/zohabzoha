@@ -8,7 +8,6 @@ const db = require('../config/db');
 /* GET home page. */
 router.get('/', function (req, res, next) {
   res.sendFile(path.join(__dirname, "../public", "index.html"));
-  console.log('index page is open');
 });
 
 /* 전화번호 입력 후 접속 */
@@ -35,7 +34,6 @@ router.post('/api/authenticate', async (req, res, next) => {
           if (error) {
             console.log('kas create wallet error ', error);
           } else if (response.statusCode == 200) {
-            console.log('body', JSON.parse(body));
             // db에 새 지갑주소 등록
             db.conn.query('INSERT INTO wallet VALUES (?, ?, ?)', [req.body.phoneNumber, JSON.parse(body).result.address, JSON.parse(body).result.public_key], (err, rows, fields) => {
               if (!err) {
@@ -50,7 +48,6 @@ router.post('/api/authenticate', async (req, res, next) => {
                     }
                   }
                 });
-                console.log('set address success ', rows);
               } else {
                 console.log('set address error ', err);
               }
@@ -73,7 +70,6 @@ router.post('/api/authenticate', async (req, res, next) => {
             }
           }
         });
-        console.log('sending remain data success');
       }
     });
   } catch (e) {
@@ -82,14 +78,38 @@ router.post('/api/authenticate', async (req, res, next) => {
 });
 
 /* 적립하는 api */
-router.post('/api/verify', (req, res, next) => {
-  if (res.verificationCode == 'zohabzohafighting') { // 여기에 qr code 값을 넣장
-    db.setBuying(res.phoneNumber, res.purchaseQuantity, res.branch, '라운드 값?')
-      .then((result) => {
-
-      })
-  } else {
-    res.json({ msg: 'invalid password' });
+router.post('/api/verify', async(req, res, next) => {
+  try {
+    // get achievement
+    let responseAchievment = await getAllAchievement();
+    
+    if (res.verificationCode == 'zohabzohafighting') { // 여기에 qr code 값을 넣장
+      // db에 구매내역 기록
+      db.conn.query('INSERT INTO users VALUES (?, ?, ?, ?)', [req.body.phoneNumber, req.body.purchaseQuantity, req.body.branch, req.body.round], (err, rows, fields) => {
+        if (!err) {
+          // 기록 후 지금까지의 구매 횟수 출력
+          db.conn.query('SELECT COUNT(phoneNumber) AS countNumber FROM users WHERE phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
+            if (!err) {
+              console.log('count rows ', rows[0]);
+              // 기록하고 구매내역 출력했으면
+              res.json({
+                "achievement": responseAchievment,
+                "justEarned": true,
+                "purchaseCount": rows[0].countNumber
+              });
+            } else {
+              console.log('check count error ', err);
+            }
+          });
+        } else {
+          console.log('insert qunatities error ', err);
+        }
+      });
+    } else {
+      res.json({ "msg": 'invalid password' });
+    }
+  } catch (e) {
+    throw e
   }
 });
 
@@ -108,7 +128,6 @@ async function getAllAchievement() {
   return new Promise((resolve, reject) => {
     db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users', (err, rows, fields) => {
       if (!err) {
-        console.log('responseAchievment ', rows[0]);
         resolve(rows[0].sumQuantities)
       }
       else {
@@ -123,7 +142,6 @@ async function getRoundOneQuantities(phoneNumber) {
   return new Promise((resolve, reject) => {
     db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users WHERE phoneNumber=? AND round=1', [phoneNumber], (err, rows, fields) => {
       if (!err) {
-        console.log('express 1st quantities ', rows[0].sumQuantities);
         resolve(rows[0].sumQuantities)
       } else {
         reject('get 1st userinfo error ', err);
@@ -137,7 +155,6 @@ async function getRoundTwoQuantities(phoneNumber) {
   return new Promise((resolve, reject) => {
     db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users WHERE phoneNumber=? AND round=2', [phoneNumber], (err, rows, fields) => {
       if (!err) {
-        console.log('express 2nd quantities ', rows[0].sumQuantities);
         resolve(rows[0].sumQuantities)
       } else {
         reject('get 2nd userinfo error ', err);
