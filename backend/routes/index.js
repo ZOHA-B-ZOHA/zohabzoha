@@ -4,6 +4,9 @@ const path = require("path");
 const request = require('request');
 const config = require('../config/config.json');
 const db = require('../config/db');
+let responseAchievment = 0;
+let responseRoundOneUserInfo = 0;
+let responseRoundTwoUserInfo = 0;
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -13,10 +16,6 @@ router.get('/', function (req, res, next) {
 
 /* 전화번호 입력 후 접속 */
 router.post('/api/authenticate', async (req, res, next) => {
-
-    let responseAchievment = 0;
-    let responseRoundOneUserInfo = 0;
-    let responseRoundTwoUserInfo = 0;
 
     // get achievement
     await getAllAchievement();    
