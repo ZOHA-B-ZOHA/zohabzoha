@@ -111,7 +111,7 @@ async function getAllAchievement () {
     if (!err) {
       console.log('responseAchievment ', rows[0]);
       rows[0].sumQuantities = responseAchievment;
-      console.log('hi2')
+      console.log(responseAchievment)
     }
     else {
       console.log('get achievement error ', err);
@@ -125,7 +125,7 @@ async function getRoundOneQuantities(phoneNumber) {
     if (!err) {
       console.log('express 1st quantities ', rows[0].sumQuantities);
       rows[0].sumQuantities = responseRoundOneUserInfo;
-      console.log('hi3')
+      console.log(responseRoundOneUserInfo)
     } else {
       console.log('get 1st userinfo error ', err);
     }
@@ -138,7 +138,7 @@ async function getRoundTwoQuantities(phoneNumber) {
     if (!err) {
       console.log('express 2nd quantities ', rows[0].sumQuantities);
       rows[0].sumQuantities = responseRoundTwoUserInfo;
-      console.log('hi4')
+      console.log(responseRoundTwoUserInfo)
     } else {
       console.log('get 2nd userinfo error ', err);
     }
