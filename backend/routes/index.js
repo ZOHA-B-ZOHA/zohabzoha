@@ -13,95 +13,75 @@ router.get('/', function (req, res, next) {
 
 /* 전화번호 입력 후 접속 */
 router.post('/api/authenticate', async (req, res, next) => {
-	var responseAchievment = 0;
-	var responseRoundOneUserInfo = 0;
-	var responseRoundTwoUserInfo = 0;
-  // get achievement
-  db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users', (err, rows, fields) => {
-    if (!err) {
-      console.log('responseAchievment ', rows[0]);
-      rows[0].sumQuantities = responseAchievment;
-	console.log('in a function ', responseAchievment);
-    } else {
-      console.log('get achievement error ', err);
-    }
-  });
-	console.log('global? ', responseAchievment);
-  // round 1 quantity
-  db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users WHERE phoneNumber=? AND round=1', [req.body.phoneNumber], (err, rows, fields) => {
-    if (!err) {
-      console.log('express 1st quantities ', rows[0].sumQuantities);
-      rows[0].sumQuantities = responseRoundOneUserInfo;
-    } else {
-      console.log('get 1st userinfo error ', err);
-    }
-  });
 
-  // round 2 quantity
-  db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users WHERE phoneNumber=? AND round=2', [req.body.phoneNumber], (err, rows, fields) => {
-    if (!err) {
-      console.log('express 2nd quantities ', rows[0].sumQuantities);
-      rows[0].sumQuantities = responseRoundTwoUserInfo;
-    } else {
-      console.log('get 2nd userinfo error ', err);
-    }
-  });
+    let responseAchievment = 0;
+    let responseRoundOneUserInfo = 0;
+    let responseRoundTwoUserInfo = 0;
 
-  // get wallet address
-  db.conn.query('SELECT address FROM wallet WHERE phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
-    if (err) {
-      console.log('get wallet address error ', err);
-    }
-    // 등록된 전화번호가 없으면
-    else if (!rows || rows == undefined) {
-      // KAS로 wallet 생성
-      request(creatingWalletOptions, (error, response, body) => {
-        let address, publicKey;
-        if (error) {
-          console.log('kas create wallet error ', error);
-        } else if (response.statusCode == 200) {
-          JSON.parse(body).result.address = address;
-          JSON.parse(body).result.public_key = publicKey
-          // db에 새 지갑주소 등록
-          db.conn.query('INSERT INTO wallet VALUES (phoneNumber=?, address=?, publicKey=?)', [req.body.phoneNumber, address, publicKey], (err, rows, fields) => {
-            if (!err) {
-              res.json({
-                "achievement": responseAchievment,
-                "justEarned": false,
-                "currentUser": {
-                  "phoneNumber": req.body.phoneNumber,
-                  "purchaseQuantity": {
-                    "firstRound": responseRoundOneUserInfo,
-                    "secondRound": responseRoundTwoUserInfo
+    // get achievement
+    await getAllAchievement();    
+
+    // round 1 quantity
+    await getRoundOneQuantities(req.body.phoneNumber);
+
+    // round 2 quantity
+    await getRoundTwoQuantities(req.body.phoneNumber);
+
+    // get wallet address
+    db.conn.query('SELECT address FROM wallet WHERE phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
+      if (err) {
+        console.log('get wallet address error ', err);
+      }
+      // 등록된 전화번호가 없으면
+      else if (!rows || rows == undefined) {
+        // KAS로 wallet 생성
+        request(creatingWalletOptions, (error, response, body) => {
+          let address, publicKey;
+          if (error) {
+            console.log('kas create wallet error ', error);
+          } else if (response.statusCode == 200) {
+            JSON.parse(body).result.address = address;
+            JSON.parse(body).result.public_key = publicKey
+            // db에 새 지갑주소 등록
+            db.conn.query('INSERT INTO wallet VALUES (phoneNumber=?, address=?, publicKey=?)', [req.body.phoneNumber, address, publicKey], (err, rows, fields) => {
+              if (!err) {
+                res.json({
+                  "achievement": responseAchievment,
+                  "justEarned": false,
+                  "currentUser": {
+                    "phoneNumber": req.body.phoneNumber,
+                    "purchaseQuantity": {
+                      "firstRound": responseRoundOneUserInfo,
+                      "secondRound": responseRoundTwoUserInfo
+                    }
                   }
-                }
-              });
-              db.conn.end();
-            } else {
-              console.log('set address error ', err);
-            }
-          });
-        }
-      });
-    }
-    // 등록된 전화번호가 존재하면
-    else {
-      console.log(responseAchievment);
-      console.log(responseRoundOneUserInfo);
-      res.json({
-        "achievement": responseAchievment,
-        "justEarned": false,
-        "currentUser": {
-          "phoneNumber": req.body.phoneNumber,
-          "purchaseQuantity": {
-            "firstRound": responseRoundOneUserInfo,
-            "secondRound": responseRoundTwoUserInfo
+                });
+                db.conn.end();
+              } else {
+                console.log('set address error ', err);
+              }
+            });
           }
-        }
-      });
-      db.conn.end();
-    }
-  });
+        });
+      }
+      // 등록된 전화번호가 존재하면
+      else {
+        console.log(responseAchievment);
+        console.log(responseRoundOneUserInfo);
+        res.json({
+          "achievement": responseAchievment,
+          "justEarned": false,
+          "currentUser": {
+            "phoneNumber": req.body.phoneNumber,
+            "purchaseQuantity": {
+              "firstRound": responseRoundOneUserInfo,
+              "secondRound": responseRoundTwoUserInfo
+            }
+          }
+        });
+        db.conn.end();
+      }
+    });
 });
 
 /* 적립하는 api */
@@ -125,6 +105,43 @@ router.post('/api/redeem', (req, res, next) => {
 router.post('', (req, res, next) => {
 
 });
+
+/* 현재 총 잔 수 */
+async function getAllAchievement () {
+  db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users', (err, rows, fields) => {
+    if (!err) {
+      console.log('responseAchievment ', rows[0]);
+      rows[0].sumQuantities = responseAchievment;
+    }
+    else {
+      console.log('get achievement error ', err);
+    }
+  });
+};
+
+/* 유저가 구매한 1라운드 잔 수 */
+async function getRoundOneQuantities(phoneNumber) {
+  db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users WHERE phoneNumber=? AND round=1', [phoneNumber], (err, rows, fields) => {
+    if (!err) {
+      console.log('express 1st quantities ', rows[0].sumQuantities);
+      rows[0].sumQuantities = responseRoundOneUserInfo;
+    } else {
+      console.log('get 1st userinfo error ', err);
+    }
+  });
+};
+
+/* 유저가 구매한 2라운드 잔 수 */
+async function getRoundTwoQuantities(phoneNumber) {
+  db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users WHERE phoneNumber=? AND round=2', [phoneNumber], (err, rows, fields) => {
+    if (!err) {
+      console.log('express 2nd quantities ', rows[0].sumQuantities);
+      rows[0].sumQuantities = responseRoundTwoUserInfo;
+    } else {
+      console.log('get 2nd userinfo error ', err);
+    }
+  });
+};
 
 /* request options */
 const creatingWalletOptions = {
