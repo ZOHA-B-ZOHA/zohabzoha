@@ -23,7 +23,6 @@ router.post('/api/authenticate', async (req, res, next) => {
     else {
       rows[0].quantity = responseAchievment;
       console.log('responseAchivement ', responseAchievment);
-      db.conn.end();
     }
   });
 
@@ -35,7 +34,6 @@ router.post('/api/authenticate', async (req, res, next) => {
     else {
       rows[0].quantity = responseRoundOneUserInfo;
       console.log('1st user info ', responseRoundOneUserInfo);
-      db.conn.end();
     }
   });
 
@@ -47,7 +45,6 @@ router.post('/api/authenticate', async (req, res, next) => {
     else {
       rows[0].quantity = responseRoundTwoUserInfo;
       console.log('2nd user info ', responseRoundTwoUserInfo);
-      db.conn.end();
     }
   });
 
@@ -75,7 +72,6 @@ router.post('/api/authenticate', async (req, res, next) => {
             }
             else {
               console.log('set address success ', rows);
-              db.conn.end();
             }
           });
         }

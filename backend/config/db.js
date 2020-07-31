@@ -16,6 +16,7 @@ async function getAllQuantaties() {
         conn.query('SELECT SUM(quantity) FROM users', (err, rows, fields) => {
             if (!err) {
                 result = rows;
+		console.log('quantities ', result);
             } else {
                 console.log(err);
             }
@@ -29,19 +30,22 @@ async function getAllQuantaties() {
 
 // 휴대폰 번호로 지갑주소 가져오기
 async function getWalletAddress(phoneNumber) {
-    try {
+let result;   
+ try {
         conn.query('SELECT address FROM wallet WHERE phoneNumber=?', [phoneNumber], (err, rows, fields) => {
             if (!err) {
-                console.log(rows);
+          	result = rows;
+		 console.log('address ', rows[0].address);
             } else {
                 console.log(err);
             }
         });
     } catch (err) {
         throw err;
-    } //finally {
-        //return result;
-    //}
+    } finally {
+        return result;
+	conn.end();
+    }
 }
 
 // 1회차 유저정보 가져오기
@@ -51,6 +55,7 @@ async function getUserInfoForFirstRound(phoneNumber) {
         conn.query('SELECT SUM(quantity) FROM users WHERE phoneNumber=? AND round=1', [phoneNumber], (err, rows, fields) => {
             if (!err) {
                 result = rows;
+		console.log('1st user info ', result);
             } else {
                 console.log(err);
             }
@@ -69,6 +74,7 @@ async function getUserInfoForSecondRound(phoneNumber) {
         conn.query('SELECT SUM(quantity) FROM users WHERE phoneNumber=? AND round=2', [phoneNumber], (err, rows, fields) => {
             if (!err) {
                 result = rows;
+		console.log('2nd user info ', result);
             } else {
                 console.log(err);
             }
@@ -87,6 +93,7 @@ async function checkNumberOfPurchased(phoneNumber) {
         conn.query('SELECT COUNT(phoneNumber) FROM users WHERE phoneNumber=?', [phoneNumber], (err, rows, fields) => {
             if (!err) {
                 result = rows;
+		console.log('achievment ', result);
             } else {
                 console.log(err);
             }
@@ -105,6 +112,7 @@ async function getRankForFirstRound() {
         conn.query('SELECT sum_quantity, phoneNumber FROM (SELECT phoneNumber, SUM(quantity) AS sum_quantity, round FROM users WHERE round=1 GROUP BY phoneNumber)t ORDER BY sum_quantity desc limit 3', (err, rows, fields) => {
             if (!err) {
                 result = rows;
+		console.log('1st ranking ', result);
             } else {
                 console.log(err);
             }
@@ -123,6 +131,7 @@ async function getRankForSecondRound() {
         conn.query('SELECT sum_quantity, phoneNumber FROM (SELECT phoneNumber, SUM(quantity) AS sum_quantity, round FROM users WHERE round=2 GROUP BY phoneNumber)t ORDER BY sum_quantity desc limit 3', (err, rows, fields) => {
             if (!err) {
                 result = rows;
+		console.log('2nd ranking ', result);
             } else {
                 console.log(err);
             }
@@ -141,6 +150,7 @@ async function setBuying(phoneNumber, quantity, place, round) {
         conn.query('INSERT INTO users VALUES (phoneNumber, quantity, place, round)', [phoneNumber, quantity, place, round], (err, rows, fields) => {
             if (!err) {
                 result = rows;
+		console.log('insert buying ', result);
             } else {
                 console.log(err);
             }
@@ -159,6 +169,7 @@ async function setWalletAddress(phoneNumber, address, publicKey) {
         conn.query('INSERT INTO wallet VALUES (phoneNumber, address, publicKey)', [phoneNumber, address, publicKey], (err, rows, fields) => {
             if (!err) {
                 result = rows;
+		console.log('insert wallet ', result);
             } else {
                 console.log(err);
             }
