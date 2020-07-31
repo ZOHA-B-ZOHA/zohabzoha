@@ -161,7 +161,7 @@ async function getWalletAddress(phoneNumber) {
       if (err) {
         reject('get wallet address error ', err);
       } else if (!rows || rows == undefined) {
-        let walletResult = await createWallet(creatingWalletOptions);
+        let walletResult = createWallet(creatingWalletOptions);
         console.log(walletResult);
       } else {
         resolve('already get wallet');
