@@ -16,37 +16,61 @@ router.post('/api/authenticate', async (req, res, next) => {
   let responseAchievment, responseRoundOneUserInfo, responseRoundTwoUserInfo;
 
   // get achievement
-  await db.getAllQuantaties((err, rows) => {
-    if (err) {
-      console.log('get achievment error ', err);
-    }
-    else {
+  db.conn.query('SELECT SUM(quantity) FROM users', (err, rows, fields) => {
+    if (!err) {
+      console.log('responseAchievment ', rows);
       rows[0].SUM(quantity) = responseAchievment;
-      console.log('responseAchivement ', responseAchievment);
+    } else {
+      console.log('get achievement error ', err);
     }
   });
+  // await db.getAllQuantaties((err, rows) => {
+  //   if (err) {
+  //     console.log('get achievment error ', err);
+  //   }
+  //   else {
+  //     rows[0].SUM(quantity) = responseAchievment;
+  //     console.log('responseAchivement ', responseAchievment);
+  //   }
+  // });
 
   // round 1 quantity
-  await db.getUserInfoForFirstRound(req.body.phoneNumber, (err, rows) => {
-    if (err) {
-      console.log('get user info first round error ', err);
-    }
-    else {
+  db.conn.query('SELECT SUM(quantity) FROM users WHERE phoneNumber=? AND round=1', [req.phoneNumber], (err, rows, fields) => {
+    if (!err) {
+      console.log('express 1st quantities ', rows);
       rows[0].SUM(quantity) = responseRoundOneUserInfo;
-      console.log('1st user info ', responseRoundOneUserInfo);
+    } else {
+      console.log('get 1st userinfo error ', err);
     }
   });
+  // await db.getUserInfoForFirstRound(req.body.phoneNumber, (err, rows) => {
+  //   if (err) {
+  //     console.log('get user info first round error ', err);
+  //   }
+  //   else {
+  //     rows[0].SUM(quantity) = responseRoundOneUserInfo;
+  //     console.log('1st user info ', responseRoundOneUserInfo);
+  //   }
+  // });
 
   // round 2 quantity
-  await db.getUserInfoForSecondRound(req.body.phoneNumber, (err, rows) => {
-    if (err) {
-      console.log('get user info second round error ', err);
-    }
-    else {
+  db.conn.query('SELECT SUM(quantity) FROM users WHERE phoneNumber=? AND round=2', [req.phoneNumber], (err, rows, fields) => {
+    if (!err) {
+      console.log('express 2nd quantities ', rows);
       rows[0].SUM(quantity) = responseRoundTwoUserInfo;
-      console.log('2nd user info ', responseRoundTwoUserInfo);
+    } else {
+      console.log('get 2nd userinfo error ', err);
     }
   });
+  // await db.getUserInfoForSecondRound(req.body.phoneNumber, (err, rows) => {
+  //   if (err) {
+  //     console.log('get user info second round error ', err);
+  //   }
+  //   else {
+  //     rows[0].SUM(quantity) = responseRoundTwoUserInfo;
+  //     console.log('2nd user info ', responseRoundTwoUserInfo);
+  //   }
+  // });
 
   // get wallet address
   await db.getWalletAddress(req.body.phoneNumber, (err, rows) => {
