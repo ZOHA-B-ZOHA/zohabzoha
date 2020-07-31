@@ -66,7 +66,7 @@ router.post('/api/authenticate', async (req, res, next) => {
           JSON.parse(body).result.address = address;
           JSON.parse(body).result.public_key = publicKey
           // db 에 새 지갑주소 등록
-          await db.setWalletAddress(req.phoneNumber, address, publicKey, (err, rows) => {
+          db.setWalletAddress(req.phoneNumber, address, publicKey, (err, rows) => {
             if (err) {
               console.log('set wallet address error ', err);
             }
