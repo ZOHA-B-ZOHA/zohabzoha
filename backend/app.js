@@ -16,13 +16,11 @@ const qrCodeRouter = require('./routes/qrCode');
 const app = express();
 app.set('port', process.env.PORT || 3000);
 
-//const corsOption = {
-  //origin: true,
-  //credentials: true
-//}
-//app.use(cors(corsOption));
-
-app.use(cors());
+const corsOption = {
+  origin: "http://192.168.0.9:8080",
+  credentials: true
+}
+app.use(cors(corsOption));
 
 app.use(session({
   secret: 'zohabzoha!',
