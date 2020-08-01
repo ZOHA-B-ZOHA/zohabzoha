@@ -93,8 +93,8 @@ router.post('/api/rankings', async(req, res, next) => {
     // 2라운드 랭킹 쿼리
     let roundTwoRanking = await getRoundTwoRanking();
 
-    console.log('1st ranking ', roundOneRanking[0]);
-    console.log('2nd ranking ', roundTwoRanking[1]);
+    console.log('1st ranking ', roundOneRanking[0].sum_quantity);
+    console.log('2nd ranking ', roundTwoRanking[1].phoneNumber);
   } catch (e) {
     throw e
   }
