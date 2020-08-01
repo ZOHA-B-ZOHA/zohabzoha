@@ -4,6 +4,8 @@ const path = require("path");
 const request = require('request');
 const config = require('../config/config.json');
 const db = require('../config/db');
+const Caver = require('caver-js');
+const caver = new Caver('https://api.baobab.klaytn.net:8651/'); // 사용시에는 cypress로 바꾸자!!
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
