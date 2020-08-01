@@ -93,8 +93,15 @@ router.post('/api/rankings', async(req, res, next) => {
     // 2라운드 랭킹 쿼리
     let roundTwoRanking = await getRoundTwoRanking();
 
-    console.log('1st ranking ', roundOneRanking[0].sum_quantity);
-    console.log('2nd ranking ', roundTwoRanking[1].phoneNumber);
+    // response
+    // 각각 객체이며 0~9 값으로 이루어져 있습니다. 사용법은 아래와 같습니다
+    // roundOneRanking[0].sum_quantity (1라운드의 1등의 구매 량)
+    // roundTwonRanking[3].phoneNumber (2랴운드 4등의 휴대폰 번호)
+    res.json({
+      "firstRoundRanking": roundOneRanking,
+      "secondRoundRanking": roundTwoRanking
+    });
+
   } catch (e) {
     throw e
   }
@@ -113,14 +120,17 @@ router.post('/api/verify', async(req, res, next) => {
       db.conn.query('INSERT INTO users (phoneNumber, quantity, place, round) VALUES (?, ?, ?, ?)', [req.body.phoneNumber, req.body.purchaseQuantity, req.body.branch, req.body.round], (err, rows, fields) => {
         if (!err) {
           // 기록 후 지금까지의 구매 횟수 출력
-          db.conn.query('SELECT SUM(quantity) AS countNumber FROM users WHERE phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
+          db.conn.query('SELECT SUM(quantity) AS countNumber FROM users WHERE phoneNumber=? GROUP BY round', [req.body.phoneNumber], (err, rows, fields) => {
             if (!err) {
               console.log('count rows ', rows[0]);
               // 기록하고 구매내역 출력했으면
               res.json({
                 "achievement": responseAchievment,
                 "justEarned": true,
-                "purchaseCount": rows[0].countNumber
+                "purchaseCount": {
+                  "firstRoundCount": rows[0].countNumber,
+                  "secondRoundCount": rows[1].countNumber
+                }
               });
             } else {
               console.log('check count error ', err);
