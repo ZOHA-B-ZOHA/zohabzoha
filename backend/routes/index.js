@@ -527,13 +527,7 @@ function checkDate() {
 };
 
 router.get('/contracts', (res, req, next) => {
-  tokenContract.methods.balanceOf('0x7930978144dfca9dfb66c5aeae94eb1472299df6').call()
-    .then((result) => {
-      console.log(result);
-      res.json({
-        "result": result
-      })
-    })
+  tokenContract.methods.balanceOf('0x7930978144dfca9dfb66c5aeae94eb1472299df6').call().then(console.log)
 });
 
 
