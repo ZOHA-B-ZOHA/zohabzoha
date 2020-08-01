@@ -30,7 +30,8 @@ app.use(session({
     cookie: {
         // 나중에 true로 바꾸기
         httpOnly: false,
-        secure: false
+        secure: false,
+        maxAge: 1200000
     }
 }))
 
