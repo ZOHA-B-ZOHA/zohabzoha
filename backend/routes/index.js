@@ -1,44 +1,6 @@
 // contract ABI
 let abi = [
 	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "interfaceId",
-				"type": "bytes4"
-			}
-		],
-		"name": "supportsInterface",
-		"outputs": [
-			{
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "tokenId",
-				"type": "uint256"
-			}
-		],
-		"name": "getApproved",
-		"outputs": [
-			{
-				"name": "",
-				"type": "address"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"constant": false,
 		"inputs": [
 			{
@@ -60,19 +22,27 @@ let abi = [
 		"constant": false,
 		"inputs": [
 			{
-				"name": "from",
-				"type": "address"
+				"name": "phone",
+				"type": "string"
 			},
 			{
-				"name": "to",
+				"name": "account",
 				"type": "address"
 			},
 			{
 				"name": "tokenId",
 				"type": "uint256"
+			},
+			{
+				"name": "round",
+				"type": "uint24"
+			},
+			{
+				"name": "couponType",
+				"type": "string"
 			}
 		],
-		"name": "transferFrom",
+		"name": "mintToken",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
@@ -101,41 +71,29 @@ let abi = [
 		"type": "function"
 	},
 	{
-		"constant": true,
+		"constant": false,
 		"inputs": [
+			{
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"name": "to",
+				"type": "address"
+			},
 			{
 				"name": "tokenId",
 				"type": "uint256"
-			}
-		],
-		"name": "ownerOf",
-		"outputs": [
+			},
 			{
-				"name": "",
-				"type": "address"
+				"name": "_data",
+				"type": "bytes"
 			}
 		],
+		"name": "safeTransferFrom",
+		"outputs": [],
 		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "owner",
-				"type": "address"
-			}
-		],
-		"name": "balanceOf",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -170,39 +128,34 @@ let abi = [
 			{
 				"name": "tokenId",
 				"type": "uint256"
-			},
-			{
-				"name": "_data",
-				"type": "bytes"
 			}
 		],
-		"name": "safeTransferFrom",
+		"name": "transferFrom",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
-		"constant": true,
+		"constant": false,
 		"inputs": [
 			{
-				"name": "owner",
+				"name": "_userAddress",
 				"type": "address"
 			},
 			{
-				"name": "operator",
-				"type": "address"
-			}
-		],
-		"name": "isApprovedForAll",
-		"outputs": [
+				"name": "round",
+				"type": "uint24"
+			},
 			{
-				"name": "",
-				"type": "bool"
+				"name": "count",
+				"type": "uint24"
 			}
 		],
+		"name": "updateRecord",
+		"outputs": [],
 		"payable": false,
-		"stateMutability": "view",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -210,6 +163,45 @@ let abi = [
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "buyer",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "round",
+				"type": "uint24"
+			},
+			{
+				"indexed": false,
+				"name": "quantity",
+				"type": "uint24"
+			}
+		],
+		"name": "setRecordInList",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "account",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "setTokenList",
+		"type": "event"
 	},
 	{
 		"anonymous": false,
@@ -276,6 +268,169 @@ let abi = [
 		],
 		"name": "ApprovalForAll",
 		"type": "event"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "balanceOf",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_userAddress",
+				"type": "address"
+			},
+			{
+				"name": "round",
+				"type": "uint24"
+			}
+		],
+		"name": "gasRecords",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint24"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "getApproved",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "phone",
+				"type": "string"
+			},
+			{
+				"name": "round",
+				"type": "uint24"
+			}
+		],
+		"name": "getTokenList",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"name": "operator",
+				"type": "address"
+			}
+		],
+		"name": "isApprovedForAll",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "ownerOf",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "interfaceId",
+				"type": "bytes4"
+			}
+		],
+		"name": "supportsInterface",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
 	}
 ];
 const express = require('express');
@@ -286,7 +441,7 @@ const config = require('../config/config.json');
 const db = require('../config/db');
 const Caver = require('caver-js');
 const caver = new Caver('https://api.baobab.klaytn.net:8651/'); // 사용시에는 cypress로 바꾸자!!
-const tokenContract = new caver.contract(abi, '0xABfE9127F9BC5CE975da7b1d36b3a34d18AC3E9f');
+const tokenContract = new caver.contract(abi, '0xcddd2f0b23f033eb85AFE5510e5285261bF68154');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -396,7 +551,11 @@ router.post('/api/verify', async(req, res, next) => {
     
     if (req.body.verificationCode == 'zohabzohafighting') { // 여기에 qr code 값을 넣장
       // chain에 구매내역 기록
-      
+	  tokenContract.methods.updateRecord(req.session.address, req.body.round, req.body.purchaseQuantity).send({from: '0x64297AE00b82e819c3AcD658cCF6EA3ee18Bc038'})
+		.on('receipt', (receipt) => {
+			console.log(receipt);
+		})
+		.on('error', console.error)
       // db에 구매내역 기록
       db.conn.query('INSERT INTO users (phoneNumber, quantity, place, round) VALUES (?, ?, ?, ?)', [req.body.phoneNumber, req.body.purchaseQuantity, req.body.branch, req.body.round], (err, rows, fields) => {
         if (!err) {
@@ -523,8 +682,12 @@ const creatingWalletOptions = {
 };
 
 // practice caver-js
-// router.get('/contracts', (res, req, next) => {
-//   tokenContract.methods.balanceOf('0x7930978144dfca9dfb66c5aeae94eb1472299df6').call().then(console.log)
-// });
+router.get('/contracts', (res, req, next) => {
+	tokenContract.methods.updateRecord(req.session.address, req.body.round, req.body.purchaseQuantity).send({from: '0x64297AE00b82e819c3AcD658cCF6EA3ee18Bc038'})
+	.on('receipt', (receipt) => {
+		console.log(receipt);
+	})
+	.on('error', console.error)
+});
 
 module.exports = router;
