@@ -440,13 +440,26 @@ const request = require('request');
 const config = require('../config/config.json');
 const db = require('../config/db');
 const moment = require('moment');
+const crypto = require('crypto');
 const Caver = require('caver-js');
 const caver = new Caver('https://api.baobab.klaytn.net:8651/'); // 사용시에는 cypress로 바꾸자!!
 const tokenContract = new caver.contract(abi, '0xcddd2f0b23f033eb85AFE5510e5285261bF68154');
 
+const cipher = crypto.createCipher('aes-256-cbc', 'zohabzohapassword');
+const decipher = crypto.createDecipher('aes-256-cbc', 'zohabzohapassword');
+
 /* GET home page. */
 router.get('/', function (req, res, next) {
 	res.sendFile(path.join(__dirname, "../public", "index.html"));
+});
+
+/* 게이지 새로고침 */
+router.get('/api', async(req, res, next) => {
+	let responseAchievment = await getAllAchievement();
+	
+	res.json({
+		achievement: responseAchievment
+	});
 });
 
 /* 전화번호 입력 후 접속 */
@@ -689,6 +702,26 @@ async function calculateDate() {
 		} else {
 			resolve('outOfOrder');
 		}
+	});
+};
+
+/* 전화번호 암호화 */
+async function cipherPhoneNumber(phoneNumber) {
+	return new Promise((resolve, reject) => {
+		let result = cipher.update(phoneNumber, 'utf8', 'base64');
+		result += cipher.final('base64');
+
+		resolve(result);
+	});
+};
+
+/* 전화번호 복호화 */
+async function decipherPhoneNumber(cipheredPhoneNumber) {
+	return new Promise((resolve, reject) => {
+		let result = decipher.update(cipheredPhoneNumber, 'base64', 'utf8');
+		result += decipher.final('utf8');
+
+		resolve(result);
 	});
 };
 
