@@ -428,12 +428,17 @@ router.post('/api/verify', async(req, res, next) => {
   }
 });
 
+/* 해당 유저의 토큰 목록을 받아옴 */
+router.post('/api/rewards', (req, res, next) => {
+
+});
+
 /* 쿠폰 사용 */
 router.post('/api/redeem', (req, res, next) => {
 
 });
 
-/* 토큰 발급 시스템 */
+/* 토큰 발급 시스템 (끝남을 받아야 함) */
 router.post('', (req, res, next) => {
 
 });
@@ -504,7 +509,6 @@ async function getRoundTwoRanking() {
   });
 };
 
-
 /* request options */
 const creatingWalletOptions = {
   method: "POST",
@@ -518,18 +522,9 @@ const creatingWalletOptions = {
   }
 };
 
-/* check date */
-function checkDate() {
-  let today = new Date();
-  let month = today.getUTCMonth;
-  let date = today.getUTCDate;
-  return
-};
-
-router.get('/contracts', (res, req, next) => {
-  tokenContract.methods.balanceOf('0x7930978144dfca9dfb66c5aeae94eb1472299df6').call().then(console.log)
-});
-
-
+// practice caver-js
+// router.get('/contracts', (res, req, next) => {
+//   tokenContract.methods.balanceOf('0x7930978144dfca9dfb66c5aeae94eb1472299df6').call().then(console.log)
+// });
 
 module.exports = router;
