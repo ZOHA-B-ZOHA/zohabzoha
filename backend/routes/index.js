@@ -682,12 +682,16 @@ const creatingWalletOptions = {
 };
 
 // practice caver-js
-router.get('/contracts', (res, req, next) => {
-	tokenContract.methods.updateRecord(req.session.address, req.body.round, req.body.purchaseQuantity).send({from: '0x64297AE00b82e819c3AcD658cCF6EA3ee18Bc038'})
-	.on('receipt', (receipt) => {
-		console.log(receipt);
-	})
-	.on('error', console.error)
+router.post('/contracts', (req, res, next) => {
+	
+console.log(req.body)
+console.log(caver.klay.accounts.wallet[0])
+tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', req.body.round, req.body.purchaseQuantity).
+send({from: '0x0f8a05726a799072C183620D6028a81065582039', gas: 3000000})
+.on('receipt', (receipt) => {
+	console.log(receipt)
+})
+.on('error', console.error)
 });
 
 module.exports = router;
