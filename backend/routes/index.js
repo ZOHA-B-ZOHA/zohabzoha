@@ -740,15 +740,15 @@ const creatingWalletOptions = {
 
 // practice caver-js
 router.post('/contracts', (req, res, next) => {
+	let byteCode = tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', 2, 3);
 
-	console.log(req.body)
-	console.log(caver.klay.accounts.wallet[0])
-	tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', req.body.round, req.body.purchaseQuantity).
-		send({ from: '0x7930978144dfca9dfb66c5aeae94eb1472299df6', gas: 3000000 })
-		.on('receipt', (receipt) => {
-			console.log(receipt)
-		})
-		.on('error', console.error)
+	console.log(byteCode)
+	// tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', req.body.round, req.body.purchaseQuantity).
+	// 	send({ from: '0x7930978144dfca9dfb66c5aeae94eb1472299df6', gas: 3000000 })
+	// 	.on('receipt', (receipt) => {
+	// 		console.log(receipt)
+	// 	})
+	// 	.on('error', console.error)
 });
 
 module.exports = router;
