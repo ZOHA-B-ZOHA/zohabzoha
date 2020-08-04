@@ -744,16 +744,21 @@ const creatingWalletOptions = {
 // practice caver-js
 router.post('/contracts', async(req, res, next) => {
 	try {
-		const address = '0x7930978144dfca9dfb66c5aeae94eb1472299df6'
-		const key = '0x90e0d2b3993086c75063d7bd0a0256e1887988bad3bfc1b883ee92ac8af2ef52'
-		const account = caver.klay.accounts.createWithAccountKey(address, key)
-		caver.klay.accounts.wallet.add(account)
+		// const address = '0x7930978144dfca9dfb66c5aeae94eb1472299df6'
+		// const key = '0x90e0d2b3993086c75063d7bd0a0256e1887988bad3bfc1b883ee92ac8af2ef52'
+		// const account = caver.klay.accounts.createWithAccountKey(address, key)
+		// caver.klay.accounts.wallet.add(account)
+
+		const feePayerAddress = '0x7930978144dfca9dfb66c5aeae94eb1472299df6';
+		const feePayerKey = '0x90e0d2b3993086c75063d7bd0a0256e1887988bad3bfc1b883ee92ac8af2ef52';
+		const feePayerAccount = caver.klay.accounts.createWithAccountKey(feePayerAddress, feePayerKey);
+		caver.klay.accounts.wallet.add(feePayerAccount);
 	
 		const contractAddress = '0xcddd2f0b23f033eb85AFE5510e5285261bF68154'
 	
 		const txObject = {
 			type: 'FEE_DELEGATED_SMART_CONTRACT_EXECUTION_WITH_RATIO',
-			from: account.address,
+			from: '0x405a59680bdc2a0eD53a925Cb6d4653093489d21', //account.address
 			to: contractAddress,
 			data: '0xbb16f4430000000000000000000000007930978144dfca9dfb66c5aeae94eb1472299df600000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003',
 			value:0,
@@ -762,7 +767,7 @@ router.post('/contracts', async(req, res, next) => {
 		}
 	
 		const senderSigned = await caver.klay.accounts.signTransaction(txObject)
-		const feePayerSigned = await caver.klay.accounts.feePayerSignTransaction(senderSigned.rawTransaction, '0x64297AE00b82e819c3AcD658cCF6EA3ee18Bc038')
+		const feePayerSigned = await caver.klay.accounts.feePayerSignTransaction(senderSigned.rawTransaction, feePayerAccount.address)
 		const receipt = await caver.klay.senderSignedTransaction(feePayerSigned.rawTransaction)
 		
 		console.log(receipt)
