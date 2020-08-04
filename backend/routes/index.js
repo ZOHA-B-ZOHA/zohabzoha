@@ -216,7 +216,7 @@ router.post('/api/rewards', async (req, res, next) => {
 	// 쿠폰 기간 체크
 	let couponDate = await calculateCouponDate();
 	let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
-	console.log(tokenStatus)
+	console.log(tokenStatus[0])
 	// let firstRoundPlus = tokenStatus[0].token1_plus;
 	// let firstRoundFree = tokenStatus[0].token1_free;
 	// let secondRoundPlus = tokenStatus[0].token2_plus;
