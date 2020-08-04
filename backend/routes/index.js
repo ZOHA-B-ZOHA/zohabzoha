@@ -747,7 +747,7 @@ router.post('/contracts', (req, res, next) => {
 
 	console.log(byteCode)
 
-	caver.klay.abi.encodeFunctionCall({
+	let klayArray = caver.klay.abi.encodeFunctionCall({
 		"constant": false,
 		"inputs": [
 			{
@@ -769,6 +769,13 @@ router.post('/contracts', (req, res, next) => {
 		"stateMutability": "nonpayable",
 		"type": "function"
 	}, ['0x7930978144dfca9dfb66c5aeae94eb1472299df6', 2, 3]).then(console.log)
+
+	new caver.transaction.feeDelegatedSmartContractExecution({
+		from: '0x7930978144dfca9dfb66c5aeae94eb1472299df6',
+		to: '0xcddd2f0b23f033eb85AFE5510e5285261bF68154',
+		input: ' 0xbb16f4430000000000000000000000007930978144dfca9dfb66c5aeae94eb1472299df600000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003',
+		gas: 3000000
+	}).then(console.log)
 	
 	// tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', req.body.round, req.body.purchaseQuantity).
 	// 	send({ from: '0x7930978144dfca9dfb66c5aeae94eb1472299df6', gas: 3000000 })
