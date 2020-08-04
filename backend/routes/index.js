@@ -849,7 +849,7 @@ router.post('/contracts', async(req, res, next) => {
 			} else {
 				console.log('1', result)
 				console.log('2', result.Result)
-				console.log(JSON.parse(result.Result))
+				console.log(JSON.parse(result))
 			}
 		})
 		
