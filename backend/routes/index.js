@@ -240,7 +240,6 @@ router.post('/api/redeem', async (req, res, next) => {
 
 		// 2차 쿠폰 만료
 		let checkExpire = await insertExpired(couponDate);
-		console.log(checkExpire);
 
 		//check status
 		let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
@@ -562,12 +561,16 @@ async function insertUnused(round) {
 			db.conn.query('UPDATE users SET token1_plus = "unused" WHERE token1_plus = "unavailable"', (err, rows, fields) => {
 				if (err) {
 					reject('insert unused error ', err);
+				} else {
+					resolve(rows)
 				}
 			})
 			for (let i = 0; i < 5; i++) {
 				db.conn.query('UPDATE users SET token1_free = "unused" WHERE token1_free is null AND phoneNumber=?', [ranking[i].phoneNumber], (err, rows, fields) => {
 					if (err) {
 						reject('insert unused error i ', err)
+					} else {
+						resolve(rows)
 					}
 				})
 			}
@@ -576,12 +579,16 @@ async function insertUnused(round) {
 			db.conn.query('UPDATE users SET token2_plus = "unused" WHERE token2_plus = "unavailable"', (err, rows, fields) => {
 				if (err) {
 					reject('insert unused error ', err);
+				} else {
+					resolve(rows)
 				}
 			})
 			for (let j = 0; j < 5; j++) {
 				db.conn.query('UPDATE users SET token2_free = "unused" WHERE token2_free is null AND phoneNumber=?', [ranking[j].phoneNumber], (err, rows, fields) => {
 					if (err) {
 						reject('insert unused error j ', err)
+					} else {
+						resolve(rows)
 					}
 				})
 			}
