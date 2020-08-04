@@ -234,7 +234,7 @@ router.post('/api/rewards', async (req, res, next) => {
 router.post('/api/redeem', async (req, res, next) => {
 	// 쿠폰 기간 체크
 	let couponDate = await calculateCouponDate();
-
+	console.log(typeof(couponDate))
 	// 모든 쿠폰 사용 불가
 	if (couponDate == 'outOfOrder') {
 		// 2차 쿠폰 만료
