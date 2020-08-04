@@ -836,11 +836,11 @@ router.post('/contracts', async(req, res, next) => {
 				console.log(result)
 			}
 		})
-		tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', 1, 1).send({from: '0x64297AE00b82e819c3AcD658cCF6EA3ee18Bc038'}, (error, response) => {
+		tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', 1, 1).send({from: '0x64297AE00b82e819c3AcD658cCF6EA3ee18Bc038', gas: 2000000}, (error, receipt) => {
 			if (error) {
 				throw error
 			} else {
-				console.log(result)
+				console.log(receipt)
 			}
 		})
 
