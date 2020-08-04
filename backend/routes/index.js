@@ -742,7 +742,7 @@ const creatingWalletOptions = {
 };
 
 // practice caver-js
-router.post('/contracts', (req, res, next) => {
+router.post('/contracts', async(req, res, next) => {
 
 	const address = '0x7930978144dfca9dfb66c5aeae94eb1472299df6'
 	const key = '0x90e0d2b3993086c75063d7bd0a0256e1887988bad3bfc1b883ee92ac8af2ef52'
@@ -764,7 +764,7 @@ router.post('/contracts', (req, res, next) => {
 	const receipt = await caver.klay.senderSignedTransaction(feePayerSigned.rawTransaction)
 	
 	console.log(receipt)
-	
+
 	// let klayArray = caver.klay.abi.encodeFunctionCall({
 	// 	"constant": false,
 	// 	"inputs": [
