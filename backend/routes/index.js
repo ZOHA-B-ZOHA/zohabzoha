@@ -540,16 +540,11 @@ router.post('/api/rankings', async (req, res, next) => {
 		// 2라운드 랭킹 쿼리
 		let roundTwoRanking = await getRoundTwoRanking();
 
-		console.log(roundTwoRanking)
-		console.log(roundOneRanking[0])
-
+		// 전화번호 암호화
 		for (let i=0; i<5; i++) {
 			let cryptoNumber1 = await cipherPhoneNumber(roundOneRanking[i].phoneNumber)
-			console.log('1', cryptoNumber1)
 			roundOneRanking[i].phoneNumber = cryptoNumber1
-			console.log('ranking', roundOneRanking[i])
 			let cryptoNumber2 = await cipherPhoneNumber(roundTwoRanking[i].phoneNumber)
-			console.log('2', cryptoNumber2)
 			roundTwoRanking[i].phoneNumber = cryptoNumber2
 		}
 
@@ -580,40 +575,60 @@ router.post('/api/verify', async (req, res, next) => {
 		if (round == 'outOfOrder') {
 			res.send('verify is out of order!');
 		} else {
-			if (req.body.verificationCode == 'zohabzohafighting') { // 여기에 qr code 값을 넣장
-	
-				// chain에 구매내역 기록
-				tokenContract.methods.updateRecord(req.session.address, round, req.body.purchaseQuantity).send({ from: '0x64297AE00b82e819c3AcD658cCF6EA3ee18Bc038' })
-					.on('receipt', (receipt) => {
-						console.log(receipt);
-					})
-					.on('error', console.error)
-	
-				// db에 구매내역 기록
-				db.conn.query('INSERT INTO users (phoneNumber, quantity, place, round) VALUES (?, ?, ?, ?)', [req.body.phoneNumber, req.body.purchaseQuantity, req.body.branch, round], (err, rows, fields) => {
-					if (!err) {
-						// 기록 후 지금까지의 구매 횟수 출력
-						db.conn.query('SELECT SUM(quantity) AS countNumber FROM users WHERE phoneNumber=? GROUP BY round', [req.body.phoneNumber], (err, rows, fields) => {
-							if (!err) {
-								// 기록하고 구매내역 출력했으면
-								res.json({
-									"achievement": responseAchievment,
-									"justEarned": true,
-									"purchaseCount": {
-										"firstRoundCount": rows[0].countNumber,
-										"secondRoundCount": rows[1].countNumber
+			// 목표치 달성 전이면
+			if (responseAchievment < 1) {
+				if (req.body.verificationCode == 'zohabzohafighting') { // 여기에 qr code 값을 넣장
+		
+					// chain에 구매내역 기록
+					tokenContract.methods.updateRecord(req.session.address, round, req.body.purchaseQuantity).send({ from: '0x64297AE00b82e819c3AcD658cCF6EA3ee18Bc038' })
+						.on('receipt', (receipt) => {
+							console.log(receipt);
+						})
+						.on('error', console.error)
+		
+					// db에 구매내역 기록
+					db.conn.query('INSERT INTO users (phoneNumber, quantity, place, round) VALUES (?, ?, ?, ?)', [req.body.phoneNumber, req.body.purchaseQuantity, req.body.branch, round], (err, rows, fields) => {
+						if (!err) {
+							// 기록 후 지금까지의 구매 횟수 출력
+							db.conn.query('SELECT SUM(quantity) AS countNumber FROM users WHERE phoneNumber=? GROUP BY round', [req.body.phoneNumber], (err, rows, fields) => {
+								if (!err) {
+									// 기록하고 구매내역 출력했으면
+									// 목표치 달성 다시 확인
+									let checkMission = await getAllAchievement();
+									if (checkMission == 1) {
+										res.json({
+											"achievement": responseAchievment,
+											"justEarned": true,
+											"purchaseCount": {
+												"firstRoundCount": rows[0].countNumber,
+												"secondRoundCount": rows[1].countNumber
+											},
+											"complete": true
+										});
+									} else {
+										res.json({
+											"achievement": responseAchievment,
+											"justEarned": true,
+											"purchaseCount": {
+												"firstRoundCount": rows[0].countNumber,
+												"secondRoundCount": rows[1].countNumber
+											},
+											"complete": false
+										});
 									}
-								});
-							} else {
-								console.log('check count error ', err);
-							}
-						});
-					} else {
-						console.log('insert qunatities error ', err);
-					}
-				});
-			} else {
-				res.json({ "msg": 'invalid password' });
+								} else {
+									console.log('check count error ', err);
+								}
+							});
+						} else {
+							console.log('insert qunatities error ', err);
+						}
+					});
+				} else {
+					res.json({ "msg": 'invalid password' });
+				}
+			} else if (responseAchievment >= 1) {
+				res.send("mission is complete")
 			}
 		}
 	} catch (e) {
@@ -789,72 +804,8 @@ const creatingWalletOptions = {
 // practice caver-js
 router.post('/contracts', async(req, res, next) => {
 	try {
-		// const address = '0x7930978144dfca9dfb66c5aeae94eb1472299df6'
-		// const key = '0x90e0d2b3993086c75063d7bd0a0256e1887988bad3bfc1b883ee92ac8af2ef52'
-		// const account = caver.klay.accounts.createWithAccountKey(address, key)
-		// caver.klay.accounts.wallet.add(account)
-
-		const feePayerAddress = '0x7930978144dfca9dfb66c5aeae94eb1472299df6';
-		const feePayerKey = '0x90e0d2b3993086c75063d7bd0a0256e1887988bad3bfc1b883ee92ac8af2ef52';
-		const feePayerAccount = caver.klay.accounts.createWithAccountKey(feePayerAddress, feePayerKey);
-		caver.klay.accounts.wallet.add(feePayerAccount);
-	
-		const contractAddress = '0xcddd2f0b23f033eb85AFE5510e5285261bF68154'
-	
-		const txObject = {
-			type: 'FEE_DELEGATED_SMART_CONTRACT_EXECUTION_WITH_RATIO',
-			from: '0x405a59680bdc2a0eD53a925Cb6d4653093489d21', //account.address
-			to: contractAddress,
-			data: '0xbb16f4430000000000000000000000007930978144dfca9dfb66c5aeae94eb1472299df600000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003',
-			value:0,
-			gas: 300000,
-			feeRatio: 100
-		}
-	
-		const senderSigned = await caver.klay.accounts.signTransaction(txObject)
-		const feePayerSigned = await caver.klay.accounts.feePayerSignTransaction(senderSigned.rawTransaction, feePayerAccount.address)
-		const receipt = await caver.klay.senderSignedTransaction(feePayerSigned.rawTransaction)
-		
-		console.log(receipt)
-	
-		// let klayArray = caver.klay.abi.encodeFunctionCall({
-		// 	"constant": false,
-		// 	"inputs": [
-		// 		{
-		// 			"name": "_userAddress",
-		// 			"type": "address"
-		// 		},
-		// 		{
-		// 			"name": "round",
-		// 			"type": "uint24"
-		// 		},
-		// 		{
-		// 			"name": "count",
-		// 			"type": "uint24"
-		// 		}
-		// 	],
-		// 	"name": "updateRecord",
-		// 	"outputs": [],
-		// 	"payable": false,
-		// 	"stateMutability": "nonpayable",
-		// 	"type": "function"
-		// }, ['0x7930978144dfca9dfb66c5aeae94eb1472299df6', 2, 3])
-	
-		// new caver.transaction.feeDelegatedSmartContractExecution({
-		// 	from: '0x7930978144dfca9dfb66c5aeae94eb1472299df6',
-		// 	to: '0xcddd2f0b23f033eb85AFE5510e5285261bF68154',
-		// 	input: '0xbb16f4430000000000000000000000007930978144dfca9dfb66c5aeae94eb1472299df600000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003',
-		// 	gas: 3000000
-		// }, (result) => {
-		// 	console.log(result)
-		// })
-		
-		// tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', req.body.round, req.body.purchaseQuantity).
-		// 	send({ from: '0x7930978144dfca9dfb66c5aeae94eb1472299df6', gas: 3000000 })
-		// 	.on('receipt', (receipt) => {
-		// 		console.log(receipt)
-		// 	})
-		// 	.on('error', console.error)
+		let encode = tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', 1, 2).encodeABI()
+		console.log(encode)
 	} catch(e) {
 		throw e
 	}
