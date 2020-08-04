@@ -829,7 +829,7 @@ const contractUpdateRecordOptions = {
 router.post('/contracts', async(req, res, next) => {
 	try {
 		let encode = tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', 1, 2).encodeABI()
-		let call = tokenContract.methods.balaceOf('0x7930978144dfca9dfb66c5aeae94eb1472299df6').call()
+		let call = tokenContract.methods.balanceOf('0x7930978144dfca9dfb66c5aeae94eb1472299df6').call()
 		console.log(encode)
 		console.log(call)
 		request(contractUpdateRecordOptions, (error, response) => {
