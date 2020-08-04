@@ -596,11 +596,15 @@ async function insertExpired(couponDate) {
 			db.conn.query('UPDATE users SET token1_plus = "expired" WHERE token1_plus = "unused"', (err, rows, fields) => {
 				if (err) {
 					reject('insert expired token1_plus error ', err);
+				} else {
+					resolve(rows)
 				}
 			})
 			db.conn.query('UPDATE users SET token1_free = "expired" WHERE token1_free = "unused"', (err, rows, fields) => {
 				if (err) {
 					reject('insert expired token1_free error ', err);
+				} else {
+					resolve(rows)
 				}
 			})
 		}
@@ -608,11 +612,15 @@ async function insertExpired(couponDate) {
 			db.conn.query('UPDATE users SET token2_plus = "expired" WHERE token2_plus = "unused"', (err, rows, fields) => {
 				if (err) {
 					reject('insert expired token2_plus error ', err);
+				} else {
+					resolve(rows)
 				}
 			})
 			db.conn.query('UPDATE users SET token2_free = "expired" WHERE token2_free = "unused"', (err, rows, fields) => {
 				if (err) {
 					reject('insert expired token2_free error ', err);
+				} else {
+					resolve(rows)
 				}
 			})
 		}
