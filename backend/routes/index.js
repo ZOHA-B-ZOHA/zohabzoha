@@ -443,7 +443,7 @@ const moment = require('moment');
 const crypto = require('crypto');
 const Caver = require('caver-js');
 const caver = new Caver('https://api.baobab.klaytn.net:8651/'); // 사용시에는 cypress로 바꾸자!!
-const tokenContract = new caver.contract(abi, '0xcddd2f0b23f033eb85AFE5510e5285261bF68154');
+const tokenContract = new caver.klay.Contract(abi, '0xcddd2f0b23f033eb85AFE5510e5285261bF68154');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -829,6 +829,8 @@ const contractUpdateRecordOptions = {
 router.post('/contracts', async(req, res, next) => {
 	try {
 		let encode = tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', 1, 2).encodeABI()
+		console.log(encode)
+		let encode2 = tokenContract.methods['updateRecore(address, uint24, uint24)']('0x7930978144dfca9dfb66c5aeae94eb1472299df6', 1, 2).encodeABI()
 		console.log(encode)
 		request(contractUpdateRecordOptions, (error, response) => {
 			if (error) {
