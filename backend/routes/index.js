@@ -590,7 +590,7 @@ router.post('/api/verify', async (req, res, next) => {
 					db.conn.query('INSERT INTO users (phoneNumber, quantity, place, round) VALUES (?, ?, ?, ?)', [req.body.phoneNumber, req.body.purchaseQuantity, req.body.branch, round], (err, rows, fields) => {
 						if (!err) {
 							// 기록 후 지금까지의 구매 횟수 출력
-							db.conn.query('SELECT SUM(quantity) AS countNumber FROM users WHERE phoneNumber=? GROUP BY round', [req.body.phoneNumber], (err, rows, fields) => {
+							db.conn.query('SELECT SUM(quantity) AS countNumber FROM users WHERE phoneNumber=? GROUP BY round', [req.body.phoneNumber], async(err, rows, fields) => {
 								if (!err) {
 									// 기록하고 구매내역 출력했으면
 									// 목표치 달성 다시 확인
