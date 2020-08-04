@@ -645,14 +645,27 @@ router.post('/api/rewards', async(req, res, next) => {
 		res.send('coupons are outdated');
 	} else if (couponDate == 1) {
 		// get roundOneTokenList (with contract method)
+		tokenContract.methods.getTokenList(req.body.phoneNumber, 1).call((error, result) => {
+			if (error) {
+				throw error
+			} else {
+				console.log(result)
+			}
+		})
 	} else if (couponDate == 2) {
 		// get roundTwoTokenList (with contract method)
+		tokenContract.methods.getTokenList(req.body.phoneNumber, 2).call((error, result) => {
+			if (error) {
+				throw error
+			} else {
+				console.log(result)
+			}
+		})
 	}
 });
 
 /* 쿠폰 사용 */
 router.post('/api/redeem', async(req, res, next) => {
-	// 쿠폰 기간 체크
 	// 쿠폰 기간 체크
 	let couponDate = await calculateCouponDate();
 
@@ -660,6 +673,7 @@ router.post('/api/redeem', async(req, res, next) => {
 		res.send('coupons are outdated');
 	} else if (couponDate == 1) {
 		// get roundOneTokenList (with contract method)
+
 	} else if (couponDate == 2) {
 		// get roundTwoTokenList (with contract method)
 	}
@@ -833,16 +847,19 @@ router.post('/contracts', async(req, res, next) => {
 			if (error) {
 				throw error
 			} else {
-				console.log(result)
+				console.log('1', result)
+				console.log('2', result.Result)
+				console.log(JSON.parse('3', result.Result))
 			}
 		})
-		tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', 1, 1).send({from: '0x64297AE00b82e819c3AcD658cCF6EA3ee18Bc038', gas: 2000000}, (error, receipt) => {
-			if (error) {
-				throw error
-			} else {
-				console.log(receipt)
-			}
-		})
+		
+		// tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', 1, 1).send({from: '0x64297AE00b82e819c3AcD658cCF6EA3ee18Bc038', gas: 2000000}, (error, receipt) => {
+		// 	if (error) {
+		// 		throw error
+		// 	} else {
+		// 		console.log(receipt)
+		// 	}
+		// })
 
 		request(contractUpdateRecordOptions, (error, response) => {
 			if (error) {
