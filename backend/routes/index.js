@@ -546,7 +546,8 @@ router.post('/api/rankings', async (req, res, next) => {
 		for (let i=0; i<5; i++) {
 			let cryptoNumber1 = await cipherPhoneNumber(roundOneRanking[i].phoneNumber)
 			console.log('1', cryptoNumber1)
-			roundTwoRanking[i].phoneNumber = cryptoNumber1
+			roundOneRanking[i].phoneNumber = cryptoNumber1
+			console.log('ranking', roundOneRanking[i])
 			let cryptoNumber2 = await cipherPhoneNumber(roundTwoRanking[i].phoneNumber)
 			console.log('2', cryptoNumber2)
 			roundTwoRanking[i].phoneNumber = cryptoNumber2
