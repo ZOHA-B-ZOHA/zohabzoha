@@ -540,6 +540,13 @@ router.post('/api/rankings', async (req, res, next) => {
 		// 2라운드 랭킹 쿼리
 		let roundTwoRanking = await getRoundTwoRanking();
 
+		for (let i=0; i<5; i++) {
+			let cryptoNumber1 = await cipherPhoneNumber(roundOneRanking[i].phoneNumber)
+			roundTwoRanking[i].phoneNumber = cryptoNumber1
+			let cryptoNumber2 = await cipherPhoneNumber(roundTwoRanking[i].phoneNumber)
+			roundTwoRanking[i].phoneNumber = cryptoNumber2
+		}
+
 		// response
 		// 각각 객체이며 0~4 값으로 이루어져 있습니다. 사용법은 아래와 같습니다
 		// roundOneRanking[0].sum_quantity (1라운드의 1등의 구매 량)
@@ -609,13 +616,32 @@ router.post('/api/verify', async (req, res, next) => {
 });
 
 /* 해당 유저의 토큰 목록을 받아옴 */
-router.post('/api/rewards', (req, res, next) => {
-	// contract 로 하자
+router.post('/api/rewards', async(req, res, next) => {
+	// 쿠폰 기간 체크
+	let couponDate = await calculateCouponDate();
+
+	if (couponDate == 'outOfOrder') {
+		res.send('coupons are outdated');
+	} else if (couponDate == 1) {
+		// get roundOneTokenList (with contract method)
+	} else if (couponDate == 2) {
+		// get roundTwoTokenList (with contract method)
+	}
 });
 
 /* 쿠폰 사용 */
-router.post('/api/redeem', (req, res, next) => {
+router.post('/api/redeem', async(req, res, next) => {
+	// 쿠폰 기간 체크
+	// 쿠폰 기간 체크
+	let couponDate = await calculateCouponDate();
 
+	if (couponDate == 'outOfOrder') {
+		res.send('coupons are outdated');
+	} else if (couponDate == 1) {
+		// get roundOneTokenList (with contract method)
+	} else if (couponDate == 2) {
+		// get roundTwoTokenList (with contract method)
+	}
 });
 
 /* 토큰 발급 시스템 (끝남을 받아야 함) */
@@ -695,6 +721,19 @@ async function calculateDate() {
 		if (moment().isBetween('2020-08-10', '2020-08-14', 'date', '[]') == true) {
 			resolve(1);
 		} else if (moment().isBetween('2020-08-18', '2020-08-21', 'date', '[]') == true) {
+			resolve(2);
+		} else {
+			resolve('outOfOrder');
+		}
+	});
+};
+
+/* 쿠폰 기간 계산 */
+async function calculateCouponDate() {
+	return new Promise((resolve, reject) => {
+		if (moment().isBetween('2020-08-17', '2020-08-31', 'date', '[]') == true) {
+			resolve(1);
+		} else if (moment().isBetween('2020-08-24', '2020-09-07', 'date', '[]') == true) {
 			resolve(2);
 		} else {
 			resolve('outOfOrder');
