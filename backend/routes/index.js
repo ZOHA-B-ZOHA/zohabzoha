@@ -789,6 +789,7 @@ async function decipherPhoneNumber(cipheredPhoneNumber) {
 };
 
 /* request options */
+// create wallet
 const creatingWalletOptions = {
 	method: "POST",
 	preambleCRLF: true,
@@ -801,11 +802,41 @@ const creatingWalletOptions = {
 	}
 };
 
+
+const contractUpdateRecordOptions = {
+	method: "POST",
+	preambleCRLF: true,
+	postambleCRLF: true,
+	url: 'https://wallet-api.beta.klaytn.io/v2/tx/contract/execute',
+	headers: {
+		'Content-type': 'application/json',
+		'x-krn': 'krn:1001:wallet:116:account:default',
+		'Authorization': 'Basic ' + config.kasAuth
+	},
+	body: JSON.stringify({
+		"from":"0x64297AE00b82e819c3AcD658cCF6EA3ee18Bc038",
+		"value":"0x0",
+		"to":"0xcddd2f0b23f033eb85AFE5510e5285261bF68154",
+		"input":"0xbb16f4430000000000000000000000007930978144dfca9dfb66c5aeae94eb1472299df600000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002",
+		"nonce":0,
+		"gas_limit":2000000,
+		"submit":true,
+		"fee_ratio":0
+	})
+};
+
 // practice caver-js
 router.post('/contracts', async(req, res, next) => {
 	try {
 		let encode = tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', 1, 2).encodeABI()
 		console.log(encode)
+		request(contractUpdateRecordOptions, (error, response) => {
+			if (error) {
+				throw error
+			} else {
+				console.log(response.body)
+			}
+		})
 	} catch(e) {
 		throw e
 	}
