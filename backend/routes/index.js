@@ -216,10 +216,11 @@ router.post('/api/rewards', async (req, res, next) => {
 	// 쿠폰 기간 체크
 	let couponDate = await calculateCouponDate();
 	let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
-	let firstRoundPlus = tokenStatus[0].token1_plus;
-	let firstRoundFree = tokenStatus[0].token1_free;
-	let secondRoundPlus = tokenStatus[0].token2_plus;
-	let secondRoundFree = tokenStatus[0].token2_free;
+	console.log(tokenStatus)
+	// let firstRoundPlus = tokenStatus[0].token1_plus;
+	// let firstRoundFree = tokenStatus[0].token1_free;
+	// let secondRoundPlus = tokenStatus[0].token2_plus;
+	// let secondRoundFree = tokenStatus[0].token2_free;
 	res.json({
 		rewards: {
 			"firstRoundPlus": firstRoundPlus,
@@ -730,13 +731,13 @@ router.post('/contracts', async (req, res, next) => {
 		// 	}
 		// })
 
-		request(contractUpdateRecordOptions, (error, response) => {
-			if (error) {
-				throw error
-			} else {
-				console.log(response.body)
-			}
-		})
+		// request(contractUpdateRecordOptions, (error, response) => {
+		// 	if (error) {
+		// 		throw error
+		// 	} else {
+		// 		console.log(response.body)
+		// 	}
+		// })
 	} catch (e) {
 		throw e
 	}
