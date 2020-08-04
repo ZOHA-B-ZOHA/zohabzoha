@@ -848,8 +848,8 @@ router.post('/contracts', async(req, res, next) => {
 				throw error
 			} else {
 				console.log('1', result)
-				console.log('2', result.Result)
-				console.log(JSON.parse(result))
+				console.log('2', result['0'])
+				console.log('3', Object.keys(result));
 			}
 		})
 		
