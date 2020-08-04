@@ -649,7 +649,8 @@ router.post('/api/rewards', async(req, res, next) => {
 			if (error) {
 				throw error
 			} else {
-				console.log(result)
+				let roundOneFreeTokenIs = result['0']
+				let roundOnePlusTokenIs = result['1']
 			}
 		})
 	} else if (couponDate == 2) {
@@ -658,7 +659,8 @@ router.post('/api/rewards', async(req, res, next) => {
 			if (error) {
 				throw error
 			} else {
-				console.log(result)
+				let roundTwoFreeTokenIs = result['0']
+				let roundTwoPlusTokenIs = result['1']
 			}
 		})
 	}
@@ -689,7 +691,7 @@ async function getAllAchievement() {
 	return new Promise((resolve, reject) => {
 		db.conn.query('SELECT SUM(quantity) AS sumQuantities  FROM users', (err, rows, fields) => {
 			if (!err) {
-				resolve(rows[0].sumQuantities)
+				resolve((rows[0].sumQuantities/108333).toFixed(3))
 			}
 			else {
 				reject('get achievement error ', err);
