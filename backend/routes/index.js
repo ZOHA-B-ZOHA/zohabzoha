@@ -768,15 +768,15 @@ router.post('/contracts', (req, res, next) => {
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "function"
-	}, ['0x7930978144dfca9dfb66c5aeae94eb1472299df6', 2, 3]).then(console.log)
+	}, ['0x7930978144dfca9dfb66c5aeae94eb1472299df6', 2, 3])
 
 	new caver.transaction.feeDelegatedSmartContractExecution({
 		from: '0x7930978144dfca9dfb66c5aeae94eb1472299df6',
 		to: '0xcddd2f0b23f033eb85AFE5510e5285261bF68154',
-		input: ' 0xbb16f4430000000000000000000000007930978144dfca9dfb66c5aeae94eb1472299df600000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003',
+		input: '0xbb16f4430000000000000000000000007930978144dfca9dfb66c5aeae94eb1472299df600000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003',
 		gas: 3000000
 	}).on('receipt', (receipt) => {
-		console.log(receipt)
+		console.log('this is receipt', receipt)
 	}).on('error', console.error)
 	
 	// tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', req.body.round, req.body.purchaseQuantity).
