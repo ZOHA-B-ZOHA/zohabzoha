@@ -445,9 +445,6 @@ const Caver = require('caver-js');
 const caver = new Caver('https://api.baobab.klaytn.net:8651/'); // 사용시에는 cypress로 바꾸자!!
 const tokenContract = new caver.contract(abi, '0xcddd2f0b23f033eb85AFE5510e5285261bF68154');
 
-const cipher = crypto.createCipher('aes-256-cbc', 'zohabzohapassword');
-const decipher = crypto.createDecipher('aes-256-cbc', 'zohabzohapassword');
-
 /* GET home page. */
 router.get('/', function (req, res, next) {
 	res.sendFile(path.join(__dirname, "../public", "index.html"));
@@ -458,7 +455,7 @@ router.get('/api', async(req, res, next) => {
 	let responseAchievment = await getAllAchievement();
 	
 	res.json({
-		achievement: responseAchievment
+		"achievement": responseAchievment
 	});
 });
 
@@ -544,7 +541,7 @@ router.post('/api/rankings', async (req, res, next) => {
 		let roundTwoRanking = await getRoundTwoRanking();
 
 		// response
-		// 각각 객체이며 0~9 값으로 이루어져 있습니다. 사용법은 아래와 같습니다
+		// 각각 객체이며 0~4 값으로 이루어져 있습니다. 사용법은 아래와 같습니다
 		// roundOneRanking[0].sum_quantity (1라운드의 1등의 구매 량)
 		// roundTwonRanking[3].phoneNumber (2랴운드 4등의 휴대폰 번호)
 		res.json({
@@ -669,7 +666,7 @@ async function getRoundTwoQuantities(phoneNumber) {
 /* 1라운드 등 수 10등까지 */
 async function getRoundOneRanking() {
 	return new Promise((resolve, reject) => {
-		db.conn.query('SELECT sum_quantity, phoneNumber FROM (SELECT phoneNumber, SUM(quantity) AS sum_quantity, round FROM users WHERE round=1 GROUP BY phoneNumber)t ORDER BY sum_quantity desc limit 10', (err, rows, fields) => {
+		db.conn.query('SELECT sum_quantity, phoneNumber FROM (SELECT phoneNumber, SUM(quantity) AS sum_quantity, round FROM users WHERE round=1 GROUP BY phoneNumber)t ORDER BY sum_quantity desc limit 5', (err, rows, fields) => {
 			if (!err) {
 				resolve(rows);
 			} else {
@@ -682,7 +679,7 @@ async function getRoundOneRanking() {
 /* 2라운드 등 수 10등까지 */
 async function getRoundTwoRanking() {
 	return new Promise((resolve, reject) => {
-		db.conn.query('SELECT sum_quantity, phoneNumber FROM (SELECT phoneNumber, SUM(quantity) AS sum_quantity, round FROM users WHERE round=2 GROUP BY phoneNumber)n ORDER BY sum_quantity desc limit 10', (err, rows, fields) => {
+		db.conn.query('SELECT sum_quantity, phoneNumber FROM (SELECT phoneNumber, SUM(quantity) AS sum_quantity, round FROM users WHERE round=2 GROUP BY phoneNumber)n ORDER BY sum_quantity desc limit 5', (err, rows, fields) => {
 			if (!err) {
 				resolve(rows);
 			} else {
@@ -708,9 +705,12 @@ async function calculateDate() {
 /* 전화번호 암호화 */
 async function cipherPhoneNumber(phoneNumber) {
 	return new Promise((resolve, reject) => {
+		const key = 'zohabzohapassword';
+		const pass = crypto.createHash('sha256').update(String(key)).digest('base64').substr(0, 32);
+		const iv = Buffer.from(key.slice(0, 16));
+		const cipher = crypto.createCipheriv('aes-256-cbc', pass, iv);
 		let result = cipher.update(phoneNumber, 'utf8', 'base64');
 		result += cipher.final('base64');
-
 		resolve(result);
 	});
 };
@@ -718,9 +718,12 @@ async function cipherPhoneNumber(phoneNumber) {
 /* 전화번호 복호화 */
 async function decipherPhoneNumber(cipheredPhoneNumber) {
 	return new Promise((resolve, reject) => {
+		const key = 'zohabzohapassword';
+		const pass = crypto.createHash('sha256').update(String(key)).digest('base64').substr(0, 32);
+		const iv = Buffer.from(key.slice(0, 16));
+		const decipher = crypto.createDecipheriv('aes-256-cbc', pass, iv);
 		let result = decipher.update(cipheredPhoneNumber, 'base64', 'utf8');
 		result += decipher.final('utf8');
-
 		resolve(result);
 	});
 };
@@ -743,6 +746,30 @@ router.post('/contracts', (req, res, next) => {
 	let byteCode = tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', 2, 3);
 
 	console.log(byteCode)
+
+	caver.klay.abi.encodeFunctionCall({
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_userAddress",
+				"type": "address"
+			},
+			{
+				"name": "round",
+				"type": "uint24"
+			},
+			{
+				"name": "count",
+				"type": "uint24"
+			}
+		],
+		"name": "updateRecord",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}, ['0x7930978144dfca9dfb66c5aeae94eb1472299df6', 2, 3]).then(console.log)
+	
 	// tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', req.body.round, req.body.purchaseQuantity).
 	// 	send({ from: '0x7930978144dfca9dfb66c5aeae94eb1472299df6', gas: 3000000 })
 	// 	.on('receipt', (receipt) => {
