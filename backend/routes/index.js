@@ -550,7 +550,7 @@ async function checkTokenStatus(phoneNumber) {
 
 /* 쿠폰 발급 (사용하지 않았을 때) */
 async function insertUnused(round) {
-	return new Promise((resolve, reject) => {
+	return new Promise(async(resolve, reject) => {
 		let ranking = await getRoundOneRanking();
 
 		// 체인에서 token 발급
