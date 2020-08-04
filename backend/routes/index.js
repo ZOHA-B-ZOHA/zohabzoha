@@ -220,14 +220,52 @@ router.post('/api/rewards', async (req, res, next) => {
 	let firstRoundFree = tokenStatus[0].token1_free;
 	let secondRoundPlus = tokenStatus[0].token2_plus;
 	let secondRoundFree = tokenStatus[0].token2_free;
-	res.json({
-		rewards: {
-			"firstRoundPlus": firstRoundPlus,
-			"firstRooundFree": firstRoundFree,
-			"secondRoundPlus": secondRoundPlus,
-			"secondRoundFree": secondRoundFree
-		}
-	})
+	
+	if (couponDate == 'outOfOrder') {
+		await insertExpired(couponDate);
+
+		res.json({
+			rewards: {
+				"firstRoundPlus": firstRoundPlus,
+				"firstRooundFree": firstRoundFree,
+				"secondRoundPlus": secondRoundPlus,
+				"secondRoundFree": secondRoundFree
+			}
+		})
+	}
+	else if (couponDate == 1) {
+		res.json({
+			rewards: {
+				"firstRoundPlus": firstRoundPlus,
+				"firstRooundFree": firstRoundFree,
+				"secondRoundPlus": secondRoundPlus,
+				"secondRoundFree": secondRoundFree
+			}
+		})
+	}
+	else if (couponDate == 12) {
+		res.json({
+			rewards: {
+				"firstRoundPlus": firstRoundPlus,
+				"firstRooundFree": firstRoundFree,
+				"secondRoundPlus": secondRoundPlus,
+				"secondRoundFree": secondRoundFree
+			}
+		})
+	}
+	else if (couponDate == 2) {
+		
+		await insertExpired(couponDate);
+
+		res.json({
+			rewards: {
+				"firstRoundPlus": firstRoundPlus,
+				"firstRooundFree": firstRoundFree,
+				"secondRoundPlus": secondRoundPlus,
+				"secondRoundFree": secondRoundFree
+			}
+		})
+	}
 });
 
 /* 쿠폰 사용 */
@@ -506,7 +544,7 @@ async function insertUnavailable(phoneNumber, counts, round) {
 		if (round == 1) {
 			db.conn.query('SELECT token1_plus FROM users WHERE phoneNumber=?', [phoneNumber], (err, rows, fields) => {
 				if (!err && rows[0].token1_plus == null && counts >= 3) {
-					db.conn.query('UPDATE users SET token1_plus = "unavailable" WHERE token1_plus is null AND phoneNumber=?'[phoneNumber], (err, rows, fields) => {
+					db.conn.query('UPDATE users SET token1_plus = "unavailable" WHERE token1_plus is null AND phoneNumber=?', [phoneNumber], (err, rows, fields) => {
 						if (!err) {
 							resolve(rows)
 						} else {
@@ -520,8 +558,8 @@ async function insertUnavailable(phoneNumber, counts, round) {
 		}
 		else if (round == 2) {
 			db.conn.query('SELECT token2_plus FROM users WHERE phoneNumber=?', [phoneNumber], (err, rows, fields) => {
-				if (!err && rows[0].token1_plus == null && counts >= 3) {
-					db.conn.query('UPDATE users SET token2_plus = "unavailable" WHERE token2_plus is null AND phoneNumber=?'[phoneNumber], (err, rows, fields) => {
+				if (!err && rows[0].token2_plus == null && counts >= 3) {
+					db.conn.query('UPDATE users SET token2_plus = "unavailable" WHERE token2_plus is null AND phoneNumber=?', [phoneNumber], (err, rows, fields) => {
 						if (!err) {
 							resolve(rows)
 						} else {
@@ -562,36 +600,34 @@ async function insertUnused(round) {
 				if (err) {
 					reject('insert unused error ', err);
 				} else {
-					resolve(rows)
-				}
-			})
-			for (let i = 0; i < 5; i++) {
-				db.conn.query('UPDATE users SET token1_free = "unused" WHERE token1_free is null AND phoneNumber=?', [ranking[i].phoneNumber], (err, rows, fields) => {
-					if (err) {
-						reject('insert unused error i ', err)
-					} else {
-						resolve(rows)
+					for (let i = 0; i < 5; i++) {
+						db.conn.query('UPDATE users SET token1_free = "unused" WHERE token1_free is null AND phoneNumber=?', [ranking[i].phoneNumber], (err, rows, fields) => {
+							if (err) {
+								reject('insert unused error i ', err)
+							} else {
+								resolve(rows)
+							}
+						})
 					}
-				})
-			}
+				}
+			});
 		}
 		else if (round == 2) {
 			db.conn.query('UPDATE users SET token2_plus = "unused" WHERE token2_plus = "unavailable"', (err, rows, fields) => {
 				if (err) {
 					reject('insert unused error ', err);
 				} else {
-					resolve(rows)
-				}
-			})
-			for (let j = 0; j < 5; j++) {
-				db.conn.query('UPDATE users SET token2_free = "unused" WHERE token2_free is null AND phoneNumber=?', [ranking[j].phoneNumber], (err, rows, fields) => {
-					if (err) {
-						reject('insert unused error j ', err)
-					} else {
-						resolve(rows)
+					for (let j = 0; j < 5; j++) {
+						db.conn.query('UPDATE users SET token2_free = "unused" WHERE token2_free is null AND phoneNumber=?', [ranking[j].phoneNumber], (err, rows, fields) => {
+							if (err) {
+								reject('insert unused error j ', err)
+							} else {
+								resolve(rows)
+							}
+						})
 					}
-				})
-			}
+				}
+			});
 		}
 	});
 };
@@ -604,14 +640,13 @@ async function insertExpired(couponDate) {
 				if (err) {
 					reject('insert expired token1_plus error ', err);
 				} else {
-					resolve(rows)
-				}
-			})
-			db.conn.query('UPDATE users SET token1_free = "expired" WHERE token1_free = "unused"', (err, rows, fields) => {
-				if (err) {
-					reject('insert expired token1_free error ', err);
-				} else {
-					resolve(rows)
+					db.conn.query('UPDATE users SET token1_free = "expired" WHERE token1_free = "unused"', (err, rows, fields) => {
+						if (err) {
+							reject('insert expired token1_free error ', err);
+						} else {
+							resolve(rows)
+						}
+					})
 				}
 			})
 		}
@@ -620,14 +655,13 @@ async function insertExpired(couponDate) {
 				if (err) {
 					reject('insert expired token2_plus error ', err);
 				} else {
-					resolve(rows)
-				}
-			})
-			db.conn.query('UPDATE users SET token2_free = "expired" WHERE token2_free = "unused"', (err, rows, fields) => {
-				if (err) {
-					reject('insert expired token2_free error ', err);
-				} else {
-					resolve(rows)
+					db.conn.query('UPDATE users SET token2_free = "expired" WHERE token2_free = "unused"', (err, rows, fields) => {
+						if (err) {
+							reject('insert expired token2_free error ', err);
+						} else {
+							resolve(rows)
+						}
+					})
 				}
 			})
 		}
