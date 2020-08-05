@@ -31,10 +31,11 @@ router.post('/api/authenticate', async (req, res, next) => {
 	try {
 		// get round
 		let round = await calculateDate()
+		console.log(round)
 
 		// get achievement
 		let responseAchievment = await getAllAchievement(round);
-
+		console.log(responseAchievment)
 		// round 1 quantity
 		// let responseRoundOneUserInfo = await getRoundOneQuantities(req.body.phoneNumber);
 
