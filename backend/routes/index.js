@@ -208,7 +208,7 @@ router.post('/api/rankings', async (req, res, next) => {
 	
 		// 값 넣기
 		function putValuesToRoundTwoRanking() {
-			return new Promise((resolve, reject) => {
+			return new Promise(async(resolve, reject) => {
 				let rankings = {
 					first: {
 						quantity: 0,
