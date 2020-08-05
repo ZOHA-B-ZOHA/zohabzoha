@@ -8,9 +8,6 @@ const FileStore = require('session-file-store')(session);
 const cors = require('cors');
 
 const indexRouter = require('./routes/index');
-const myPageRouter = require('./routes/myPage');
-const rewardRouter = require('./routes/reward');
-const qrCodeRouter = require('./routes/qrCode');
 
 const app = express();
 app.set('port', process.env.PORT || 3000);
@@ -50,9 +47,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/mypage', myPageRouter);
-app.use('/reward', rewardRouter);
-app.use('/qrCode', qrCodeRouter);
 
 
 // catch 404 and forward to error handler
