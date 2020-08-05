@@ -263,7 +263,6 @@ router.post('/api/verify', async (req, res, next) => {
 									let responseRoundOneUserCounts = await getRoundOneCounts(req.body.phoneNumber);
 									// round 2 user counts
 									let responseRoundTwoUserCounts = await getRoundTwoCounts(req.body.phoneNumber);
-									console.log(rows)
 
 									if (checkMission >= 1) {
 
