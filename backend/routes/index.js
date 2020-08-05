@@ -135,9 +135,10 @@ router.post('/api/rankings', async (req, res, next) => {
 			"first": roundOneRanking
 		})
 		console.log(roundOneRanking[0])
-		console.log(roundOneRanking[0].length)
-		console.log(roundOneRanking.first)
-		console.log(roundOneRanking.first.length)
+		console.log(roundOneRanking[0].sumQuantities)
+		console.log(roundOneRanking[0].phoneNumber)
+		console.log(roundOneRanking[0].ranking)
+		console.log(roundOneRanking.length)
 		// 전화번호 암호화
 		// for (let i = 0; i < 3; i++) {
 		// 	let cryptoNumber1 = await cipherPhoneNumber(roundOneRanking[i].phoneNumber)
