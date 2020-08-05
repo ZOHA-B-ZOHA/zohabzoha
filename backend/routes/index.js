@@ -18,11 +18,10 @@ router.get('/', function (req, res, next) {
 
 /* 게이지 새로고침 */
 router.get('/api', async (req, res, next) => {
-	console.log('이거니?')
 	let round = await calculateDate();
-	console.log('아니면 이거니?')
-	let responseAchievment = await getAllAchievement(round);
 	console.log(round)
+	let responseAchievment = await getAllAchievement(round);
+	console.log(responseAchievment)
 	res.json({
 		"achievement": responseAchievment
 	});
