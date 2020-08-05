@@ -19,24 +19,21 @@ router.get('/', function (req, res, next) {
 /* 게이지 새로고침 */
 router.get('/api', async (req, res, next) => {
 	let round = await calculateDate();
-	console.log(round)
+
 	if (round == 'outOfOrder') {
 		let responseAchievment = await getAllAchievement(round);
-		console.log(responseAchievment)
 		res.json({
 			"achievement": responseAchievment
 		});
 	}
 	else if (round == 1) {
 		let responseAchievment = await getAllAchievement(round);
-		console.log(responseAchievment)
 		res.json({
 			"achievement": responseAchievment
 		});
 	}
 	else if (round == 2) {
 		let responseAchievment = await getAllAchievement(round);
-		console.log(responseAchievment)
 		res.json({
 			"achievement": responseAchievment
 		});
@@ -260,13 +257,17 @@ router.post('/api/verify', async (req, res, next) => {
 								if (!err) {
 									// 지금까지의 구매 횟수 출력
 									let counts = await getBuyingCounts(round, req.body.phoneNumber);
-
+									console.log(counts)
 									// 목표치 달성 다시 확인
 									let checkMission = await getAllAchievement(round);
+									console.log(checkMission)
 									// round 1 user counts
 									let responseRoundOneUserCounts = await getRoundOneCounts(req.body.phoneNumber);
+									console.log(responseRoundOneUserCounts)
 									// round 2 user counts
 									let responseRoundTwoUserCounts = await getRoundTwoCounts(req.body.phoneNumber);
+									console.log(responseRoundTwoUserCounts)
+									console.log(rows)
 
 									if (checkMission >= 1) {
 
@@ -295,6 +296,10 @@ router.post('/api/verify', async (req, res, next) => {
 											"purchaseQuantity": {
 												"firstRound": rows[0].sumQuantities,
 												"secondRound": rows[1].sumQuantities
+											},
+											"purchaseCount": {
+												"firstRound": responseRoundOneUserCounts,
+												"secondRound": responseRoundTwoUserCounts
 											}
 										});
 									}
