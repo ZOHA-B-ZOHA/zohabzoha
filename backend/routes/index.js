@@ -43,7 +43,7 @@ router.post('/api/authenticate', async (req, res, next) => {
 
 		// user counts
 		let responseRoundUserCounts = await getBuyingCounts(round, req.body.phoneNumber);
-
+		console.log(responseRoundUserCounts);
 		// get wallet address
 		db.conn.query('SELECT address FROM wallet WHERE phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 			if (err) {
