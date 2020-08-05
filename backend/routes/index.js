@@ -827,7 +827,11 @@ router.post('/contracts', async (req, res, next) => {
 		
 		
 		let encode = tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', 1, 2).encodeABI()
-		console.log(encode);
+
+		let tx = caver.transaction.decode("0x31f90143808505d21dba00830f424094cddd2f0b23f033eb85afe5510e5285261bf681548094b5ff3f8b19f917f0290d8eead466edb779cd61d3b864bb16f4430000000000000000000000007930978144dfca9dfb66c5aeae94eb1472299df600000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002f847f8458207f6a039de716bb64c5081e442343ff1e9e9de80d24e7a8c48ef0a452a5b3cf2afdc91a01bfd30d3258b4321154d37418d4a8a85c7ffb83f260ef75c9ecf4ba33960b685941b71a63903e35371e2fc41c6012effb99b9a2c0ff847f8458207f5a020d39dd1b1cc322c86633accf559561ee9d48930fd9a57e19a9a4a5ce18069a5a033398aa469fa48744462e23d60579d96a7ab8672d997954a339cf3f874ce65fc");
+		const signed = await caver.wallet.signAsFeePayer('0x64297AE00b82e819c3AcD658cCF6EA3ee18Bc038', tx);
+		const receipt = await caver.rpc.klay.sendRawTransaction(signed)
+		console.log(receipt);
 		// tokenContract.methods.getTokenList('01087754055', 1).call((error, result) => {
 		// 	if (error) {
 		// 		throw error
