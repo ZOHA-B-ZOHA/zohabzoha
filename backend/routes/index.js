@@ -117,60 +117,97 @@ router.post('/api/rankings', async (req, res, next) => {
 		// if (round == 1) {
 		// 	// 1라운드 랭킹 쿼리
 		// 	let roundOneRanking = await getRoundOneRanking();
-		// 	// 1등 객체
-		// 	let firstGroup = {
-		// 		quantity: 0,
-		// 		userPhoneNumbers: []
-		// 	};
-		// 	// 2등 객체
-		// 	let secondGroup = {
-		// 		quantity: 0,
-		// 		userPhoneNumbers: []
-		// 	};
-		// 	// 3등 객체
-		// 	let thirdGroup = {
-		// 		quantity: 0,
-		// 		userPhoneNumbers: []
-		// 	};
+	
 		// 	// 값 넣기
-		// 	for (let i=0; i<roundOneRanking.length; i++) {
-		// 		if (roundOneRanking[i] == 1) {
-		// 			firstGroup.quantity = roundOneRanking[i].sumQuantities
-		// 			firstGroup.phoneNumber.push(roundOneRanking[i].phoneNumber)
-		// 		}
-		// 		else if (roundOneRanking[i] == 2) {
-		// 			secondGroup.quantity = roundOneRanking[i].sumQuantities
-		// 			firstGroup.phoneNumber.push(roundOneRanking[i].phoneNumber)
-		// 		}
-		// 		else if (roundOneRanking[i] == 3) {
-		// 			thirdGroup.quantity = roundOneRanking[i].sumQuantities
-		// 			firstGroup.phoneNumber.push(roundOneRanking[i].phoneNumber)
-		// 		}
-		// 	}
+		// 	function putValuesToRoundOneRanking() {
+		// 		return new Promise((resolve, reject) => {
+		// 			let rankings = {
+		// 				first: {
+		// 					quantity: 0,
+		// 					userPhoneNumbers: []
+		// 				},
+		// 				second: {
+		// 					quantity: 0,
+		// 					userPhoneNumbers: []
+		// 				},
+		// 				third: {
+		// 					quantity: 0,
+		// 					userPhoneNumbers: []
+		// 				}
+		// 			}
+		// 			for (let i = 0; i < roundOneRanking.length; i++) {
+		// 				if (roundOneRanking[i].ranking == '1') {
+		// 					rankings.first.quantity = roundOneRanking[i].sumQuantities
+		// 					rankings.first.userPhoneNumbers.push(roundOneRanking[i].phoneNumber)
+		// 				}
+		// 				else if (roundOneRanking[i].ranking == '2') {
+		// 					rankings.second.quantity = roundOneRanking[i].sumQuantities
+		// 					rankings.second.userPhoneNumbers.push(roundOneRanking[i].phoneNumber)
+		// 				}
+		// 				else if (roundOneRanking[i].ranking == '3') {
+		// 					rankings.third.quantity = roundOneRanking[i].sumQuantities
+		// 					rankings.third.userPhoneNumbers.push(roundOneRanking[i].phoneNumber)
+		// 				}
+		// 			}
+		// 			resolve(rankings)
+		// 		});
+		// 	};
+		// 	let rankingData = await putValuesToRoundOneRanking();
+		
 		// 	res.json({
-		// 		"first": firstGroup,
-		// 		"secnode": secondGroup,
-		// 		"third": thirdGroup
+		// 		"rankings": rankingData
 		// 	})
 		// }
 		// else if (round == 2) {
 		// 	// 2라운드 랭킹 쿼리
-		// 	let roundTwoRanking = await getRoundTwoRanking();
-		// 	// 1등 객체
-		// 	// 2등 객체
-		// 	// 3등 객체
+		// 	let roundOneRanking = await getRoundTwoRanking();
+	
+		// 	// 값 넣기
+		// 	function putValuesToRoundTwoRanking() {
+		// 		return new Promise((resolve, reject) => {
+		// 			let rankings = {
+		// 				first: {
+		// 					quantity: 0,
+		// 					userPhoneNumbers: []
+		// 				},
+		// 				second: {
+		// 					quantity: 0,
+		// 					userPhoneNumbers: []
+		// 				},
+		// 				third: {
+		// 					quantity: 0,
+		// 					userPhoneNumbers: []
+		// 				}
+		// 			}
+		// 			for (let i = 0; i < roundOneRanking.length; i++) {
+		// 				if (roundOneRanking[i].ranking == '1') {
+		// 					rankings.first.quantity = roundOneRanking[i].sumQuantities
+		// 					rankings.first.userPhoneNumbers.push(roundOneRanking[i].phoneNumber)
+		// 				}
+		// 				else if (roundOneRanking[i].ranking == '2') {
+		// 					rankings.second.quantity = roundOneRanking[i].sumQuantities
+		// 					rankings.second.userPhoneNumbers.push(roundOneRanking[i].phoneNumber)
+		// 				}
+		// 				else if (roundOneRanking[i].ranking == '3') {
+		// 					rankings.third.quantity = roundOneRanking[i].sumQuantities
+		// 					rankings.third.userPhoneNumbers.push(roundOneRanking[i].phoneNumber)
+		// 				}
+		// 			}
+		// 			resolve(rankings)
+		// 		});
+		// 	};
+		// 	let rankingData = await putValuesToRoundTwoRanking();
+		
 		// 	res.json({
-		// 		"first": roundTwoRanking,
-		// 		"second": "",
-		// 		"third": ""
+		// 		"rankings": rankingData
 		// 	})
 		// }
 
-		// 1라운드 랭킹 쿼리
-		let roundOneRanking = await getRoundOneRanking();
-
+		// 2라운드 랭킹 쿼리
+		let roundOneRanking = await getRoundTwoRanking();
+	
 		// 값 넣기
-		function putValuesToRoundOneRanking() {
+		function putValuesToRoundTwoRanking() {
 			return new Promise((resolve, reject) => {
 				let rankings = {
 					first: {
@@ -186,28 +223,34 @@ router.post('/api/rankings', async (req, res, next) => {
 						userPhoneNumbers: []
 					}
 				}
+				let cryptoNumber;
+
 				for (let i = 0; i < roundOneRanking.length; i++) {
 					if (roundOneRanking[i].ranking == '1') {
 						rankings.first.quantity = roundOneRanking[i].sumQuantities
-						rankings.first.userPhoneNumbers.push(roundOneRanking[i].phoneNumber)
+						cryptoNumber = cipherPhoneNumber(roundOneRanking[i].phoneNumber)
+						rankings.first.userPhoneNumbers.push(cryptoNumber)
 					}
 					else if (roundOneRanking[i].ranking == '2') {
 						rankings.second.quantity = roundOneRanking[i].sumQuantities
-						rankings.second.userPhoneNumbers.push(roundOneRanking[i].phoneNumber)
+						cryptoNumber = cipherPhoneNumber(roundOneRanking[i].phoneNumber)
+						rankings.second.userPhoneNumbers.push(cryptoNumber)
 					}
 					else if (roundOneRanking[i].ranking == '3') {
 						rankings.third.quantity = roundOneRanking[i].sumQuantities
-						rankings.third.userPhoneNumbers.push(roundOneRanking[i].phoneNumber)
+						cryptoNumber = cipherPhoneNumber(roundOneRanking[i].phoneNumber)
+						rankings.third.userPhoneNumbers.push(cryptoNumber)
 					}
 				}
 				resolve(rankings)
 			});
 		};
-		let rankingData = await putValuesToRoundOneRanking();
+		let rankingData = await putValuesToRoundTwoRanking();
 	
 		res.json({
-		"rankings": rankingData
+			"rankings": rankingData
 		})
+
 
 	// 전화번호 암호화
 	// for (let i = 0; i < 3; i++) {
