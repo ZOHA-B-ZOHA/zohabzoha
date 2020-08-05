@@ -36,10 +36,10 @@ router.post('/api/authenticate', async (req, res, next) => {
 		let responseAchievment = await getAllAchievement(round);
 
 		// round 1 quantity
-		// let responseRoundOneUserInfo = await getRoundOneQuantities(req.body.phoneNumber);
+		let responseRoundOneUserInfo = await getRoundOneQuantities(req.body.phoneNumber);
 
 		// round 2 quantity
-		// let responseRoundTwoUserInfo = await getRoundTwoQuantities(req.body.phoneNumber);
+		let responseRoundTwoUserInfo = await getRoundTwoQuantities(req.body.phoneNumber);
 
 		// round1 user counts
 		let responseRoundOneUserCounts = await getRoundOneCounts(req.body.phoneNumber);
@@ -73,11 +73,11 @@ router.post('/api/authenticate', async (req, res, next) => {
 										"purchaseCounts": {
 											"firstRound": responseRoundOneUserCounts,
 											"secondRound": responseRoundTwoUserCounts
+										},
+										"purchaseQuantity": {
+											"firstRound": responseRoundOneUserInfo,
+											"secondRound": responseRoundTwoUserInfo
 										}
-										// "purchaseQuantity": {
-										// 	"firstRound": responseRoundOneUserInfo,
-										// 	"secondRound": responseRoundTwoUserInfo
-										// }
 									}
 								});
 							} else {
@@ -102,11 +102,11 @@ router.post('/api/authenticate', async (req, res, next) => {
 						"purchaseCounts": {
 							"firstRound": responseRoundOneUserCounts,
 							"seconRound": responseRoundTwoUserCounts
+						},
+						"purchaseQuantity": {
+							"firstRound": responseRoundOneUserInfo,
+							"secondRound": responseRoundTwoUserInfo
 						}
-						// "purchaseQuantity": {
-						// 	"firstRound": responseRoundOneUserInfo,
-						// 	"secondRound": responseRoundTwoUserInfo
-						// }
 					}
 				});
 			}
@@ -152,13 +152,13 @@ router.post('/api/verify', async (req, res, next) => {
 		// get today's date
 		let round = await calculateDate();
 
-		// get achievement
-		let responseAchievment = await getAllAchievement(round);
-
 		// 행사 시기가 아니면 결제 x
 		if (round == 'outOfOrder') {
 			res.send('verify is out of order!');
 		} else {
+			// get achievement
+			let responseAchievment = await getAllAchievement(round);
+
 			// 목표치 달성 전이면
 			if (responseAchievment < 1) {
 				if (req.body.verificationCode == config.auth.qrCodePassword) { // 여기에 qr code 값을 넣장
@@ -190,8 +190,7 @@ router.post('/api/verify', async (req, res, next) => {
 											"purchaseQuantity": {
 												"firstRoundCount": rows[0].countNumber,
 												"secondRoundCount": rows[1].countNumber
-											},
-											"complete": true
+											}
 										});
 									} else {
 										res.json({
@@ -201,8 +200,7 @@ router.post('/api/verify', async (req, res, next) => {
 											"purchaseQuantity": {
 												"firstRoundCount": rows[0].countNumber,
 												"secondRoundCount": rows[1].countNumber
-											},
-											"complete": false
+											}
 										});
 									}
 								} else {
@@ -218,6 +216,7 @@ router.post('/api/verify', async (req, res, next) => {
 				}
 			} else if (responseAchievment >= 1) {
 				res.send("mission is complete")
+				// 쿠폰 발급하기
 			}
 		}
 	} catch (e) {
@@ -631,7 +630,7 @@ async function checkTokenStatus(phoneNumber) {
 	});
 };
 
-/* 쿠폰 발급 (사용하지 않았을 때) */
+/* plus 쿠폰 발급 */
 async function insertUnused(round) {
 	return new Promise(async(resolve, reject) => {
 		let roundOneRanker = await getRoundOneRanking();
@@ -639,7 +638,7 @@ async function insertUnused(round) {
 
 		// 체인에서 token 발급
 
-		// db 값 unused 로 변경
+		// db 값 unused로 변경
 		if (round == 1) {
 			db.conn.query('UPDATE users SET token1_plus = "unused" WHERE token1_plus = "unavailable"', (err, rows, fields) => {
 				if (err) {
@@ -676,6 +675,24 @@ async function insertUnused(round) {
 		}
 	});
 };
+
+/* free 쿠폰 발급 */
+async function mintFreecoupon(round) {
+	return new Promise(async(resolve, resject) => {
+		let roundOneRanker = await getRoundOneRanking();
+		let roundTwoRanker = await getRoundTwoRanking();
+
+		// 체인에서 token 발급
+
+		// db 값 unused로 변경
+		if (round == 1) {
+
+		}
+		else if (round == 2) {
+
+		}
+	})
+}
 
 /* 발급된 쿠폰의 사용기간이 종료되었을 때 */
 async function insertExpired(couponDate) {
@@ -807,16 +824,19 @@ const contractUpdateRecordOptions = {
 // practice caver-js
 router.post('/contracts', async (req, res, next) => {
 	try {
+		
+		
 		let encode = tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', 1, 2).encodeABI()
-		tokenContract.methods.getTokenList('01087754055', 1).call((error, result) => {
-			if (error) {
-				throw error
-			} else {
-				console.log('1', result)
-				console.log('2', result['0'])
-				console.log('3', Object.keys(result));
-			}
-		})
+		console.log(encode);
+		// tokenContract.methods.getTokenList('01087754055', 1).call((error, result) => {
+		// 	if (error) {
+		// 		throw error
+		// 	} else {
+		// 		console.log('1', result)
+		// 		console.log('2', result['0'])
+		// 		console.log('3', Object.keys(result));
+		// 	}
+		// })
 
 		// tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', 1, 1).send({from: '0x64297AE00b82e819c3AcD658cCF6EA3ee18Bc038', gas: 2000000}, (error, receipt) => {
 		// 	if (error) {
