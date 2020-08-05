@@ -215,54 +215,57 @@ router.post('/api/verify', async (req, res, next) => {
 router.post('/api/rewards', async (req, res, next) => {
 	// 쿠폰 기간 체크
 	let couponDate = await calculateCouponDate();
-	let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
-	let firstRoundPlus = tokenStatus[0].token1_plus;
-	let firstRoundFree = tokenStatus[0].token1_free;
-	let secondRoundPlus = tokenStatus[0].token2_plus;
-	let secondRoundFree = tokenStatus[0].token2_free;
 	
 	if (couponDate == 'outOfOrder') {
+		// 쿠폰 만료 기입
 		await insertExpired(couponDate);
-
+		// 쿠폰기간 체크
+		let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
 		res.json({
 			rewards: {
-				"firstRoundPlus": firstRoundPlus,
-				"firstRooundFree": firstRoundFree,
-				"secondRoundPlus": secondRoundPlus,
-				"secondRoundFree": secondRoundFree
+				"firstRoundPlus": tokenStatus[0].token1_plus,
+				"firstRooundFree": tokenStatus[0].token1_free,
+				"secondRoundPlus": tokenStatus[0].token2_plus,
+				"secondRoundFree": tokenStatus[0].token2_free
 			}
 		})
 	}
 	else if (couponDate == 1) {
+		// 쿠폰기간 체크
+		let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
 		res.json({
 			rewards: {
-				"firstRoundPlus": firstRoundPlus,
-				"firstRooundFree": firstRoundFree,
-				"secondRoundPlus": secondRoundPlus,
-				"secondRoundFree": secondRoundFree
+				"firstRoundPlus": tokenStatus[0].token1_plus,
+				"firstRooundFree": tokenStatus[0].token1_free,
+				"secondRoundPlus": tokenStatus[0].token2_plus,
+				"secondRoundFree": tokenStatus[0].token2_free
 			}
 		})
 	}
 	else if (couponDate == 12) {
+		// 쿠폰기간 체크
+		let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
 		res.json({
 			rewards: {
-				"firstRoundPlus": firstRoundPlus,
-				"firstRooundFree": firstRoundFree,
-				"secondRoundPlus": secondRoundPlus,
-				"secondRoundFree": secondRoundFree
+				"firstRoundPlus": tokenStatus[0].token1_plus,
+				"firstRooundFree": tokenStatus[0].token1_free,
+				"secondRoundPlus": tokenStatus[0].token2_plus,
+				"secondRoundFree": tokenStatus[0].token2_free
 			}
 		})
 	}
 	else if (couponDate == 2) {
-		
+		// 쿠폰 만료 기입
 		await insertExpired(couponDate);
 
+		// 쿠폰기간 체크
+		let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
 		res.json({
 			rewards: {
-				"firstRoundPlus": firstRoundPlus,
-				"firstRooundFree": firstRoundFree,
-				"secondRoundPlus": secondRoundPlus,
-				"secondRoundFree": secondRoundFree
+				"firstRoundPlus": tokenStatus[0].token1_plus,
+				"firstRooundFree": tokenStatus[0].token1_free,
+				"secondRoundPlus": tokenStatus[0].token2_plus,
+				"secondRoundFree": tokenStatus[0].token2_free
 			}
 		})
 	}
