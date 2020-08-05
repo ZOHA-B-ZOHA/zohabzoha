@@ -6,7 +6,6 @@ const logger = require('morgan');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const cors = require('cors');
-const http = require('http');
 
 const indexRouter = require('./routes/index');
 const myPageRouter = require('./routes/myPage');
@@ -34,6 +33,9 @@ app.use(session({
         maxAge: 1200000
     }
 }))
+
+// vue js router 연동
+app.use(require('connect-history-api-fallback')());
 
 require('console-stamp')(console, 'yyyy/mm/dd HH:MM:ss.l');
 
