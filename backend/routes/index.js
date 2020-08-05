@@ -78,7 +78,7 @@ router.post('/api/authenticate', async (req, res, next) => {
 									"achievement": responseAchievment,
 									"currentUser": {
 										"phoneNumber": req.body.phoneNumber,
-										"purchaseCounts": {
+										"purchaseCount": {
 											"firstRound": responseRoundOneUserCounts,
 											"secondRound": responseRoundTwoUserCounts
 										},
@@ -106,7 +106,7 @@ router.post('/api/authenticate', async (req, res, next) => {
 					"achievement": responseAchievment,
 					"currentUser": {
 						"phoneNumber": req.body.phoneNumber,
-						"purchaseCounts": {
+						"purchaseCount": {
 							"firstRound": responseRoundOneUserCounts,
 							"seconRound": responseRoundTwoUserCounts
 						},
