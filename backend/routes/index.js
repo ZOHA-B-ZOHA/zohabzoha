@@ -223,11 +223,13 @@ router.post('/api/rankings', async (req, res, next) => {
 						userPhoneNumbers: []
 					}
 				}
-				let cryptoNumber;
+				let cryptoNumber="";
 
 				for (let i = 0; i < roundOneRanking.length; i++) {
 					if (roundOneRanking[i].ranking == '1') {
 						rankings.first.quantity = roundOneRanking[i].sumQuantities
+						console.log(roundOneRanking[i].phoneNumber)
+						console.log(typeof(roundOneRanking[i].phoneNumber))
 						cryptoNumber = cipherPhoneNumber(roundOneRanking[i].phoneNumber)
 						rankings.first.userPhoneNumbers.push(cryptoNumber)
 					}
