@@ -31,20 +31,22 @@ router.post('/api/authenticate', async (req, res, next) => {
 	try {
 		// get round
 		let round = await calculateDate()
-		console.log(round)
 
 		// get achievement
 		let responseAchievment = await getAllAchievement(round);
-		console.log(responseAchievment)
+
 		// round 1 quantity
 		// let responseRoundOneUserInfo = await getRoundOneQuantities(req.body.phoneNumber);
 
 		// round 2 quantity
 		// let responseRoundTwoUserInfo = await getRoundTwoQuantities(req.body.phoneNumber);
 
-		// user counts
-		let responseRoundUserCounts = await getBuyingCounts(round, req.body.phoneNumber);
-		console.log(responseRoundUserCounts);
+		// round1 user counts
+		let responseRoundOneUserCounts = await getRoundOneCounts(req.body.phoneNumber);
+
+		// round2 user counts
+		let responseRoundTwoUserCounts = await getRoundTwoCounts(req.body.phoneNumber);
+
 		// get wallet address
 		db.conn.query('SELECT address FROM wallet WHERE phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 			if (err) {
@@ -68,7 +70,10 @@ router.post('/api/authenticate', async (req, res, next) => {
 									"justEarned": false,
 									"currentUser": {
 										"phoneNumber": req.body.phoneNumber,
-										"purchaseCounts": responseRoundUserCounts
+										"purchaseCounts": {
+											"firstRound": responseRoundOneUserCounts,
+											"secondRound": responseRoundTwoUserCounts
+										}
 										// "purchaseQuantity": {
 										// 	"firstRound": responseRoundOneUserInfo,
 										// 	"secondRound": responseRoundTwoUserInfo
@@ -94,7 +99,10 @@ router.post('/api/authenticate', async (req, res, next) => {
 					"justEarned": false,
 					"currentUser": {
 						"phoneNumber": req.body.phoneNumber,
-						"purchaseCounts": responseRoundUserCounts
+						"purchaseCounts": {
+							"firstRound": responseRoundOneUserCounts,
+							"seconRound": responseRoundTwoUserCounts
+						}
 						// "purchaseQuantity": {
 						// 	"firstRound": responseRoundOneUserInfo,
 						// 	"secondRound": responseRoundTwoUserInfo
@@ -495,6 +503,32 @@ async function getBuyingCounts(round, phoneNumber) {
 		}
 	})
 }
+
+/* 1라운드 구매 횟 수*/
+async function getRoundOneCounts(phoneNumber) {
+	return new Promise((resolve, reject) => {
+		db.conn.query('SELECT COUNT(quantity) AS counts FROM users WHERE phoneNumber=? AND round=1', [phoneNumber], (err, rows, fields ) => {
+			if (!err) {
+				resolve(rows[0].counts)
+			} else {
+				reject('get 1st counts error ', err)
+			}
+		})
+	});
+};
+
+/* 2라운드 구매 횟수*/
+async function getRoundTwoCounts(phoneNumber) {
+	return new Promise((resolve, reject) => {
+		db.conn.query('SELECT COUNT(quantity) AS counts FROM users WHERE phoneNumber=? AND round=2', [phoneNumber], (err, rows, fields ) => {
+			if (!err) {
+				resolve(rows[0].counts)
+			} else {
+				reject('get 2st counts error ', err)
+			}
+		})
+	});
+};
 
 /* 유저가 구매한 1라운드 잔 수 */
 async function getRoundOneQuantities(phoneNumber) {
