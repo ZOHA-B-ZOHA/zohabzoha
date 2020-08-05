@@ -134,14 +134,17 @@ router.post('/api/rankings', async (req, res, next) => {
 		res.json({
 			"first": roundOneRanking
 		})
-
+		console.log(roundOneRanking[0])
+		console.log(roundOneRanking[0].length)
+		console.log(roundOneRanking.first)
+		console.log(roundOneRanking.first.length)
 		// 전화번호 암호화
-		for (let i = 0; i < 3; i++) {
-			let cryptoNumber1 = await cipherPhoneNumber(roundOneRanking[i].phoneNumber)
-			roundOneRanking[i].phoneNumber = cryptoNumber1
-			let cryptoNumber2 = await cipherPhoneNumber(roundTwoRanking[i].phoneNumber)
-			roundTwoRanking[i].phoneNumber = cryptoNumber2
-		}
+		// for (let i = 0; i < 3; i++) {
+		// 	let cryptoNumber1 = await cipherPhoneNumber(roundOneRanking[i].phoneNumber)
+		// 	roundOneRanking[i].phoneNumber = cryptoNumber1
+		// 	let cryptoNumber2 = await cipherPhoneNumber(roundTwoRanking[i].phoneNumber)
+		// 	roundTwoRanking[i].phoneNumber = cryptoNumber2
+		// }
 	} catch (e) {
 		throw e
 	}
