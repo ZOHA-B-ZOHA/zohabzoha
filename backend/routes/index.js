@@ -36,10 +36,13 @@ router.post('/api/authenticate', async (req, res, next) => {
 		let responseAchievment = await getAllAchievement(round);
 
 		// round 1 quantity
-		let responseRoundOneUserInfo = await getRoundOneQuantities(req.body.phoneNumber);
+		// let responseRoundOneUserInfo = await getRoundOneQuantities(req.body.phoneNumber);
 
 		// round 2 quantity
-		let responseRoundTwoUserInfo = await getRoundTwoQuantities(req.body.phoneNumber);
+		// let responseRoundTwoUserInfo = await getRoundTwoQuantities(req.body.phoneNumber);
+
+		// user counts
+		let responseRoundUserCounts = await getBuyingCounts(round, req.body.phoneNumber);
 
 		// get wallet address
 		db.conn.query('SELECT address FROM wallet WHERE phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
@@ -64,10 +67,11 @@ router.post('/api/authenticate', async (req, res, next) => {
 									"justEarned": false,
 									"currentUser": {
 										"phoneNumber": req.body.phoneNumber,
-										"purchaseQuantity": {
-											"firstRound": responseRoundOneUserInfo,
-											"secondRound": responseRoundTwoUserInfo
-										}
+										"purchaseCounts": responseRoundUserCounts
+										// "purchaseQuantity": {
+										// 	"firstRound": responseRoundOneUserInfo,
+										// 	"secondRound": responseRoundTwoUserInfo
+										// }
 									}
 								});
 							} else {
@@ -89,10 +93,11 @@ router.post('/api/authenticate', async (req, res, next) => {
 					"justEarned": false,
 					"currentUser": {
 						"phoneNumber": req.body.phoneNumber,
-						"purchaseQuantity": {
-							"firstRound": responseRoundOneUserInfo,
-							"secondRound": responseRoundTwoUserInfo
-						}
+						"purchaseCounts": responseRoundUserCounts
+						// "purchaseQuantity": {
+						// 	"firstRound": responseRoundOneUserInfo,
+						// 	"secondRound": responseRoundTwoUserInfo
+						// }
 					}
 				});
 			}
@@ -326,7 +331,8 @@ router.post('/api/redeem', async (req, res, next) => {
 				})
 			}
 
-		} else {
+		}
+		else {
 			//check status
 			let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
 			res.json({
