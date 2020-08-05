@@ -31,20 +31,15 @@ router.post('/api/authenticate', async (req, res, next) => {
 	try {
 		// get round
 		let round = await calculateDate()
-
 		// get achievement
 		let responseAchievment = await getAllAchievement(round);
-
 		// round 1 quantity
 		let responseRoundOneUserInfo = await getRoundOneQuantities(req.body.phoneNumber);
-
 		// round 2 quantity
 		let responseRoundTwoUserInfo = await getRoundTwoQuantities(req.body.phoneNumber);
-
-		// round1 user counts
+		// round 1 user counts
 		let responseRoundOneUserCounts = await getRoundOneCounts(req.body.phoneNumber);
-
-		// round2 user counts
+		// round 2 user counts
 		let responseRoundTwoUserCounts = await getRoundTwoCounts(req.body.phoneNumber);
 
 		// get wallet address
@@ -67,7 +62,6 @@ router.post('/api/authenticate', async (req, res, next) => {
 							if (!err) {
 								res.json({
 									"achievement": responseAchievment,
-									"justEarned": false,
 									"currentUser": {
 										"phoneNumber": req.body.phoneNumber,
 										"purchaseCounts": {
@@ -96,7 +90,6 @@ router.post('/api/authenticate', async (req, res, next) => {
 
 				res.json({
 					"achievement": responseAchievment,
-					"justEarned": false,
 					"currentUser": {
 						"phoneNumber": req.body.phoneNumber,
 						"purchaseCounts": {
@@ -119,10 +112,28 @@ router.post('/api/authenticate', async (req, res, next) => {
 /* 랭킹 호출 api */
 router.post('/api/rankings', async (req, res, next) => {
 	try {
-		// 1라운드 랭킹 쿼리
+		// 라운드 체크
+		// let round = await calculateDate();
+		// if (round == 1) {
+		// 	// 1라운드 랭킹 쿼리
+		// 	let roundOneRanking = await getRoundOneRanking();
+		// 	res.json({
+		// 		"first": roundOneRanking
+		// 	})
+		// }
+		// else if (round == 2) {
+		// 	// 2라운드 랭킹 쿼리
+		// 	let roundTwoRanking = await getRoundTwoRanking();
+		// 	res.json({
+		// 		"first": roundTwoRanking
+		// 	})
+		// }
+
 		let roundOneRanking = await getRoundOneRanking();
-		// 2라운드 랭킹 쿼리
-		let roundTwoRanking = await getRoundTwoRanking();
+
+		res.json({
+			"first": roundOneRanking
+		})
 
 		// 전화번호 암호화
 		for (let i = 0; i < 3; i++) {
@@ -131,16 +142,6 @@ router.post('/api/rankings', async (req, res, next) => {
 			let cryptoNumber2 = await cipherPhoneNumber(roundTwoRanking[i].phoneNumber)
 			roundTwoRanking[i].phoneNumber = cryptoNumber2
 		}
-
-		// response
-		// 각각 객체이며 0~4 값으로 이루어져 있습니다. 사용법은 아래와 같습니다
-		// roundOneRanking[0].sum_quantity (1라운드의 1등의 구매 량)
-		// roundTwonRanking[3].phoneNumber (2랴운드 4등의 휴대폰 번호)
-		res.json({
-			"firstRoundRanking": roundOneRanking,
-			"secondRoundRanking": roundTwoRanking
-		});
-
 	} catch (e) {
 		throw e
 	}
@@ -161,50 +162,56 @@ router.post('/api/verify', async (req, res, next) => {
 
 			// 목표치 달성 전이면
 			if (responseAchievment < 1) {
-				if (req.body.verificationCode == config.auth.qrCodePassword) { // 여기에 qr code 값을 넣장
-
+				// qr code 값이 맞으면
+				if (req.body.verificationCode == config.auth.qrCodePassword) {
 					// db에 구매내역 기록
 					db.conn.query('INSERT INTO users (phoneNumber, quantity, place, round) VALUES (?, ?, ?, ?)', [req.body.phoneNumber, req.body.purchaseQuantity, req.body.branch, round], (err, rows, fields) => {
 						if (!err) {
 							// 기록 후 지금까지의 구매 수량 출력
-							db.conn.query('SELECT SUM(quantity) AS countNumber FROM users WHERE phoneNumber=? GROUP BY round', [req.body.phoneNumber], async (err, rows, fields) => {
+							db.conn.query('SELECT SUM(quantity) AS sumQuantities FROM users WHERE phoneNumber=? GROUP BY round', [req.body.phoneNumber], async (err, rows, fields) => {
 								if (!err) {
 									// 지금까지의 구매 횟수 출력
 									let counts = await getBuyingCounts(round, req.body.phoneNumber);
 
-									// 조건에 맞다면 unavailable 입력
-									await insertUnavailable(req.body.phoneNumber, counts, round);
-
 									// 목표치 달성 다시 확인
 									let checkMission = await getAllAchievement(round);
-
+									// round 1 user counts
+									let responseRoundOneUserCounts = await getRoundOneCounts(req.body.phoneNumber);
+									// round 2 user counts
+									let responseRoundTwoUserCounts = await getRoundTwoCounts(req.body.phoneNumber);
+									
 									if (checkMission >= 1) {
 
-										// 토큰 발급
-										await insertUnused(round);
+										// 쿠폰 발급
+										await mintFreeCoupon(round);
+										await mintPlusCoupon(round);
 
 										res.json({
-											"achievement": responseAchievment,
+											"achievement": checkMission,
 											"justEarned": true,
-											"purchaseCount": counts,
+											"purchaseCountNow": counts,
 											"purchaseQuantity": {
-												"firstRoundCount": rows[0].countNumber,
-												"secondRoundCount": rows[1].countNumber
+												"firstRound": rows[0].sumQuantities,
+												"secondRound": rows[1].sumQuantities
+											},
+											"purchaseCount": {
+												"firstRound": responseRoundOneUserCounts,
+												"secoundRound": responseRoundTwoUserCounts
 											}
 										});
 									} else {
 										res.json({
-											"achievement": responseAchievment,
+											"achievement": checkMission,
 											"justEarned": true,
-											"purchaseCount": counts,
+											"purchaseCountNow": counts,
 											"purchaseQuantity": {
-												"firstRoundCount": rows[0].countNumber,
-												"secondRoundCount": rows[1].countNumber
+												"firstRound": rows[0].sumQuantities,
+												"secondRound": rows[1].sumQuantities
 											}
 										});
 									}
 								} else {
-									console.log('check count error ', err);
+									console.log('check quantity error ', err);
 								}
 							});
 						} else {
@@ -215,8 +222,11 @@ router.post('/api/verify', async (req, res, next) => {
 					res.json({ "msg": 'invalid password' });
 				}
 			} else if (responseAchievment >= 1) {
-				res.send("mission is complete")
+				
 				// 쿠폰 발급하기
+				await mintFreeCoupon(round);
+				await mintPlusCoupon(round);
+				res.send("mission is complete")
 			}
 		}
 	} catch (e) {
@@ -228,7 +238,7 @@ router.post('/api/verify', async (req, res, next) => {
 router.post('/api/rewards', async (req, res, next) => {
 	// 쿠폰 기간 체크
 	let couponDate = await calculateCouponDate();
-	
+
 	if (couponDate == 'outOfOrder') {
 		// 쿠폰 만료 기입
 		await insertExpired(couponDate);
@@ -270,7 +280,6 @@ router.post('/api/rewards', async (req, res, next) => {
 	else if (couponDate == 2) {
 		// 쿠폰 만료 기입
 		await insertExpired(couponDate);
-
 		// 쿠폰기간 체크
 		let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
 		res.json({
@@ -293,7 +302,7 @@ router.post('/api/redeem', async (req, res, next) => {
 	if (couponDate == 'outOfOrder') {
 
 		// 2차 쿠폰 만료
-		let checkExpire = await insertExpired(couponDate);
+		await insertExpired(couponDate);
 
 		//check status
 		let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
@@ -461,7 +470,7 @@ router.post('/api/redeem', async (req, res, next) => {
 				"secondRoundFree": tokenStatus[0].token2_free
 			})
 		}
-	} 
+	}
 });
 
 /****************************************************************************************************************************/
@@ -471,7 +480,12 @@ async function getAllAchievement(round) {
 	return new Promise((resolve, reject) => {
 		db.conn.query('SELECT SUM(quantity) AS sumQuantities FROM users WHERE round=?', [round], (err, rows, fields) => {
 			if (!err) {
-				resolve((rows[0].sumQuantities / 5415).toFixed(4))
+				if (round == 1) {
+					resolve((rows[0].sumQuantities / 4862).toFixed(4))
+				}
+				else if (round == 2) {
+					resolve((rows[0].sumQuantities / 5968).toFixed(4))
+				}
 			}
 			else {
 				reject('get achievement error ', err);
@@ -506,7 +520,7 @@ async function getBuyingCounts(round, phoneNumber) {
 /* 1라운드 구매 횟 수*/
 async function getRoundOneCounts(phoneNumber) {
 	return new Promise((resolve, reject) => {
-		db.conn.query('SELECT COUNT(quantity) AS counts FROM users WHERE phoneNumber=? AND round=1', [phoneNumber], (err, rows, fields ) => {
+		db.conn.query('SELECT COUNT(quantity) AS counts FROM users WHERE phoneNumber=? AND round=1', [phoneNumber], (err, rows, fields) => {
 			if (!err) {
 				resolve(rows[0].counts)
 			} else {
@@ -519,7 +533,7 @@ async function getRoundOneCounts(phoneNumber) {
 /* 2라운드 구매 횟수*/
 async function getRoundTwoCounts(phoneNumber) {
 	return new Promise((resolve, reject) => {
-		db.conn.query('SELECT COUNT(quantity) AS counts FROM users WHERE phoneNumber=? AND round=2', [phoneNumber], (err, rows, fields ) => {
+		db.conn.query('SELECT COUNT(quantity) AS counts FROM users WHERE phoneNumber=? AND round=2', [phoneNumber], (err, rows, fields) => {
 			if (!err) {
 				resolve(rows[0].counts)
 			} else {
@@ -555,10 +569,10 @@ async function getRoundTwoQuantities(phoneNumber) {
 	});
 };
 
-/* 1라운드 등 수 3등까지 */
+/* 1라운드 랭킹 */
 async function getRoundOneRanking() {
 	return new Promise((resolve, reject) => {
-		db.conn.query('SELECT sum_quantity, phoneNumber FROM (SELECT phoneNumber, SUM(quantity) AS sum_quantity, round FROM users WHERE round=1 GROUP BY phoneNumber)t ORDER BY sum_quantity desc limit 3', (err, rows, fields) => {
+		db.conn.query('SELECT sumQuantities, phoneNumber, ranking FROM(SELECT sumQuantities, phoneNumber, (@rank:=IF(@last > sumQuantities, @rank:=@rank+1, @rank)) AS ranking, (@last:=sumQuantities) FROM (SELECT phoneNumber, SUM(quantity) AS sumQuantities, round FROM users WHERE round=1 GROUP BY phoneNumber)t, (SELECT @rank:=1, @last:=0) AS b ORDER BY sumQuantities DESC)n WHERE ranking < 4;', (err, rows, fields) => {
 			if (!err) {
 				resolve(rows);
 			} else {
@@ -568,52 +582,17 @@ async function getRoundOneRanking() {
 	});
 };
 
-/* 2라운드 등 수 3등까지 */
+
+/* 2라운드 랭킹 */
 async function getRoundTwoRanking() {
 	return new Promise((resolve, reject) => {
-		db.conn.query('SELECT sum_quantity, phoneNumber FROM (SELECT phoneNumber, SUM(quantity) AS sum_quantity, round FROM users WHERE round=2 GROUP BY phoneNumber)n ORDER BY sum_quantity desc limit 3', (err, rows, fields) => {
+		db.conn.query('SELECT sumQuantities, phoneNumber, ranking FROM(SELECT sumQuantities, phoneNumber, (@rank:=IF(@last > sumQuantities, @rank:=@rank+1, @rank)) AS ranking, (@last:=sumQuantities) FROM (SELECT phoneNumber, SUM(quantity) AS sumQuantities, round FROM users WHERE round=2 GROUP BY phoneNumber)t, (SELECT @rank:=1, @last:=0) AS b ORDER BY sumQuantities DESC)n WHERE ranking < 4;', (err, rows, fields) => {
 			if (!err) {
 				resolve(rows);
 			} else {
 				reject('get 2nd ranking ', err);
 			}
 		})
-	});
-};
-
-/* 3회 구매 시 DB 값 변경 */
-async function insertUnavailable(phoneNumber, counts, round) {
-	return new Promise((resolve, reject) => {
-		if (round == 1) {
-			db.conn.query('SELECT token1_plus FROM users WHERE phoneNumber=?', [phoneNumber], (err, rows, fields) => {
-				if (!err && rows[0].token1_plus == null && counts >= 3) {
-					db.conn.query('UPDATE users SET token1_plus = "unavailable" WHERE token1_plus is null AND phoneNumber=?', [phoneNumber], (err, rows, fields) => {
-						if (!err) {
-							resolve(rows)
-						} else {
-							reject('insert unavailable error ', err)
-						}
-					})
-				} else {
-					reject('get token1_plus error ', err)
-				}
-			})
-		}
-		else if (round == 2) {
-			db.conn.query('SELECT token2_plus FROM users WHERE phoneNumber=?', [phoneNumber], (err, rows, fields) => {
-				if (!err && rows[0].token2_plus == null && counts >= 3) {
-					db.conn.query('UPDATE users SET token2_plus = "unavailable" WHERE token2_plus is null AND phoneNumber=?', [phoneNumber], (err, rows, fields) => {
-						if (!err) {
-							resolve(rows)
-						} else {
-							reject('insert unavailable error ', err)
-						}
-					})
-				} else {
-					reject('get token1_plus error ', err)
-				}
-			})
-		}
 	});
 };
 
@@ -631,45 +610,27 @@ async function checkTokenStatus(phoneNumber) {
 };
 
 /* plus 쿠폰 발급 */
-async function insertUnused(round) {
-	return new Promise(async(resolve, reject) => {
-		let roundOneRanker = await getRoundOneRanking();
-		let roundTwoRanker = await getRoundTwoRanking();
+async function mintPlusCoupon(round) {
+	return new Promise(async (resolve, reject) => {
 
 		// 체인에서 token 발급
 
 		// db 값 unused로 변경
 		if (round == 1) {
-			db.conn.query('UPDATE users SET token1_plus = "unused" WHERE token1_plus = "unavailable"', (err, rows, fields) => {
+			db.conn.query('UPDATE users SET token1_plus = "unused" WHERE token1_plus = is null AND quantity >=3', (err, rows, fields) => {
 				if (err) {
-					reject('insert unused error ', err);
+					reject('insert round1 unused error ', err);
 				} else {
-					for (let i = 0; i < 3; i++) {
-						db.conn.query('UPDATE users SET token1_free = "unused" WHERE token1_free is null AND phoneNumber=?', [roundOneRanker[i].phoneNumber], (err, rows, fields) => {
-							if (err) {
-								reject('insert unused error i ', err)
-							} else {
-								resolve(rows)
-							}
-						})
-					}
+					resolve(rows)
 				}
 			});
 		}
 		else if (round == 2) {
-			db.conn.query('UPDATE users SET token2_plus = "unused" WHERE token2_plus = "unavailable"', (err, rows, fields) => {
+			db.conn.query('UPDATE users SET token2_plus = "unused" WHERE token2_plus is null AND quantity >=3', (err, rows, fields) => {
 				if (err) {
-					reject('insert unused error ', err);
+					reject('insert round2 unused error ', err);
 				} else {
-					for (let j = 0; j < 3; j++) {
-						db.conn.query('UPDATE users SET token2_free = "unused" WHERE token2_free is null AND phoneNumber=?', [roundTwoRanker[j].phoneNumber], (err, rows, fields) => {
-							if (err) {
-								reject('insert unused error j ', err)
-							} else {
-								resolve(rows)
-							}
-						})
-					}
+					resolve(rows)
 				}
 			});
 		}
@@ -677,8 +638,8 @@ async function insertUnused(round) {
 };
 
 /* free 쿠폰 발급 */
-async function mintFreecoupon(round) {
-	return new Promise(async(resolve, resject) => {
+async function mintFreeCoupon(round) {
+	return new Promise(async (resolve, resject) => {
 		let roundOneRanker = await getRoundOneRanking();
 		let roundTwoRanker = await getRoundTwoRanking();
 
@@ -686,10 +647,27 @@ async function mintFreecoupon(round) {
 
 		// db 값 unused로 변경
 		if (round == 1) {
+			for (let i = 0; i < 3; i++) {
+				db.conn.query('UPDATE users SET token1_free = "unused" WHERE token1_free is null AND phoneNumber=?', [roundOneRanker[i].phoneNumber], (err, rows, fields) => {
+					if (err) {
+						reject('insert unused error i ', err)
+					} else {
+						resolve(rows)
+					}
+				})
+			}
 
 		}
 		else if (round == 2) {
-
+			for (let j = 0; j < 3; j++) {
+				db.conn.query('UPDATE users SET token2_free = "unused" WHERE token2_free is null AND phoneNumber=?', [roundTwoRanker[j].phoneNumber], (err, rows, fields) => {
+					if (err) {
+						reject('insert unused error j ', err)
+					} else {
+						resolve(rows)
+					}
+				})
+			}
 		}
 	})
 }
@@ -824,8 +802,8 @@ const contractUpdateRecordOptions = {
 // practice caver-js
 router.post('/contracts', async (req, res, next) => {
 	try {
-		
-		
+
+
 		let encode = tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', 1, 2).encodeABI()
 
 		let tx = caver.transaction.decode("0x31f90143808505d21dba00830f424094cddd2f0b23f033eb85afe5510e5285261bf681548094b5ff3f8b19f917f0290d8eead466edb779cd61d3b864bb16f4430000000000000000000000007930978144dfca9dfb66c5aeae94eb1472299df600000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002f847f8458207f6a039de716bb64c5081e442343ff1e9e9de80d24e7a8c48ef0a452a5b3cf2afdc91a01bfd30d3258b4321154d37418d4a8a85c7ffb83f260ef75c9ecf4ba33960b685941b71a63903e35371e2fc41c6012effb99b9a2c0ff847f8458207f5a020d39dd1b1cc322c86633accf559561ee9d48930fd9a57e19a9a4a5ce18069a5a033398aa469fa48744462e23d60579d96a7ab8672d997954a339cf3f874ce65fc");
