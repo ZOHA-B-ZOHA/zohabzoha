@@ -223,25 +223,22 @@ router.post('/api/rankings', async (req, res, next) => {
 						userPhoneNumbers: []
 					}
 				}
-				let cryptoNumber="";
 
 				for (let i = 0; i < roundOneRanking.length; i++) {
 					if (roundOneRanking[i].ranking == '1') {
 						rankings.first.quantity = roundOneRanking[i].sumQuantities
-						console.log(roundOneRanking[i].phoneNumber)
-						console.log(typeof(roundOneRanking[i].phoneNumber))
-						cryptoNumber = cipherPhoneNumber(roundOneRanking[i].phoneNumber)
-						rankings.first.userPhoneNumbers.push(cryptoNumber)
+						let cryptoNumber1 = await cipherPhoneNumber(roundOneRanking[i].phoneNumber)
+						rankings.first.userPhoneNumbers.push(cryptoNumber1)
 					}
 					else if (roundOneRanking[i].ranking == '2') {
 						rankings.second.quantity = roundOneRanking[i].sumQuantities
-						cryptoNumber = cipherPhoneNumber(roundOneRanking[i].phoneNumber)
-						rankings.second.userPhoneNumbers.push(cryptoNumber)
+						let cryptoNumber2 = await cipherPhoneNumber(roundOneRanking[i].phoneNumber)
+						rankings.second.userPhoneNumbers.push(cryptoNumber2)
 					}
 					else if (roundOneRanking[i].ranking == '3') {
 						rankings.third.quantity = roundOneRanking[i].sumQuantities
-						cryptoNumber = cipherPhoneNumber(roundOneRanking[i].phoneNumber)
-						rankings.third.userPhoneNumbers.push(cryptoNumber)
+						let cryptoNumber3 = await cipherPhoneNumber(roundOneRanking[i].phoneNumber)
+						rankings.third.userPhoneNumbers.push(cryptoNumber3)
 					}
 				}
 				resolve(rankings)
