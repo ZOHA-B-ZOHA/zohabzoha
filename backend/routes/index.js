@@ -111,7 +111,7 @@ router.post('/api/rankings', async (req, res, next) => {
 		let roundTwoRanking = await getRoundTwoRanking();
 
 		// 전화번호 암호화
-		for (let i = 0; i < 5; i++) {
+		for (let i = 0; i < 3; i++) {
 			let cryptoNumber1 = await cipherPhoneNumber(roundOneRanking[i].phoneNumber)
 			roundOneRanking[i].phoneNumber = cryptoNumber1
 			let cryptoNumber2 = await cipherPhoneNumber(roundTwoRanking[i].phoneNumber)
@@ -515,10 +515,10 @@ async function getRoundTwoQuantities(phoneNumber) {
 	});
 };
 
-/* 1라운드 등 수 5등까지 */
+/* 1라운드 등 수 3등까지 */
 async function getRoundOneRanking() {
 	return new Promise((resolve, reject) => {
-		db.conn.query('SELECT sum_quantity, phoneNumber FROM (SELECT phoneNumber, SUM(quantity) AS sum_quantity, round FROM users WHERE round=1 GROUP BY phoneNumber)t ORDER BY sum_quantity desc limit 5', (err, rows, fields) => {
+		db.conn.query('SELECT sum_quantity, phoneNumber FROM (SELECT phoneNumber, SUM(quantity) AS sum_quantity, round FROM users WHERE round=1 GROUP BY phoneNumber)t ORDER BY sum_quantity desc limit 3', (err, rows, fields) => {
 			if (!err) {
 				resolve(rows);
 			} else {
@@ -528,10 +528,10 @@ async function getRoundOneRanking() {
 	});
 };
 
-/* 2라운드 등 수 5등까지 */
+/* 2라운드 등 수 3등까지 */
 async function getRoundTwoRanking() {
 	return new Promise((resolve, reject) => {
-		db.conn.query('SELECT sum_quantity, phoneNumber FROM (SELECT phoneNumber, SUM(quantity) AS sum_quantity, round FROM users WHERE round=2 GROUP BY phoneNumber)n ORDER BY sum_quantity desc limit 5', (err, rows, fields) => {
+		db.conn.query('SELECT sum_quantity, phoneNumber FROM (SELECT phoneNumber, SUM(quantity) AS sum_quantity, round FROM users WHERE round=2 GROUP BY phoneNumber)n ORDER BY sum_quantity desc limit 3', (err, rows, fields) => {
 			if (!err) {
 				resolve(rows);
 			} else {
@@ -593,7 +593,8 @@ async function checkTokenStatus(phoneNumber) {
 /* 쿠폰 발급 (사용하지 않았을 때) */
 async function insertUnused(round) {
 	return new Promise(async(resolve, reject) => {
-		let ranking = await getRoundOneRanking();
+		let roundOneRanker = await getRoundOneRanking();
+		let roundTwoRanker = await getRoundTwoRanking();
 
 		// 체인에서 token 발급
 
@@ -603,8 +604,8 @@ async function insertUnused(round) {
 				if (err) {
 					reject('insert unused error ', err);
 				} else {
-					for (let i = 0; i < 5; i++) {
-						db.conn.query('UPDATE users SET token1_free = "unused" WHERE token1_free is null AND phoneNumber=?', [ranking[i].phoneNumber], (err, rows, fields) => {
+					for (let i = 0; i < 3; i++) {
+						db.conn.query('UPDATE users SET token1_free = "unused" WHERE token1_free is null AND phoneNumber=?', [roundOneRanker[i].phoneNumber], (err, rows, fields) => {
 							if (err) {
 								reject('insert unused error i ', err)
 							} else {
@@ -620,8 +621,8 @@ async function insertUnused(round) {
 				if (err) {
 					reject('insert unused error ', err);
 				} else {
-					for (let j = 0; j < 5; j++) {
-						db.conn.query('UPDATE users SET token2_free = "unused" WHERE token2_free is null AND phoneNumber=?', [ranking[j].phoneNumber], (err, rows, fields) => {
+					for (let j = 0; j < 3; j++) {
+						db.conn.query('UPDATE users SET token2_free = "unused" WHERE token2_free is null AND phoneNumber=?', [roundTwoRanker[j].phoneNumber], (err, rows, fields) => {
 							if (err) {
 								reject('insert unused error j ', err)
 							} else {
