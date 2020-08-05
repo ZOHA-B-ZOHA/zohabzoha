@@ -574,6 +574,9 @@ async function getAllAchievement(round) {
 				else if (round == 2) {
 					resolve((rows[0].sumQuantities / 5968).toFixed(4))
 				}
+				else if (round == 'outOfOrder') {
+					resolve('event is outdated')
+				}
 			}
 			else {
 				reject('get achievement error ', err);
@@ -799,7 +802,7 @@ async function insertExpired(couponDate) {
 /* 라운드 계산 */
 async function calculateDate() {
 	return new Promise((resolve, reject) => {
-		if (moment().isBetween('2020-08-06', '2020-08-08', 'date', '[]'/*'2020-08-10', '2020-08-14', 'date', '[]'*/) == true) {
+		if (moment().isBetween('2020-08-05', '2020-08-08', 'date', '[]'/*'2020-08-10', '2020-08-14', 'date', '[]'*/) == true) {
 			resolve(1);
 		} else if (moment().isBetween('2020-08-18', '2020-08-24', 'date', '[]') == true) {
 			resolve(2);
