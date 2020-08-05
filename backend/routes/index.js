@@ -20,11 +20,27 @@ router.get('/', function (req, res, next) {
 router.get('/api', async (req, res, next) => {
 	let round = await calculateDate();
 	console.log(round)
-	let responseAchievment = await getAllAchievement(round);
-	console.log(responseAchievment)
-	res.json({
-		"achievement": responseAchievment
-	});
+	if (round == 'outOfOrder') {
+		let responseAchievment = await getAllAchievement(round);
+		console.log(responseAchievment)
+		res.json({
+			"achievement": responseAchievment
+		});
+	}
+	else if (round == 1) {
+		let responseAchievment = await getAllAchievement(round);
+		console.log(responseAchievment)
+		res.json({
+			"achievement": responseAchievment
+		});
+	}
+	else if (round == 2) {
+		let responseAchievment = await getAllAchievement(round);
+		console.log(responseAchievment)
+		res.json({
+			"achievement": responseAchievment
+		});
+	}
 });
 
 /* 전화번호 입력 후 접속 */
@@ -115,7 +131,7 @@ router.post('/api/rankings', async (req, res, next) => {
 	try {
 		// 라운드 체크
 		let round = await calculateDate();
-		
+
 		if (round == 'outOfOrder') {
 			res.send('event is outdated')
 		}
@@ -553,10 +569,10 @@ async function getAllAchievement(round) {
 		db.conn.query('SELECT SUM(quantity) AS sumQuantities FROM users WHERE round=?', [round], (err, rows, fields) => {
 			if (!err) {
 				if (round == 1) {
-					resolve((rows[0].sumQuantities/4862).toFixed(4))
+					resolve((rows[0].sumQuantities / 4862).toFixed(4))
 				}
 				else if (round == 2) {
-					resolve((rows[0].sumQuantities/5968).toFixed(4))
+					resolve((rows[0].sumQuantities / 5968).toFixed(4))
 				}
 			}
 			else {
@@ -796,7 +812,7 @@ async function calculateDate() {
 /* 쿠폰 기간 계산 */
 async function calculateCouponDate() {
 	return new Promise((resolve, reject) => {
-		if (moment().isBetween('2020-08-06', '2020-08-08', 'date', '[]'/*'2020-08-18', '2020-08-24', 'date', '[]'*/) == true) {
+		if (moment().isBetween('2020-08-05', '2020-08-08', 'date', '[]'/*'2020-08-18', '2020-08-24', 'date', '[]'*/) == true) {
 			resolve(1);
 		} else if (moment().isBetween('2020-08-25', '2020-08-31', 'date', '[]') == true) {
 			resolve(12);
