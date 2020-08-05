@@ -113,58 +113,97 @@ router.post('/api/authenticate', async (req, res, next) => {
 router.post('/api/rankings', async (req, res, next) => {
 	try {
 		// 라운드 체크
-		let round = await calculateDate();
-		if (round == 1) {
-			// 1라운드 랭킹 쿼리
-			let roundOneRanking = await getRoundOneRanking();
-			// 1등 객체
-			let firstGroup = {
-				quantity: 0,
-				userPhoneNumbers: []
-			};
-			// 2등 객체
-			let secondGroup = {
-				quantity: 0,
-				userPhoneNumbers: []
-			};
-			// 3등 객체
-			let thirdGroup = {
-				quantity: 0,
-				userPhoneNumbers: []
-			};
-			// 값 넣기
-			for (let i=0; i<roundOneRanking.length; i++) {
-				if (roundOneRanking[i] == 1) {
-					firstGroup.quantity = roundOneRanking[i].sumQuantities
-					firstGroup.phoneNumber.push(roundOneRanking[i].phoneNumber)
-				}
-				else if (roundOneRanking[i] == 2) {
-					secondGroup.quantity = roundOneRanking[i].sumQuantities
-					firstGroup.phoneNumber.push(roundOneRanking[i].phoneNumber)
-				}
-				else if (roundOneRanking[i] == 3) {
-					thirdGroup.quantity = roundOneRanking[i].sumQuantities
-					firstGroup.phoneNumber.push(roundOneRanking[i].phoneNumber)
-				}
+		// let round = await calculateDate();
+		// if (round == 1) {
+		// 	// 1라운드 랭킹 쿼리
+		// 	let roundOneRanking = await getRoundOneRanking();
+		// 	// 1등 객체
+		// 	let firstGroup = {
+		// 		quantity: 0,
+		// 		userPhoneNumbers: []
+		// 	};
+		// 	// 2등 객체
+		// 	let secondGroup = {
+		// 		quantity: 0,
+		// 		userPhoneNumbers: []
+		// 	};
+		// 	// 3등 객체
+		// 	let thirdGroup = {
+		// 		quantity: 0,
+		// 		userPhoneNumbers: []
+		// 	};
+		// 	// 값 넣기
+		// 	for (let i=0; i<roundOneRanking.length; i++) {
+		// 		if (roundOneRanking[i] == 1) {
+		// 			firstGroup.quantity = roundOneRanking[i].sumQuantities
+		// 			firstGroup.phoneNumber.push(roundOneRanking[i].phoneNumber)
+		// 		}
+		// 		else if (roundOneRanking[i] == 2) {
+		// 			secondGroup.quantity = roundOneRanking[i].sumQuantities
+		// 			firstGroup.phoneNumber.push(roundOneRanking[i].phoneNumber)
+		// 		}
+		// 		else if (roundOneRanking[i] == 3) {
+		// 			thirdGroup.quantity = roundOneRanking[i].sumQuantities
+		// 			firstGroup.phoneNumber.push(roundOneRanking[i].phoneNumber)
+		// 		}
+		// 	}
+		// 	res.json({
+		// 		"first": firstGroup,
+		// 		"secnode": secondGroup,
+		// 		"third": thirdGroup
+		// 	})
+		// }
+		// else if (round == 2) {
+		// 	// 2라운드 랭킹 쿼리
+		// 	let roundTwoRanking = await getRoundTwoRanking();
+		// 	// 1등 객체
+		// 	// 2등 객체
+		// 	// 3등 객체
+		// 	res.json({
+		// 		"first": roundTwoRanking,
+		// 		"seconde": "",
+		// 		"third": ""
+		// 	})
+		// }
+
+		// 1라운드 랭킹 쿼리
+		let roundOneRanking = await getRoundOneRanking();
+		// 1등 객체
+		let firstGroup = {
+			quantity: 0,
+			userPhoneNumbers: []
+		};
+		// 2등 객체
+		let secondGroup = {
+			quantity: 0,
+			userPhoneNumbers: []
+		};
+		// 3등 객체
+		let thirdGroup = {
+			quantity: 0,
+			userPhoneNumbers: []
+		};
+		// 값 넣기
+		for (let i=0; i<roundOneRanking.length; i++) {
+			if (roundOneRanking[i] == 1) {
+				firstGroup.quantity = roundOneRanking[i].sumQuantities
+				firstGroup.phoneNumber.push(roundOneRanking[i].phoneNumber)
 			}
-			res.json({
-				"first": firstGroup,
-				"secnode": secondGroup,
-				"third": thirdGroup
-			})
+			else if (roundOneRanking[i] == 2) {
+				secondGroup.quantity = roundOneRanking[i].sumQuantities
+				firstGroup.phoneNumber.push(roundOneRanking[i].phoneNumber)
+			}
+			else if (roundOneRanking[i] == 3) {
+				thirdGroup.quantity = roundOneRanking[i].sumQuantities
+				firstGroup.phoneNumber.push(roundOneRanking[i].phoneNumber)
+			}
 		}
-		else if (round == 2) {
-			// 2라운드 랭킹 쿼리
-			let roundTwoRanking = await getRoundTwoRanking();
-			// 1등 객체
-			// 2등 객체
-			// 3등 객체
-			res.json({
-				"first": roundTwoRanking,
-				"seconde": "",
-				"third": ""
-			})
-		}
+		res.json({
+			"first": firstGroup,
+			"secnode": secondGroup,
+			"third": thirdGroup
+		})
+
 		// 전화번호 암호화
 		// for (let i = 0; i < 3; i++) {
 		// 	let cryptoNumber1 = await cipherPhoneNumber(roundOneRanking[i].phoneNumber)
