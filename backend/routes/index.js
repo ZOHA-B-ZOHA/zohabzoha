@@ -457,7 +457,7 @@ async function getAllAchievement(round) {
 	return new Promise((resolve, reject) => {
 		db.conn.query('SELECT SUM(quantity) AS sumQuantities FROM users WHERE round=?', [round], (err, rows, fields) => {
 			if (!err) {
-				resolve((rows[0].sumQuantities / 5415).toFixed(3))
+				resolve((rows[0].sumQuantities / 5415).toFixed(4))
 			}
 			else {
 				reject('get achievement error ', err);
