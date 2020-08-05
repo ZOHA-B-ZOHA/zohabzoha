@@ -257,16 +257,12 @@ router.post('/api/verify', async (req, res, next) => {
 								if (!err) {
 									// 지금까지의 구매 횟수 출력
 									let counts = await getBuyingCounts(round, req.body.phoneNumber);
-									console.log(counts)
 									// 목표치 달성 다시 확인
 									let checkMission = await getAllAchievement(round);
-									console.log(checkMission)
 									// round 1 user counts
 									let responseRoundOneUserCounts = await getRoundOneCounts(req.body.phoneNumber);
-									console.log(responseRoundOneUserCounts)
 									// round 2 user counts
 									let responseRoundTwoUserCounts = await getRoundTwoCounts(req.body.phoneNumber);
-									console.log(responseRoundTwoUserCounts)
 									console.log(rows)
 
 									if (checkMission >= 1) {
@@ -274,34 +270,68 @@ router.post('/api/verify', async (req, res, next) => {
 										// 쿠폰 발급
 										await mintFreeCoupon(round);
 										await mintPlusCoupon(round);
-
-										res.json({
-											"achievement": checkMission,
-											"justEarned": true,
-											"purchaseCountNow": counts,
-											"purchaseQuantity": {
-												"firstRound": rows[0].sumQuantities,
-												"secondRound": rows[1].sumQuantities
-											},
-											"purchaseCount": {
-												"firstRound": responseRoundOneUserCounts,
-												"secoundRound": responseRoundTwoUserCounts
-											}
-										});
+										if (round == 1) {
+											res.json({
+												"achievement": checkMission,
+												"justEarned": true,
+												"purchaseCountNow": counts,
+												"purchaseQuantity": {
+													"firstRound": rows[0].sumQuantities,
+													"secondRound": 0
+												},
+												"purchaseCount": {
+													"firstRound": responseRoundOneUserCounts,
+													"secoundRound": responseRoundTwoUserCounts
+												}
+											});
+										}
+										else if (round == 2) {
+											res.json({
+												"achievement": checkMission,
+												"justEarned": true,
+												"purchaseCountNow": counts,
+												"purchaseQuantity": {
+													"firstRound": rows[0].sumQuantities,
+													"secondRound": rows[1].sumQuantities
+												},
+												"purchaseCount": {
+													"firstRound": responseRoundOneUserCounts,
+													"secoundRound": responseRoundTwoUserCounts
+												}
+											});
+										}
 									} else {
-										res.json({
-											"achievement": checkMission,
-											"justEarned": true,
-											"purchaseCountNow": counts,
-											"purchaseQuantity": {
-												"firstRound": rows[0].sumQuantities,
-												"secondRound": rows[1].sumQuantities
-											},
-											"purchaseCount": {
-												"firstRound": responseRoundOneUserCounts,
-												"secondRound": responseRoundTwoUserCounts
-											}
-										});
+										if (round == 1) {
+											res.json({
+												"achievement": checkMission,
+												"justEarned": true,
+												"purchaseCountNow": counts,
+												"purchaseQuantity": {
+													"firstRound": rows[0].sumQuantities,
+													"secondRound": 0
+												},
+												"purchaseCount": {
+													"firstRound": responseRoundOneUserCounts,
+													"secondRound": responseRoundTwoUserCounts
+												}
+											});
+
+										}
+										else if (round == 2) {
+											res.json({
+												"achievement": checkMission,
+												"justEarned": true,
+												"purchaseCountNow": counts,
+												"purchaseQuantity": {
+													"firstRound": rows[0].sumQuantities,
+													"secondRound": rows[1].sumQuantities
+												},
+												"purchaseCount": {
+													"firstRound": responseRoundOneUserCounts,
+													"secondRound": responseRoundTwoUserCounts
+												}
+											});
+										}
 									}
 								} else {
 									console.log('check quantity error ', err);
