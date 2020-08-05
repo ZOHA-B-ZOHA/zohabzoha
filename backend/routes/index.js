@@ -18,7 +18,9 @@ router.get('/', function (req, res, next) {
 
 /* 게이지 새로고침 */
 router.get('/api', async (req, res, next) => {
+	console.log('이거니?')
 	let round = await calculateDate();
+	console.log('아니면 이거니?')
 	let responseAchievment = await getAllAchievement(round);
 	console.log(round)
 	res.json({
@@ -552,10 +554,10 @@ async function getAllAchievement(round) {
 		db.conn.query('SELECT SUM(quantity) AS sumQuantities FROM users WHERE round=?', [round], (err, rows, fields) => {
 			if (!err) {
 				if (round == 1) {
-					resolve((rows[0].sumQuantities / 4862).toFixed(4))
+					resolve((rows[0].sumQuantities/4862).toFixed(4))
 				}
 				else if (round == 2) {
-					resolve((rows[0].sumQuantities / 5968).toFixed(4))
+					resolve((rows[0].sumQuantities/5968).toFixed(4))
 				}
 			}
 			else {
