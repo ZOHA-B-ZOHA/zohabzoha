@@ -113,154 +113,109 @@ router.post('/api/authenticate', async (req, res, next) => {
 router.post('/api/rankings', async (req, res, next) => {
 	try {
 		// 라운드 체크
-		// let round = await calculateDate();
-		// if (round == 1) {
-		// 	// 1라운드 랭킹 쿼리
-		// 	let roundOneRanking = await getRoundOneRanking();
-	
-		// 	// 값 넣기
-		// 	function putValuesToRoundOneRanking() {
-		// 		return new Promise((resolve, reject) => {
-		// 			let rankings = {
-		// 				first: {
-		// 					quantity: 0,
-		// 					userPhoneNumbers: []
-		// 				},
-		// 				second: {
-		// 					quantity: 0,
-		// 					userPhoneNumbers: []
-		// 				},
-		// 				third: {
-		// 					quantity: 0,
-		// 					userPhoneNumbers: []
-		// 				}
-		// 			}
-		// 			for (let i = 0; i < roundOneRanking.length; i++) {
-		// 				if (roundOneRanking[i].ranking == '1') {
-		// 					rankings.first.quantity = roundOneRanking[i].sumQuantities
-		// 					rankings.first.userPhoneNumbers.push(roundOneRanking[i].phoneNumber)
-		// 				}
-		// 				else if (roundOneRanking[i].ranking == '2') {
-		// 					rankings.second.quantity = roundOneRanking[i].sumQuantities
-		// 					rankings.second.userPhoneNumbers.push(roundOneRanking[i].phoneNumber)
-		// 				}
-		// 				else if (roundOneRanking[i].ranking == '3') {
-		// 					rankings.third.quantity = roundOneRanking[i].sumQuantities
-		// 					rankings.third.userPhoneNumbers.push(roundOneRanking[i].phoneNumber)
-		// 				}
-		// 			}
-		// 			resolve(rankings)
-		// 		});
-		// 	};
-		// 	let rankingData = await putValuesToRoundOneRanking();
+		let round = await calculateDate();
 		
-		// 	res.json({
-		// 		"rankings": rankingData
-		// 	})
-		// }
-		// else if (round == 2) {
-		// 	// 2라운드 랭킹 쿼리
-		// 	let roundOneRanking = await getRoundTwoRanking();
-	
-		// 	// 값 넣기
-		// 	function putValuesToRoundTwoRanking() {
-		// 		return new Promise((resolve, reject) => {
-		// 			let rankings = {
-		// 				first: {
-		// 					quantity: 0,
-		// 					userPhoneNumbers: []
-		// 				},
-		// 				second: {
-		// 					quantity: 0,
-		// 					userPhoneNumbers: []
-		// 				},
-		// 				third: {
-		// 					quantity: 0,
-		// 					userPhoneNumbers: []
-		// 				}
-		// 			}
-		// 			for (let i = 0; i < roundOneRanking.length; i++) {
-		// 				if (roundOneRanking[i].ranking == '1') {
-		// 					rankings.first.quantity = roundOneRanking[i].sumQuantities
-		// 					rankings.first.userPhoneNumbers.push(roundOneRanking[i].phoneNumber)
-		// 				}
-		// 				else if (roundOneRanking[i].ranking == '2') {
-		// 					rankings.second.quantity = roundOneRanking[i].sumQuantities
-		// 					rankings.second.userPhoneNumbers.push(roundOneRanking[i].phoneNumber)
-		// 				}
-		// 				else if (roundOneRanking[i].ranking == '3') {
-		// 					rankings.third.quantity = roundOneRanking[i].sumQuantities
-		// 					rankings.third.userPhoneNumbers.push(roundOneRanking[i].phoneNumber)
-		// 				}
-		// 			}
-		// 			resolve(rankings)
-		// 		});
-		// 	};
-		// 	let rankingData = await putValuesToRoundTwoRanking();
-		
-		// 	res.json({
-		// 		"rankings": rankingData
-		// 	})
-		// }
+		if (round == 'outOfOrder') {
+			res.send('event is outdated')
+		}
+		else if (round == 1) {
+			// 1라운드 랭킹 쿼리
+			let roundOneRanking = await getRoundOneRanking();
 
-		// 2라운드 랭킹 쿼리
-		let roundOneRanking = await getRoundTwoRanking();
-	
-		// 값 넣기
-		function putValuesToRoundTwoRanking() {
-			return new Promise(async(resolve, reject) => {
-				let rankings = {
-					first: {
-						quantity: 0,
-						userPhoneNumbers: []
-					},
-					second: {
-						quantity: 0,
-						userPhoneNumbers: []
-					},
-					third: {
-						quantity: 0,
-						userPhoneNumbers: []
+			// 값 넣기
+			function putValuesToRoundOneRanking() {
+				return new Promise(async (resolve, reject) => {
+					let rankings = {
+						first: {
+							quantity: 0,
+							userPhoneNumbers: []
+						},
+						second: {
+							quantity: 0,
+							userPhoneNumbers: []
+						},
+						third: {
+							quantity: 0,
+							userPhoneNumbers: []
+						}
 					}
-				}
+					for (let i = 0; i < roundOneRanking.length; i++) {
+						if (roundOneRanking[i].ranking == '1') {
+							rankings.first.quantity = roundOneRanking[i].sumQuantities
+							let cryptoNumber1 = await cipherPhoneNumber(roundOneRanking[i].phoneNumber)
+							rankings.first.userPhoneNumbers.push(cryptoNumber1)
+						}
+						else if (roundOneRanking[i].ranking == '2') {
+							rankings.second.quantity = roundOneRanking[i].sumQuantities
+							let cryptoNumber2 = await cipherPhoneNumber(roundOneRanking[i].phoneNumber)
+							rankings.second.userPhoneNumbers.push(cryptoNumber2)
+						}
+						else if (roundOneRanking[i].ranking == '3') {
+							rankings.third.quantity = roundOneRanking[i].sumQuantities
+							let cryptoNumber3 = await cipherPhoneNumber(roundOneRanking[i].phoneNumber)
+							rankings.third.userPhoneNumbers.push(cryptoNumber3)
+						}
+					}
+					resolve(rankings)
+				});
+			};
+			let rankingData = await putValuesToRoundOneRanking();
 
-				for (let i = 0; i < roundOneRanking.length; i++) {
-					if (roundOneRanking[i].ranking == '1') {
-						rankings.first.quantity = roundOneRanking[i].sumQuantities
-						let cryptoNumber1 = await cipherPhoneNumber(roundOneRanking[i].phoneNumber)
-						rankings.first.userPhoneNumbers.push(cryptoNumber1)
-					}
-					else if (roundOneRanking[i].ranking == '2') {
-						rankings.second.quantity = roundOneRanking[i].sumQuantities
-						let cryptoNumber2 = await cipherPhoneNumber(roundOneRanking[i].phoneNumber)
-						rankings.second.userPhoneNumbers.push(cryptoNumber2)
-					}
-					else if (roundOneRanking[i].ranking == '3') {
-						rankings.third.quantity = roundOneRanking[i].sumQuantities
-						let cryptoNumber3 = await cipherPhoneNumber(roundOneRanking[i].phoneNumber)
-						rankings.third.userPhoneNumbers.push(cryptoNumber3)
-					}
-				}
-				resolve(rankings)
-			});
-		};
-		let rankingData = await putValuesToRoundTwoRanking();
-	
-		res.json({
-			"rankings": rankingData
-		})
+			res.json({
+				"rankings": rankingData
+			})
+		}
+		else if (round == 2) {
+			// 2라운드 랭킹 쿼리
+			let roundOneRanking = await getRoundTwoRanking();
 
+			// 값 넣기
+			function putValuesToRoundTwoRanking() {
+				return new Promise(async (resolve, reject) => {
+					let rankings = {
+						first: {
+							quantity: 0,
+							userPhoneNumbers: []
+						},
+						second: {
+							quantity: 0,
+							userPhoneNumbers: []
+						},
+						third: {
+							quantity: 0,
+							userPhoneNumbers: []
+						}
+					}
 
-	// 전화번호 암호화
-	// for (let i = 0; i < 3; i++) {
-	// 	let cryptoNumber1 = await cipherPhoneNumber(roundOneRanking[i].phoneNumber)
-	// 	roundOneRanking[i].phoneNumber = cryptoNumber1
-	// 	let cryptoNumber2 = await cipherPhoneNumber(roundTwoRanking[i].phoneNumber)
-	// 	roundTwoRanking[i].phoneNumber = cryptoNumber2
-	// }
-} catch (e) {
-	throw e
-}
+					for (let i = 0; i < roundOneRanking.length; i++) {
+						if (roundOneRanking[i].ranking == '1') {
+							rankings.first.quantity = roundOneRanking[i].sumQuantities
+							let cryptoNumber1 = await cipherPhoneNumber(roundOneRanking[i].phoneNumber)
+							rankings.first.userPhoneNumbers.push(cryptoNumber1)
+						}
+						else if (roundOneRanking[i].ranking == '2') {
+							rankings.second.quantity = roundOneRanking[i].sumQuantities
+							let cryptoNumber2 = await cipherPhoneNumber(roundOneRanking[i].phoneNumber)
+							rankings.second.userPhoneNumbers.push(cryptoNumber2)
+						}
+						else if (roundOneRanking[i].ranking == '3') {
+							rankings.third.quantity = roundOneRanking[i].sumQuantities
+							let cryptoNumber3 = await cipherPhoneNumber(roundOneRanking[i].phoneNumber)
+							rankings.third.userPhoneNumbers.push(cryptoNumber3)
+						}
+					}
+					resolve(rankings)
+				});
+			};
+			let rankingData = await putValuesToRoundTwoRanking();
+
+			res.json({
+				"rankings": rankingData
+			})
+		}
+	} catch (e) {
+		throw e
+	}
 });
 
 /* 적립하는 api */
@@ -827,7 +782,7 @@ async function insertExpired(couponDate) {
 /* 라운드 계산 */
 async function calculateDate() {
 	return new Promise((resolve, reject) => {
-		if (moment().isBetween('2020-08-10', '2020-08-14', 'date', '[]') == true) {
+		if (moment().isBetween('2020-08-06', '2020-08-08', 'date', '[]'/*'2020-08-10', '2020-08-14', 'date', '[]'*/) == true) {
 			resolve(1);
 		} else if (moment().isBetween('2020-08-18', '2020-08-24', 'date', '[]') == true) {
 			resolve(2);
@@ -840,7 +795,7 @@ async function calculateDate() {
 /* 쿠폰 기간 계산 */
 async function calculateCouponDate() {
 	return new Promise((resolve, reject) => {
-		if (moment().isBetween('2020-08-18', '2020-08-24', 'date', '[]') == true) {
+		if (moment().isBetween('2020-08-06', '2020-08-08', 'date', '[]'/*'2020-08-18', '2020-08-24', 'date', '[]'*/) == true) {
 			resolve(1);
 		} else if (moment().isBetween('2020-08-25', '2020-08-31', 'date', '[]') == true) {
 			resolve(12);
