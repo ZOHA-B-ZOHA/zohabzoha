@@ -20,7 +20,7 @@ router.get('/', function (req, res, next) {
 router.get('/api', async (req, res, next) => {
 	let round = await calculateDate();
 	let responseAchievment = await getAllAchievement(round);
-
+	console.log(round)
 	res.json({
 		"achievement": responseAchievment
 	});
