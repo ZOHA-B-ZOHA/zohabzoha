@@ -187,15 +187,15 @@ router.post('/api/rankings', async (req, res, next) => {
 					}
 				}
 				for (let i = 0; i < roundOneRanking.length; i++) {
-					if (roundOneRanking[i] == 1) {
+					if (roundOneRanking[i].ranking == '1') {
 						rankings.firstGroup.quantity = roundOneRanking[i].sumQuantities
 						rankings.firstGroup.phoneNumber.push(roundOneRanking[i].phoneNumber)
 					}
-					else if (roundOneRanking[i] == 2) {
+					else if (roundOneRanking[i].ranking == '2') {
 						rankings.secondGroup.quantity = roundOneRanking[i].sumQuantities
 						rankings.secondGroup.phoneNumber.push(roundOneRanking[i].phoneNumber)
 					}
-					else if (roundOneRanking[i] == 3) {
+					else if (roundOneRanking[i].ranking == '3') {
 						rankings.thirdGroup.quantity = roundOneRanking[i].sumQuantities
 						rankings.thirdGroup.phoneNumber.push(roundOneRanking[i].phoneNumber)
 					}
