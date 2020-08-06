@@ -23,7 +23,7 @@ export default {
     }
   },
   created: function() {
-    axios.get(`${process.env.VUE_APP_URL}/`)
+    axios.get(`https://zohabzoha.com/api/`)
     .then((response) => {
       console.log(response)
       this.achievement = response.data.achievement;
@@ -36,7 +36,7 @@ export default {
   },
   methods: {
     authenticate: function(phoneNumber) {
-      axios.post(`${process.env.VUE_APP_URL}/authenticate`, { phoneNumber })
+      axios.post(`https://zohabzoha.com/api/authenticate`, { phoneNumber })
       .then((response) => {
         console.log(response)
         this.achievement = response.data.achievement;
