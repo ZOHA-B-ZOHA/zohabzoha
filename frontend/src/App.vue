@@ -23,7 +23,7 @@ export default {
     }
   },
   created: function() {
-    axios.get(`https://zohabzoha.com/api/`)
+    axios.get('https://zohabzoha.com/api/')
     .then((response) => {
       console.log(response)
       this.achievement = response.data.achievement;
@@ -36,7 +36,7 @@ export default {
   },
   methods: {
     authenticate: function(phoneNumber) {
-      axios.post(`https://zohabzoha.com/api/authenticate`, { phoneNumber })
+      axios.post('https://zohabzoha.com/api/authenticate', { phoneNumber })
       .then((response) => {
         console.log(response)
         this.achievement = response.data.achievement;

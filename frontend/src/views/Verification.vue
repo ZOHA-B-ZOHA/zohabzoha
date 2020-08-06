@@ -78,7 +78,7 @@ export default {
 
         document.getElementById('result').innerText = result.data;
         // 실제로는 바로 적립하도록 넘어가야 함!
-        axios.post(`https://zohabzoha.com/api/verify`, {
+        axios.post('https://zohabzoha.com/api/verify', {
           phoneNumber: this.user.phoneNumber, // console.log(121212, this.$route.query);
           branch: this.$route.query.branch,
           purchaseQuantity: this.$route.query.quantity,

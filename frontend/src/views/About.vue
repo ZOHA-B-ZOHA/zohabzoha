@@ -47,7 +47,7 @@ export default {
     };
   },
   created: function() {
-    axios.post(`https://zohabzoha.com/api/rewards`, { phoneNumber: this.user.phoneNumber })
+    axios.post('https://zohabzoha.com/api/rewards', { phoneNumber: this.user.phoneNumber })
     .then((response) => {
       console.log(response)
       this.rewards = response.data.rewards;
@@ -67,7 +67,7 @@ export default {
       this.isModalVisible = true;
     },
     redeem: function(rewardType, phoneNumber=this.user.phoneNumber) {
-      axios.post(`https://zohabzoha.com/api/redeem`, {
+      axios.post('https://zohabzoha.com/api/redeem', {
         rewardType,
         phoneNumber,
       })
