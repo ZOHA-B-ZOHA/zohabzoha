@@ -5,6 +5,7 @@ package-lock.json
 sessions/
 err.log
 out.log
+config/
 
 # local env files
 .env.local
