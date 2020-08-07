@@ -604,6 +604,7 @@ async function getAllAchievement(round) {
 			if (!err) {
 				if (round == 1) {
 					resolve((rows[0].sumQuantities / 4862).toFixed(4))
+					//resolve((rows[0].sumQuantities / 328).toFixed(4))
 				}
 				else if (round == 2) {
 					resolve((rows[0].sumQuantities / 5968).toFixed(4))
@@ -742,7 +743,7 @@ async function mintPlusCoupon(round) {
 
 		// db 값 unused로 변경
 		if (round == 1) {
-			db.conn.query('UPDATE users SET token1_plus = "unused" WHERE token1_plus = is null AND quantity >=3', (err, rows, fields) => {
+			db.conn.query('UPDATE users SET token1_plus = "unused" WHERE token1_plus is null AND quantity >=3', (err, rows, fields) => {
 				if (err) {
 					reject('insert round1 unused error ', err);
 				} else {
