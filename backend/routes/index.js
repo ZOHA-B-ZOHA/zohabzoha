@@ -603,8 +603,8 @@ async function getAllAchievement(round) {
 		db.conn.query('SELECT SUM(quantity) AS sumQuantities FROM users WHERE round=?', [round], (err, rows, fields) => {
 			if (!err) {
 				if (round == 1) {
-					resolve((rows[0].sumQuantities / 4862).toFixed(4))
-					//resolve((rows[0].sumQuantities / 328).toFixed(4))
+					//resolve((rows[0].sumQuantities / 4862).toFixed(4))
+					resolve((rows[0].sumQuantities / 338).toFixed(4))
 				}
 				else if (round == 2) {
 					resolve((rows[0].sumQuantities / 5968).toFixed(4))
@@ -743,13 +743,24 @@ async function mintPlusCoupon(round) {
 
 		// db 값 unused로 변경
 		if (round == 1) {
-			db.conn.query('UPDATE users SET token1_plus = "unused" WHERE token1_plus is null AND quantity >=3', (err, rows, fields) => {
+			db.conn.query('SELECT COUNT(quantity) AS counts, phoneNumber FROM users GROUP BY phoneNumber having counts >= 3', (err, rows, fields) => {
 				if (err) {
-					reject('insert round1 unused error ', err);
+					reject('get counts error ', err)
 				} else {
-					resolve(rows)
+					console.log('round one plus coupon ', rows)
+					
+					for (let i = 0; i < rows.length; i++) {
+						db.conn.query('UPDATE users SET token1_plus="unused" WHERE token1_plus is null AND phoneNumber=?', [rows[i].phoneNumber], (err, result, fields) => {
+							if (err) {
+								reject('insert round1 unused error ', err)
+							} else {
+								resolve(rows)
+								console.log('round1 plus ', result)
+							}
+						})
+					}
 				}
-			});
+			})			
 		}
 		else if (round == 2) {
 			db.conn.query('UPDATE users SET token2_plus = "unused" WHERE token2_plus is null AND quantity >=3', (err, rows, fields) => {
@@ -766,25 +777,29 @@ async function mintPlusCoupon(round) {
 /* free 쿠폰 발급 */
 async function mintFreeCoupon(round) {
 	return new Promise(async (resolve, resject) => {
-		let roundOneRanker = await getRoundOneRanking();
-		let roundTwoRanker = await getRoundTwoRanking();
-
+		
 		// 체인에서 token 발급
 
 		// db 값 unused로 변경
 		if (round == 1) {
+			let roundOneRanker = await getRoundOneRanking();
+			console.log(roundOneRanker)
 			for (let i = 0; i < roundOneRanker.length; i++) {
-				db.conn.query('UPDATE users SET token1_free = "unused" WHERE token1_free is null AND phoneNumber=?', [roundOneRanker[i].phoneNumber], (err, rows, fields) => {
+				db.conn.query('UPDATE users SET token1_free="used" WHERE token1_free="unused"  AND phoneNumber=?', [roundOneRanker[i].phoneNumber], (err, rows, fields) => {
 					if (err) {
 						reject('insert unused error i ', err)
 					} else {
 						resolve(rows)
+						console.log(roundOneRanker[i].phoneNumber)
+						console.log('round one free coupon ', rows)
 					}
 				})
 			}
 
 		}
 		else if (round == 2) {
+			let roundTwoRanker = await getRoundTwoRanking();
+			console.log(roundTwoRanker)
 			for (let j = 0; j < roundTwoRanker.length; j++) {
 				db.conn.query('UPDATE users SET token2_free = "unused" WHERE token2_free is null AND phoneNumber=?', [roundTwoRanker[j].phoneNumber], (err, rows, fields) => {
 					if (err) {
