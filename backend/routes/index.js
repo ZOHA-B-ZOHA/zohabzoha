@@ -443,7 +443,7 @@ router.post('/api/redeem', async (req, res, next) => {
 			if (req.body.rewardType == 'firstRoundPlus') {
 				// transfer first round plus
 				chain.transferFrom(parseInt(req.body.phoneNumber + "1"))
-				db.conn.query('UPDATE users SET token1_plus = "used" WHERE token1_plus = "unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
+				db.conn.query('UPDATE users SET token1_plus="used" WHERE token1_plus="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 					if (err) {
 						throw err
 					} else {
@@ -463,7 +463,7 @@ router.post('/api/redeem', async (req, res, next) => {
 			else if (req.body.rewardType == 'firstRoundFree') {
 				// transfer first free plus
 				chain.transferFrom(parseInt(req.body.phoneNumber + "2"))
-				db.conn.query('UPDATE users SET token1_free = "used" WHERE token1_free = "unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
+				db.conn.query('UPDATE users SET token1_free="used" WHERE token1_free="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 					if (err) {
 						throw err
 					} else {
@@ -498,7 +498,7 @@ router.post('/api/redeem', async (req, res, next) => {
 		if (req.body.rewardType == 'firstRoundPlus') {
 			// transfer first round plus
 			chain.transferFrom(parseInt(req.body.phoneNumber + "1"))
-			db.conn.query('UPDATE users SET token1_plus = "used" WHERE token1_plus = "unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
+			db.conn.query('UPDATE users SET token1_plus="used" WHERE token1_plus="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 				if (err) {
 					throw err
 				} else {
@@ -518,7 +518,7 @@ router.post('/api/redeem', async (req, res, next) => {
 		else if (req.body.rewardType == 'firstRoundFree') {
 			// transfer first round plus
 			chain.transferFrom(parseInt(req.body.phoneNumber + "2"))
-			db.conn.query('UPDATE users SET token1_free = "used" WHERE token1_free = "unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
+			db.conn.query('UPDATE users SET token1_free="used" WHERE token1_free="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 				if (err) {
 					throw err
 				} else {
@@ -539,7 +539,7 @@ router.post('/api/redeem', async (req, res, next) => {
 		else if (req.body.rewardType == 'secondRoundPlus') {
 			// transfer first round plus
 			chain.transferFrom(parseInt(req.body.phoneNumber + "3"))
-			db.conn.query('UPDATE users SET token2_plus = "used" WHERE token2_plus = "unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
+			db.conn.query('UPDATE users SET token2_plus="used" WHERE token2_plus="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 				if (err) {
 					throw err
 				} else {
@@ -560,7 +560,7 @@ router.post('/api/redeem', async (req, res, next) => {
 		else if (req.body.rewardType == 'secondRoundFree') {
 			// transfer first round plus
 			chain.transferFrom(parseInt(req.body.phoneNumber + "4"))
-			db.conn.query('UPDATE users SET token2_free = "used" WHERE token2_free = "unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
+			db.conn.query('UPDATE users SET token2_free="used" WHERE token2_free="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 				if (err) {
 					throw err
 				} else {
@@ -586,7 +586,7 @@ router.post('/api/redeem', async (req, res, next) => {
 			if (req.body.rewardType == 'secondRoundPlus') {
 				// transfer first round plus
 				chain.transferFrom(parseInt(req.body.phoneNumber + "3"))
-				db.conn.query('UPDATE users SET token2_plus = "used" WHERE token2_plus = "unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
+				db.conn.query('UPDATE users SET token2_plus="used" WHERE token2_plus="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 					if (err) {
 						throw err
 					} else {
@@ -607,7 +607,7 @@ router.post('/api/redeem', async (req, res, next) => {
 			else if (req.body.rewardType == 'secondRoundFree') {
 				// transfer first round plus
 				chain.transferFrom(parseInt(req.body.phoneNumber + "4"))
-				db.conn.query('UPDATE users SET token2_free = "used" WHERE token2_free = "unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
+				db.conn.query('UPDATE users SET token2_free="used" WHERE token2_free="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 					if (err) {
 						throw err
 					} else {
@@ -651,7 +651,7 @@ async function getAllAchievement(round) {
 			if (!err) {
 				if (round == 1) {
 					//resolve((rows[0].sumQuantities / 4862).toFixed(4))
-					resolve((rows[0].sumQuantities / 10).toFixed(4))
+					resolve((rows[0].sumQuantities / 40).toFixed(4))
 				}
 				else if (round == 2) {
 					resolve((rows[0].sumQuantities / 5968).toFixed(4))
@@ -869,7 +869,7 @@ async function mintFreeCoupon(round) {
 				let tokenId = parseInt(roundOneRanker[i].phoneNumber + '2')
 				chain.mintToken(cutAddress, tokenId, round, 'firstRoundFree')
 				
-				db.conn.query('UPDATE users SET token1_free="used" WHERE token1_free="unused"  AND phoneNumber=?', [roundOneRanker[i].phoneNumber], (err, rows, fields) => {
+				db.conn.query('UPDATE users SET token1_free="unused" WHERE token1_free is null  AND phoneNumber=?', [roundOneRanker[i].phoneNumber], (err, rows, fields) => {
 					if (err) {
 						reject('insert unused error i ', err)
 					} else {
@@ -890,7 +890,7 @@ async function mintFreeCoupon(round) {
 				let tokenId = parseInt(roundTwoRanker[i].phoneNumber + '4')
 				chain.mintToken(cutAddress, tokenId, round, 'secondRoundFree')
 
-				db.conn.query('UPDATE users SET token2_free = "unused" WHERE token2_free is null AND phoneNumber=?', [roundTwoRanker[j].phoneNumber], (err, rows, fields) => {
+				db.conn.query('UPDATE users SET token2_free="unused" WHERE token2_free is null AND phoneNumber=?', [roundTwoRanker[j].phoneNumber], (err, rows, fields) => {
 					if (err) {
 						reject('insert unused error j ', err)
 					} else {
@@ -906,11 +906,11 @@ async function mintFreeCoupon(round) {
 async function insertExpired(couponDate) {
 	return new Promise((resolve, reject) => {
 		if (couponDate == 2) {
-			db.conn.query('UPDATE users SET token1_plus = "expired" WHERE token1_plus = "unused"', (err, rows, fields) => {
+			db.conn.query('UPDATE users SET token1_plus="expired" WHERE token1_plus="unused"', (err, rows, fields) => {
 				if (err) {
 					reject('insert expired token1_plus error ', err);
 				} else {
-					db.conn.query('UPDATE users SET token1_free = "expired" WHERE token1_free = "unused"', (err, rows, fields) => {
+					db.conn.query('UPDATE users SET token1_free="expired" WHERE token1_free="unused"', (err, rows, fields) => {
 						if (err) {
 							reject('insert expired token1_free error ', err);
 						} else {
@@ -921,11 +921,11 @@ async function insertExpired(couponDate) {
 			})
 		}
 		else if (couponDate == 'outOfOrder') {
-			db.conn.query('UPDATE users SET token2_plus = "expired" WHERE token2_plus = "unused"', (err, rows, fields) => {
+			db.conn.query('UPDATE users SET token2_plus="expired" WHERE token2_plus="unused"', (err, rows, fields) => {
 				if (err) {
 					reject('insert expired token2_plus error ', err);
 				} else {
-					db.conn.query('UPDATE users SET token2_free = "expired" WHERE token2_free = "unused"', (err, rows, fields) => {
+					db.conn.query('UPDATE users SET token2_free="expired" WHERE token2_free="unused"', (err, rows, fields) => {
 						if (err) {
 							reject('insert expired token2_free error ', err);
 						} else {
