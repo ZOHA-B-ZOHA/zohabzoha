@@ -808,7 +808,8 @@ async function mintPlusCoupon(round) {
 					for (let i = 0; i < rows.length; i++) {
 						// nft 발급
 						let address = getWalletAddress(rows[i].phoneNumber);
-						let cutAddress = address.substring(2, 42);
+						console.log('address \n', address)
+						let cutAddress = address.toString().substring(2, 42);
 						let tokenId = parseInt(rows[i].phoneNumber + '1')
 						chain.mintToken(cutAddress, tokenId, round, 'firstRoundPlus')
 
