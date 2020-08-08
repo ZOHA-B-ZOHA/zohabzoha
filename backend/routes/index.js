@@ -5,6 +5,8 @@ const request = require('request');
 const config = require('../config/config.js');
 const db = require('../config/db');
 const moment = require('moment');
+require('moment-timezone');
+moment.tz.setDefault("Asia/Seoul");
 const crypto = require('crypto');
 const chain = require('../../chain');
 
