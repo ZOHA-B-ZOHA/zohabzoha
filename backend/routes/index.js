@@ -838,11 +838,10 @@ async function mintFreeCoupon(round) {
 				// nft 발급
 				let address = getWalletAddress(roundOneRanker[i].phoneNumber);
 				address.then((result) => {
-					console.log('address \n ', result)	
+					let cutAddress = result.substring(2, 42);
+					let tokenId = parseInt(roundOneRanker[i].phoneNumber + '2')
+					chain.mintToken(cutAddress, tokenId, round, 'firstRoundFree')
 				})
-				let cutAddress = address.substring(2, 42);
-				let tokenId = parseInt(roundOneRanker[i].phoneNumber + '2')
-				chain.mintToken(cutAddress, tokenId, round, 'firstRoundFree')
 				
 				db.conn.query('UPDATE users SET token1_free="unused" WHERE token1_free is null  AND phoneNumber=?', [roundOneRanker[i].phoneNumber], (err, rows, fields) => {
 					if (err) {
