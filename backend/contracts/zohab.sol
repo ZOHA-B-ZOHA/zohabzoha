@@ -22,7 +22,6 @@ contract zohabToken is KIP17 {
     
     // 토큰들 저장
     struct incentiveList {
-        address account;
         uint256 tokenId;
     }
     
@@ -50,34 +49,33 @@ contract zohabToken is KIP17 {
         emit setRecordInList(_userAddress, round, count);
     }
     
-    function mintToken(string memory phone, address account, uint256 tokenId, uint24 round, string memory couponType) public {
+    function mintToken(string memory _userAddress, uint256 tokenId, uint24 round, string memory couponType) public {
         require(owner == msg.sender);
-        string memory plus = 'plus';
-        string memory free = 'free';
-        _mint(account, tokenId);
+        string memory firstRoundPlus = 'firstRoundPlus';
+        string memory firstRoundFree = 'firstRoundFree';
+        string memory secondRoundPlus = 'secondRoundPlus';
+        string memory secondRoundFree = 'secondRoundFree';
+        
+        _mint(msg.sender, tokenId);
         
         if (round == 1) {
-            if (keccak256(bytes(plus)) == keccak256(bytes(couponType))) {
-                roundOnePlusTokenList[phone].account = account;
-                roundOnePlusTokenList[phone].tokenId = tokenId;
-            } else if (keccak256(bytes(free)) == keccak256(bytes(couponType))) {
-                roundOneFreeTokenList[phone].account = account;
-                roundOneFreeTokenList[phone].tokenId = tokenId;
+            if (keccak256(bytes(firstRoundPlus)) == keccak256(bytes(couponType))) {
+                roundOnePlusTokenList[_userAddress].tokenId = tokenId;
+            } else if (keccak256(bytes(firstRoundFree)) == keccak256(bytes(couponType))) {
+                roundOneFreeTokenList[_userAddress].tokenId = tokenId;
             }
         } else if (round == 2) {
-            if (keccak256(bytes(plus)) == keccak256(bytes(couponType))) {
-                roundTwoPlusTokenList[phone].account = account;
-                roundTwoPlusTokenList[phone].tokenId = tokenId;
-            } else if (keccak256(bytes(free)) == keccak256(bytes(couponType))) {
-                roundTwoFreeTokenList[phone].account = account;
-                roundTwoFreeTokenList[phone].tokenId = tokenId;
+            if (keccak256(bytes(secondRoundPlus)) == keccak256(bytes(couponType))) {
+                roundTwoPlusTokenList[_userAddress].tokenId = tokenId;
+            } else if (keccak256(bytes(secondRoundFree)) == keccak256(bytes(couponType))) {
+                roundTwoFreeTokenList[_userAddress].tokenId = tokenId;
             }
         }
         
-        emit setTokenList(account, tokenId);
+        emit setTokenList(msg.sender, tokenId);
     }
     
-    function gasRecords(address _userAddress, uint24 round) public view returns(uint24) {
+    function getRecords(address _userAddress, uint24 round) public view returns(uint24) {
         if (round == 1) {
             return (
                 roundOneRecordList[_userAddress].count
@@ -89,16 +87,16 @@ contract zohabToken is KIP17 {
         }
     }
     
-    function getTokenList(string memory phone, uint24 round) public view returns(uint256, uint256) {
+    function getTokenList(string memory _userAddress, uint24 round) public view returns(uint256, uint256) {
         if (round == 1) {
             return (
-                roundOneFreeTokenList[phone].tokenId,
-                roundOnePlusTokenList[phone].tokenId
+                roundOneFreeTokenList[_userAddress].tokenId,
+                roundOnePlusTokenList[_userAddress].tokenId
             );
         } else if (round == 2) {
             return (
-                roundTwoFreeTokenList[phone].tokenId,
-                roundTwoPlusTokenList[phone].tokenId
+                roundTwoFreeTokenList[_userAddress].tokenId,
+                roundTwoPlusTokenList[_userAddress].tokenId
             );
         }
     }

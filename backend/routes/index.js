@@ -6,10 +6,7 @@ const config = require('../config/config.js');
 const db = require('../config/db');
 const moment = require('moment');
 const crypto = require('crypto');
-const abi = require('../config/abi');
-const Caver = require('caver-js');
-const caver = new Caver('https://api.baobab.klaytn.net:8651/'); // 사용시에는 cypress로 바꾸자!!
-const tokenContract = new caver.klay.Contract(abi.abi, '0xcddd2f0b23f033eb85AFE5510e5285261bF68154');
+const chain = require('../../chain');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -252,6 +249,9 @@ router.post('/api/verify', async (req, res, next) => {
 					// db에 구매내역 기록
 					db.conn.query('INSERT INTO users (phoneNumber, quantity, place, round) VALUES (?, ?, ?, ?)', [req.body.phoneNumber, req.body.purchaseQuantity, req.body.branch, round], (err, rows, fields) => {
 						if (!err) {
+							// chain에 구매내역 기록
+							chain.updateRecord(req.session.address, round, req.body,purchaseQuantity)
+
 							// 기록 후 지금까지의 구매 수량 출력
 							db.conn.query('SELECT SUM(quantity) AS sumQuantities FROM users WHERE phoneNumber=? GROUP BY round', [req.body.phoneNumber], async (err, rows, fields) => {
 								if (!err) {
@@ -299,7 +299,8 @@ router.post('/api/verify', async (req, res, next) => {
 												}
 											});
 										}
-									} else {
+									}
+									else {
 										if (round == 1) {
 											res.json({
 												"achievement": checkMission,
@@ -369,7 +370,7 @@ router.post('/api/rewards', async (req, res, next) => {
 		res.json({
 			rewards: {
 				"firstRoundPlus": tokenStatus[0].token1_plus,
-				"firstRooundFree": tokenStatus[0].token1_free,
+				"firstRoundFree": tokenStatus[0].token1_free,
 				"secondRoundPlus": tokenStatus[0].token2_plus,
 				"secondRoundFree": tokenStatus[0].token2_free
 			}
@@ -381,7 +382,7 @@ router.post('/api/rewards', async (req, res, next) => {
 		res.json({
 			rewards: {
 				"firstRoundPlus": tokenStatus[0].token1_plus,
-				"firstRooundFree": tokenStatus[0].token1_free,
+				"firstRoundFree": tokenStatus[0].token1_free,
 				"secondRoundPlus": tokenStatus[0].token2_plus,
 				"secondRoundFree": tokenStatus[0].token2_free
 			}
@@ -393,7 +394,7 @@ router.post('/api/rewards', async (req, res, next) => {
 		res.json({
 			rewards: {
 				"firstRoundPlus": tokenStatus[0].token1_plus,
-				"firstRooundFree": tokenStatus[0].token1_free,
+				"firstRoundFree": tokenStatus[0].token1_free,
 				"secondRoundPlus": tokenStatus[0].token2_plus,
 				"secondRoundFree": tokenStatus[0].token2_free
 			}
@@ -407,7 +408,7 @@ router.post('/api/rewards', async (req, res, next) => {
 		res.json({
 			rewards: {
 				"firstRoundPlus": tokenStatus[0].token1_plus,
-				"firstRooundFree": tokenStatus[0].token1_free,
+				"firstRoundFree": tokenStatus[0].token1_free,
 				"secondRoundPlus": tokenStatus[0].token2_plus,
 				"secondRoundFree": tokenStatus[0].token2_free
 			}
@@ -435,13 +436,18 @@ router.post('/api/redeem', async (req, res, next) => {
 			"secondRoundFree": tokenStatus[0].token2_free
 		})
 	}
+	// 1라운드 쿠폰만 사용가능하면
 	else if (couponDate == 1) {
 		if (req.body.rewardType == 'firstRoundPlus' || req.body.rewardType == 'firstRoundFree') {
 			// use round 1 plus
 			if (req.body.rewardType == 'firstRoundPlus') {
+				// transfer first round plus
+				chain.transferFrom(parseInt(req.body.phoneNumber + "1"))
 				db.conn.query('UPDATE users SET token1_plus = "used" WHERE token1_plus = "unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 					if (err) {
 						throw err
+					} else {
+						console.log(rows)
 					}
 				})
 				//check status
@@ -455,9 +461,13 @@ router.post('/api/redeem', async (req, res, next) => {
 			}
 			// use round 1 free
 			else if (req.body.rewardType == 'firstRoundFree') {
+				// transfer first free plus
+				chain.transferFrom(parseInt(req.body.phoneNumber + "2"))
 				db.conn.query('UPDATE users SET token1_free = "used" WHERE token1_free = "unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 					if (err) {
 						throw err
+					} else {
+						console.log(rows)
 					}
 				})
 				//check status
@@ -482,12 +492,17 @@ router.post('/api/redeem', async (req, res, next) => {
 			})
 		}
 	}
+	// 1 2 라운드 모든 쿠폰 사용가능하면
 	else if (couponDate == 12) {
-
+		// 1라운드 plus coupon 사용
 		if (req.body.rewardType == 'firstRoundPlus') {
+			// transfer first round plus
+			chain.transferFrom(parseInt(req.body.phoneNumber + "1"))
 			db.conn.query('UPDATE users SET token1_plus = "used" WHERE token1_plus = "unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 				if (err) {
 					throw err
+				} else {
+					console.log(rows)
 				}
 			})
 			//check status
@@ -499,10 +514,16 @@ router.post('/api/redeem', async (req, res, next) => {
 				"secondRoundFree": tokenStatus[0].token2_free
 			})
 		}
+		// 1라운드 free coupon 사용
 		else if (req.body.rewardType == 'firstRoundFree') {
+			// transfer first round plus
+			chain.transferFrom(parseInt(req.body.phoneNumber + "2"))
 			db.conn.query('UPDATE users SET token1_free = "used" WHERE token1_free = "unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 				if (err) {
 					throw err
+				} else {
+					console.log(rows)
+					return rows
 				}
 			})
 			//check status
@@ -514,10 +535,16 @@ router.post('/api/redeem', async (req, res, next) => {
 				"secondRoundFree": tokenStatus[0].token2_free
 			})
 		}
+		// 2라운드 plus coupon 사용
 		else if (req.body.rewardType == 'secondRoundPlus') {
+			// transfer first round plus
+			chain.transferFrom(parseInt(req.body.phoneNumber + "3"))
 			db.conn.query('UPDATE users SET token2_plus = "used" WHERE token2_plus = "unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 				if (err) {
 					throw err
+				} else {
+					console.log(rows)
+					return rows
 				}
 			})
 			//check status
@@ -529,10 +556,16 @@ router.post('/api/redeem', async (req, res, next) => {
 				"secondRoundFree": tokenStatus[0].token2_free
 			})
 		}
+		// 2라운드 free coupon 사용
 		else if (req.body.rewardType == 'secondRoundFree') {
+			// transfer first round plus
+			chain.transferFrom(parseInt(req.body.phoneNumber + "4"))
 			db.conn.query('UPDATE users SET token2_free = "used" WHERE token2_free = "unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 				if (err) {
 					throw err
+				} else {
+					console.log(rows)
+					return rows
 				}
 			})
 			//check status
@@ -545,13 +578,20 @@ router.post('/api/redeem', async (req, res, next) => {
 			})
 		}
 	}
+	// 2 라운드 쿠폰만 사용가능하면
 	else if (couponDate == 2) {
 		if (req.body.rewardType == 'secondRoundPlus' || req.body.rewardType == 'secondRoundFree') {
 
+			// 2라운드 plus coupon 사용
 			if (req.body.rewardType == 'secondRoundPlus') {
+				// transfer first round plus
+				chain.transferFrom(parseInt(req.body.phoneNumber + "3"))
 				db.conn.query('UPDATE users SET token2_plus = "used" WHERE token2_plus = "unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 					if (err) {
 						throw err
+					} else {
+						console.log(rows)
+						return rows
 					}
 				})
 				//check status
@@ -563,10 +603,16 @@ router.post('/api/redeem', async (req, res, next) => {
 					"secondRoundFree": tokenStatus[0].token2_free
 				})
 			}
+			// 2라운드 free coupon 사용
 			else if (req.body.rewardType == 'secondRoundFree') {
+				// transfer first round plus
+				chain.transferFrom(parseInt(req.body.phoneNumber + "4"))
 				db.conn.query('UPDATE users SET token2_free = "used" WHERE token2_free = "unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 					if (err) {
 						throw err
+					} else {
+						console.log(rows)
+						return rows
 					}
 				})
 				//check status
@@ -579,7 +625,8 @@ router.post('/api/redeem', async (req, res, next) => {
 				})
 			}
 
-		} else {
+		}
+		else {
 			// 1차 쿠폰 만료
 			await insertExpired(couponDate);
 
@@ -735,11 +782,22 @@ async function checkTokenStatus(phoneNumber) {
 	});
 };
 
+/* 유저 지갑 호출 */
+async function getWalletAddress(phoneNumber) {
+	return new Promise((resolve, reject) => {
+		db.conn.query('SELECT address FROM wallet WHERE phoneNumber=?', [phoneNumber], (err, rows, fields) => {
+			if(!err) {
+				resolve(rows[0]);
+			} else {
+				reject('get wallet address error db ', err)
+			}
+		})
+	});
+};
+
 /* plus 쿠폰 발급 */
 async function mintPlusCoupon(round) {
 	return new Promise(async (resolve, reject) => {
-
-		// 체인에서 token 발급
 
 		// db 값 unused로 변경
 		if (round == 1) {
@@ -747,9 +805,13 @@ async function mintPlusCoupon(round) {
 				if (err) {
 					reject('get counts error ', err)
 				} else {
-					console.log('round one plus coupon ', rows)
-					
 					for (let i = 0; i < rows.length; i++) {
+						// nft 발급
+						let address = await getWalletAddress(rows[i].phoneNumber);
+						let cutAddress = address.substring(2, 42);
+						let tokenId = parseInt(rows[i].phoneNumber + '1')
+						chain.mintToken(cutAddress, tokenId, round, 'firstRoundPlus')
+
 						db.conn.query('UPDATE users SET token1_plus="unused" WHERE token1_plus is null AND phoneNumber=?', [rows[i].phoneNumber], (err, result, fields) => {
 							if (err) {
 								reject('insert round1 unused error ', err)
@@ -767,7 +829,22 @@ async function mintPlusCoupon(round) {
 				if (err) {
 					reject('insert round2 unused error ', err);
 				} else {
-					resolve(rows)
+					for (let i = 0; i < rows.length; i++) {
+						// nft 발급
+						let address = await getWalletAddress(rows[i].phoneNumber);
+						let cutAddress = address.substring(2, 42);
+						let tokenId = parseInt(rows[i].phoneNumber + '3')
+						chain.mintToken(cutAddress, tokenId, round, 'secondRoundPlus')
+						
+						db.conn.query('UPDATE users SET token2_plus="unused" WHERE token2_plus is null AND phoneNumber=?', [rows[i].phoneNumber], (err, result, fields) => {
+							if (err) {
+								reject('insert round2 unused error ', err)
+							} else {
+								resolve(rows)
+								console.log('round2 plus ', result)
+							}
+						})
+					}
 				}
 			});
 		}
@@ -777,21 +854,23 @@ async function mintPlusCoupon(round) {
 /* free 쿠폰 발급 */
 async function mintFreeCoupon(round) {
 	return new Promise(async (resolve, resject) => {
-		
-		// 체인에서 token 발급
 
 		// db 값 unused로 변경
 		if (round == 1) {
 			let roundOneRanker = await getRoundOneRanking();
-			console.log(roundOneRanker)
+
 			for (let i = 0; i < roundOneRanker.length; i++) {
+				// nft 발급
+				let address = await getWalletAddress(roundOneRanker[i].phoneNumber);
+				let cutAddress = address.substring(2, 42);
+				let tokenId = parseInt(roundOneRanker[i].phoneNumber + '2')
+				chain.mintToken(cutAddress, tokenId, round, 'firstRoundFree')
+				
 				db.conn.query('UPDATE users SET token1_free="used" WHERE token1_free="unused"  AND phoneNumber=?', [roundOneRanker[i].phoneNumber], (err, rows, fields) => {
 					if (err) {
 						reject('insert unused error i ', err)
 					} else {
 						resolve(rows)
-						console.log(roundOneRanker[i].phoneNumber)
-						console.log('round one free coupon ', rows)
 					}
 				})
 			}
@@ -799,8 +878,14 @@ async function mintFreeCoupon(round) {
 		}
 		else if (round == 2) {
 			let roundTwoRanker = await getRoundTwoRanking();
-			console.log(roundTwoRanker)
+
 			for (let j = 0; j < roundTwoRanker.length; j++) {
+				// nft 발급
+				let address = await getWalletAddress(roundTwoRanker[i].phoneNumber);
+				let cutAddress = address.substring(2, 42);
+				let tokenId = parseInt(roundTwoRanker[i].phoneNumber + '4')
+				chain.mintToken(cutAddress, tokenId, round, 'secondRoundFree')
+
 				db.conn.query('UPDATE users SET token2_free = "unused" WHERE token2_free is null AND phoneNumber=?', [roundTwoRanker[j].phoneNumber], (err, rows, fields) => {
 					if (err) {
 						reject('insert unused error j ', err)
@@ -916,69 +1001,5 @@ const creatingWalletOptions = {
 		'Authorization': 'Basic ' + config.auth.kasAuth
 	}
 };
-
-
-const contractUpdateRecordOptions = {
-	method: "POST",
-	preambleCRLF: true,
-	postambleCRLF: true,
-	url: 'https://wallet-api.beta.klaytn.io/v2/tx/contract/execute',
-	headers: {
-		'Content-type': 'application/json',
-		'x-krn': 'krn:1001:wallet:116:account:default',
-		'Authorization': 'Basic ' + config.auth.kasAuth
-	},
-	body: JSON.stringify({
-		"from": "0x64297AE00b82e819c3AcD658cCF6EA3ee18Bc038",
-		"value": "0x0",
-		"to": "0xcddd2f0b23f033eb85AFE5510e5285261bF68154",
-		"input": "0xbb16f4430000000000000000000000007930978144dfca9dfb66c5aeae94eb1472299df600000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002",
-		"nonce": 0,
-		"gas_limit": 2000000,
-		"submit": true,
-		"fee_ratio": 0
-	})
-};
-
-// practice caver-js
-router.post('/contracts', async (req, res, next) => {
-	try {
-
-
-		let encode = tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', 1, 2).encodeABI()
-
-		let tx = caver.transaction.decode("0x31f90143808505d21dba00830f424094cddd2f0b23f033eb85afe5510e5285261bf681548094b5ff3f8b19f917f0290d8eead466edb779cd61d3b864bb16f4430000000000000000000000007930978144dfca9dfb66c5aeae94eb1472299df600000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002f847f8458207f6a039de716bb64c5081e442343ff1e9e9de80d24e7a8c48ef0a452a5b3cf2afdc91a01bfd30d3258b4321154d37418d4a8a85c7ffb83f260ef75c9ecf4ba33960b685941b71a63903e35371e2fc41c6012effb99b9a2c0ff847f8458207f5a020d39dd1b1cc322c86633accf559561ee9d48930fd9a57e19a9a4a5ce18069a5a033398aa469fa48744462e23d60579d96a7ab8672d997954a339cf3f874ce65fc");
-		const signed = await caver.wallet.signAsFeePayer('0x64297AE00b82e819c3AcD658cCF6EA3ee18Bc038', tx);
-		const receipt = await caver.rpc.klay.sendRawTransaction(signed)
-		console.log(receipt);
-		// tokenContract.methods.getTokenList('01087754055', 1).call((error, result) => {
-		// 	if (error) {
-		// 		throw error
-		// 	} else {
-		// 		console.log('1', result)
-		// 		console.log('2', result['0'])
-		// 		console.log('3', Object.keys(result));
-		// 	}
-		// })
-
-		// tokenContract.methods.updateRecord('0x7930978144dfca9dfb66c5aeae94eb1472299df6', 1, 1).send({from: '0x64297AE00b82e819c3AcD658cCF6EA3ee18Bc038', gas: 2000000}, (error, receipt) => {
-		// 	if (error) {
-		// 		throw error
-		// 	} else {
-		// 		console.log(receipt)
-		// 	}
-		// })
-
-		// request(contractUpdateRecordOptions, (error, response) => {
-		// 	if (error) {
-		// 		throw error
-		// 	} else {
-		// 		console.log(response.body)
-		// 	}
-		// })
-	} catch (e) {
-		throw e
-	}
-});
 
 module.exports = router;

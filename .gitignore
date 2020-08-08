@@ -5,6 +5,8 @@ package-lock.json
 sessions/
 err.log
 out.log
+chain.js
+keystore.json
 
 # local env files
 .env.local
