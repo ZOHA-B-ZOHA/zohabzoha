@@ -18,25 +18,30 @@ router.get('/', function (req, res, next) {
 
 /* 게이지 새로고침 */
 router.get('/api', async (req, res, next) => {
-	let round = await calculateDate();
-
-	if (round == 'outOfOrder') {
-		let responseAchievment = await getAllAchievement(round);
-		res.json({
-			"achievement": responseAchievment
-		});
+	try {
+		let round = await calculateDate();
+	
+		if (round == 'outOfOrder') {
+			let responseAchievment = await getAllAchievement(round);
+			res.json({
+				"achievement": responseAchievment
+			});
+		}
+		else if (round == 1) {
+			let responseAchievment = await getAllAchievement(round);
+			res.json({
+				"achievement": responseAchievment
+			});
+		}
+		else if (round == 2) {
+			let responseAchievment = await getAllAchievement(round);
+			res.json({
+				"achievement": responseAchievment
+			});
+		}
 	}
-	else if (round == 1) {
-		let responseAchievment = await getAllAchievement(round);
-		res.json({
-			"achievement": responseAchievment
-		});
-	}
-	else if (round == 2) {
-		let responseAchievment = await getAllAchievement(round);
-		res.json({
-			"achievement": responseAchievment
-		});
+	catch (e) {
+		throw e
 	}
 });
 
@@ -331,18 +336,22 @@ router.post('/api/verify', async (req, res, next) => {
 											});
 										}
 									}
-								} else {
+								}
+								else {
 									console.log('check quantity error ', err);
 								}
 							});
-						} else {
+						}
+						else {
 							console.log('insert qunatities error ', err);
 						}
 					});
-				} else {
+				}
+				else {
 					res.json({ "msg": 'invalid password' });
 				}
-			} else if (responseAchievment >= 1) {
+			}
+			else if (responseAchievment >= 1) {
 
 				// 쿠폰 발급하기
 				await mintFreeCoupon(round);
@@ -357,66 +366,126 @@ router.post('/api/verify', async (req, res, next) => {
 
 /* 해당 유저의 토큰 목록을 받아옴 */
 router.post('/api/rewards', async (req, res, next) => {
-	// 쿠폰 기간 체크
-	let couponDate = await calculateCouponDate();
-	let today = moment();
-	console.log(today)
-
-	if (couponDate == 'outOfOrder' || couponDate == 2) {
-		// 쿠폰 만료 기입
-		await insertExpired(couponDate);
-		console.log('expired date \n', couponDate)
-		// 쿠폰기간 체크
-		let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
-		res.json({
-			rewards: {
-				"firstRoundPlus": tokenStatus[0].token1_plus,
-				"firstRoundFree": tokenStatus[0].token1_free,
-				"secondRoundPlus": tokenStatus[0].token2_plus,
-				"secondRoundFree": tokenStatus[0].token2_free
-			}
-		})
+	try {
+		// 쿠폰 기간 체크
+		let couponDate = await calculateCouponDate();
+	
+		if (couponDate == 'outOfOrder' || couponDate == 2) {
+			// 쿠폰 만료 기입
+			await insertExpired(couponDate);
+	
+			// 쿠폰기간 체크
+			let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
+			res.json({
+				rewards: {
+					"firstRoundPlus": tokenStatus[0].token1_plus,
+					"firstRoundFree": tokenStatus[0].token1_free,
+					"secondRoundPlus": tokenStatus[0].token2_plus,
+					"secondRoundFree": tokenStatus[0].token2_free
+				}
+			})
+		}
+		else if (couponDate == 1 || couponDate == 12) {
+			// 쿠폰기간 체크
+			let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
+	
+			res.json({
+				rewards: {
+					"firstRoundPlus": tokenStatus[0].token1_plus,
+					"firstRoundFree": tokenStatus[0].token1_free,
+					"secondRoundPlus": tokenStatus[0].token2_plus,
+					"secondRoundFree": tokenStatus[0].token2_free
+				}
+			})
+		}
 	}
-	else if (couponDate == 1 || couponDate == 12) {
-		// 쿠폰기간 체크
-		let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
-		console.log('can use date \n', couponDate)
-		res.json({
-			rewards: {
-				"firstRoundPlus": tokenStatus[0].token1_plus,
-				"firstRoundFree": tokenStatus[0].token1_free,
-				"secondRoundPlus": tokenStatus[0].token2_plus,
-				"secondRoundFree": tokenStatus[0].token2_free
-			}
-		})
+	catch(e) {
+		throw e
 	}
 });
 
 /* 쿠폰 사용 */
 router.post('/api/redeem', async (req, res, next) => {
-	// 쿠폰 기간 체크
-	let couponDate = await calculateCouponDate();
-
-	// 모든 쿠폰 사용 불가
-	if (couponDate == 'outOfOrder') {
-
-		// 2차 쿠폰 만료
-		await insertExpired(couponDate);
-
-		//check status
-		let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
-		res.json({
-			"firstRoundPlus": tokenStatus[0].token1_plus,
-			"firstRoundFree": tokenStatus[0].token1_free,
-			"secondRoundPlus": tokenStatus[0].token2_plus,
-			"secondRoundFree": tokenStatus[0].token2_free
-		})
-	}
-	// 1라운드 쿠폰만 사용가능하면
-	else if (couponDate == 1) {
-		// 1라운드 쿠폰이면
-		if (req.body.rewardType == 'firstRoundPlus' || req.body.rewardType == 'firstRoundFree') {
-			// use round 1 plus
+	try {
+		// 쿠폰 기간 체크
+		let couponDate = await calculateCouponDate();
+	
+		// 모든 쿠폰 사용 불가
+		if (couponDate == 'outOfOrder') {
+	
+			// 2차 쿠폰 만료
+			await insertExpired(couponDate);
+	
+			//check status
+			let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
+			res.json({
+				"firstRoundPlus": tokenStatus[0].token1_plus,
+				"firstRoundFree": tokenStatus[0].token1_free,
+				"secondRoundPlus": tokenStatus[0].token2_plus,
+				"secondRoundFree": tokenStatus[0].token2_free
+			})
+		}
+		// 1라운드 쿠폰만 사용가능하면
+		else if (couponDate == 1) {
+			// 1라운드 쿠폰이면
+			if (req.body.rewardType == 'firstRoundPlus' || req.body.rewardType == 'firstRoundFree') {
+				// use round 1 plus
+				if (req.body.rewardType == 'firstRoundPlus') {
+					// transfer first round plus
+					chain.transferFrom(parseInt(req.body.phoneNumber + "1"))
+					db.conn.query('UPDATE users SET token1_plus="used" WHERE token1_plus="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
+						if (err) {
+							throw err
+						} else {
+							console.log(rows)
+						}
+					})
+					//check status
+					let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
+					res.json({
+						"firstRoundPlus": tokenStatus[0].token1_plus,
+						"firstRoundFree": tokenStatus[0].token1_free,
+						"secondRoundPlus": tokenStatus[0].token2_plus,
+						"secondRoundFree": tokenStatus[0].token2_free
+					})
+				}
+				// use round 1 free
+				else if (req.body.rewardType == 'firstRoundFree') {
+					// transfer first free plus
+					chain.transferFrom(parseInt(req.body.phoneNumber + "2"))
+					db.conn.query('UPDATE users SET token1_free="used" WHERE token1_free="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
+						if (err) {
+							throw err
+						} else {
+							console.log(rows)
+						}
+					})
+					//check status
+					let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
+					res.json({
+						"firstRoundPlus": tokenStatus[0].token1_plus,
+						"firstRoundFree": tokenStatus[0].token1_free,
+						"secondRoundPlus": tokenStatus[0].token2_plus,
+						"secondRoundFree": tokenStatus[0].token2_free
+					})
+				}
+	
+			}
+			// 2라운드 쿠폰이면
+			else {
+				//check status
+				let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
+				res.json({
+					"firstRoundPlus": tokenStatus[0].token1_plus,
+					"firstRoundFree": tokenStatus[0].token1_free,
+					"secondRoundPlus": tokenStatus[0].token2_plus,
+					"secondRoundFree": tokenStatus[0].token2_free
+				})
+			}
+		}
+		// 1 2 라운드 모든 쿠폰 사용가능하면
+		else if (couponDate == 12) {
+			// 1라운드 plus coupon 사용
 			if (req.body.rewardType == 'firstRoundPlus') {
 				// transfer first round plus
 				chain.transferFrom(parseInt(req.body.phoneNumber + "1"))
@@ -436,15 +505,16 @@ router.post('/api/redeem', async (req, res, next) => {
 					"secondRoundFree": tokenStatus[0].token2_free
 				})
 			}
-			// use round 1 free
+			// 1라운드 free coupon 사용
 			else if (req.body.rewardType == 'firstRoundFree') {
-				// transfer first free plus
+				// transfer first round plus
 				chain.transferFrom(parseInt(req.body.phoneNumber + "2"))
 				db.conn.query('UPDATE users SET token1_free="used" WHERE token1_free="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 					if (err) {
 						throw err
 					} else {
 						console.log(rows)
+						return rows
 					}
 				})
 				//check status
@@ -456,113 +526,8 @@ router.post('/api/redeem', async (req, res, next) => {
 					"secondRoundFree": tokenStatus[0].token2_free
 				})
 			}
-
-		}
-		// 2라운드 쿠폰이면
-		else {
-			//check status
-			let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
-			res.json({
-				"firstRoundPlus": tokenStatus[0].token1_plus,
-				"firstRoundFree": tokenStatus[0].token1_free,
-				"secondRoundPlus": tokenStatus[0].token2_plus,
-				"secondRoundFree": tokenStatus[0].token2_free
-			})
-		}
-	}
-	// 1 2 라운드 모든 쿠폰 사용가능하면
-	else if (couponDate == 12) {
-		// 1라운드 plus coupon 사용
-		if (req.body.rewardType == 'firstRoundPlus') {
-			// transfer first round plus
-			chain.transferFrom(parseInt(req.body.phoneNumber + "1"))
-			db.conn.query('UPDATE users SET token1_plus="used" WHERE token1_plus="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
-				if (err) {
-					throw err
-				} else {
-					console.log(rows)
-				}
-			})
-			//check status
-			let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
-			res.json({
-				"firstRoundPlus": tokenStatus[0].token1_plus,
-				"firstRoundFree": tokenStatus[0].token1_free,
-				"secondRoundPlus": tokenStatus[0].token2_plus,
-				"secondRoundFree": tokenStatus[0].token2_free
-			})
-		}
-		// 1라운드 free coupon 사용
-		else if (req.body.rewardType == 'firstRoundFree') {
-			// transfer first round plus
-			chain.transferFrom(parseInt(req.body.phoneNumber + "2"))
-			db.conn.query('UPDATE users SET token1_free="used" WHERE token1_free="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
-				if (err) {
-					throw err
-				} else {
-					console.log(rows)
-					return rows
-				}
-			})
-			//check status
-			let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
-			res.json({
-				"firstRoundPlus": tokenStatus[0].token1_plus,
-				"firstRoundFree": tokenStatus[0].token1_free,
-				"secondRoundPlus": tokenStatus[0].token2_plus,
-				"secondRoundFree": tokenStatus[0].token2_free
-			})
-		}
-		// 2라운드 plus coupon 사용
-		else if (req.body.rewardType == 'secondRoundPlus') {
-			// transfer first round plus
-			chain.transferFrom(parseInt(req.body.phoneNumber + "3"))
-			db.conn.query('UPDATE users SET token2_plus="used" WHERE token2_plus="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
-				if (err) {
-					throw err
-				} else {
-					console.log(rows)
-					return rows
-				}
-			})
-			//check status
-			let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
-			res.json({
-				"firstRoundPlus": tokenStatus[0].token1_plus,
-				"firstRoundFree": tokenStatus[0].token1_free,
-				"secondRoundPlus": tokenStatus[0].token2_plus,
-				"secondRoundFree": tokenStatus[0].token2_free
-			})
-		}
-		// 2라운드 free coupon 사용
-		else if (req.body.rewardType == 'secondRoundFree') {
-			// transfer first round plus
-			chain.transferFrom(parseInt(req.body.phoneNumber + "4"))
-			db.conn.query('UPDATE users SET token2_free="used" WHERE token2_free="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
-				if (err) {
-					throw err
-				} else {
-					console.log(rows)
-					return rows
-				}
-			})
-			//check status
-			let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
-			res.json({
-				"firstRoundPlus": tokenStatus[0].token1_plus,
-				"firstRoundFree": tokenStatus[0].token1_free,
-				"secondRoundPlus": tokenStatus[0].token2_plus,
-				"secondRoundFree": tokenStatus[0].token2_free
-			})
-		}
-	}
-	// 2 라운드 쿠폰만 사용가능하면
-	else if (couponDate == 2) {
-		// 2라운드 쿠폰이면
-		if (req.body.rewardType == 'secondRoundPlus' || req.body.rewardType == 'secondRoundFree') {
-
 			// 2라운드 plus coupon 사용
-			if (req.body.rewardType == 'secondRoundPlus') {
+			else if (req.body.rewardType == 'secondRoundPlus') {
 				// transfer first round plus
 				chain.transferFrom(parseInt(req.body.phoneNumber + "3"))
 				db.conn.query('UPDATE users SET token2_plus="used" WHERE token2_plus="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
@@ -603,22 +568,74 @@ router.post('/api/redeem', async (req, res, next) => {
 					"secondRoundFree": tokenStatus[0].token2_free
 				})
 			}
-
 		}
-		// 1라운드 쿠폰이면
-		else {
-			// 1차 쿠폰 만료
-			await insertExpired(couponDate);
-
-			//check status
-			let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
-			res.json({
-				"firstRoundPlus": tokenStatus[0].token1_plus,
-				"firstRoundFree": tokenStatus[0].token1_free,
-				"secondRoundPlus": tokenStatus[0].token2_plus,
-				"secondRoundFree": tokenStatus[0].token2_free
-			})
+		// 2 라운드 쿠폰만 사용가능하면
+		else if (couponDate == 2) {
+			// 2라운드 쿠폰이면
+			if (req.body.rewardType == 'secondRoundPlus' || req.body.rewardType == 'secondRoundFree') {
+	
+				// 2라운드 plus coupon 사용
+				if (req.body.rewardType == 'secondRoundPlus') {
+					// transfer first round plus
+					chain.transferFrom(parseInt(req.body.phoneNumber + "3"))
+					db.conn.query('UPDATE users SET token2_plus="used" WHERE token2_plus="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
+						if (err) {
+							throw err
+						} else {
+							console.log(rows)
+							return rows
+						}
+					})
+					//check status
+					let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
+					res.json({
+						"firstRoundPlus": tokenStatus[0].token1_plus,
+						"firstRoundFree": tokenStatus[0].token1_free,
+						"secondRoundPlus": tokenStatus[0].token2_plus,
+						"secondRoundFree": tokenStatus[0].token2_free
+					})
+				}
+				// 2라운드 free coupon 사용
+				else if (req.body.rewardType == 'secondRoundFree') {
+					// transfer first round plus
+					chain.transferFrom(parseInt(req.body.phoneNumber + "4"))
+					db.conn.query('UPDATE users SET token2_free="used" WHERE token2_free="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
+						if (err) {
+							throw err
+						} else {
+							console.log(rows)
+							return rows
+						}
+					})
+					//check status
+					let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
+					res.json({
+						"firstRoundPlus": tokenStatus[0].token1_plus,
+						"firstRoundFree": tokenStatus[0].token1_free,
+						"secondRoundPlus": tokenStatus[0].token2_plus,
+						"secondRoundFree": tokenStatus[0].token2_free
+					})
+				}
+	
+			}
+			// 1라운드 쿠폰이면
+			else {
+				// 1차 쿠폰 만료
+				await insertExpired(couponDate);
+	
+				//check status
+				let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
+				res.json({
+					"firstRoundPlus": tokenStatus[0].token1_plus,
+					"firstRoundFree": tokenStatus[0].token1_free,
+					"secondRoundPlus": tokenStatus[0].token2_plus,
+					"secondRoundFree": tokenStatus[0].token2_free
+				})
+			}
 		}
+	}
+	catch(e) {
+		throw e
 	}
 });
 
