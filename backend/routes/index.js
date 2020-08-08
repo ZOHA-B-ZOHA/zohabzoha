@@ -789,7 +789,6 @@ async function mintPlusCoupon(round) {
 								reject('insert round1 unused error ', err)
 							} else {
 								resolve(rows)
-								console.log('round1 plus ', result)
 							}
 						})
 					}
@@ -815,7 +814,6 @@ async function mintPlusCoupon(round) {
 								reject('insert round2 unused error ', err)
 							} else {
 								resolve(rows)
-								console.log('round2 plus ', result)
 							}
 						})
 					}
