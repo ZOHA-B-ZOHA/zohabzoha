@@ -66,9 +66,6 @@ router.post('/api/authenticate', async (req, res, next) => {
 					if (error) {
 						console.log('kas create wallet error ', error);
 					} else if (response.statusCode == 200) {
-						// session 에 지갑주속 등록
-						req.session.address = JSON.parse(body).result.address;
-
 						// db에 새 지갑주소 등록
 						db.conn.query('INSERT INTO wallet VALUES (?, ?, ?)', [req.body.phoneNumber, JSON.parse(body).result.address, JSON.parse(body).result.public_key], (err, rows, fields) => {
 							if (!err) {
@@ -97,9 +94,6 @@ router.post('/api/authenticate', async (req, res, next) => {
 			}
 			// 등록된 전화번호가 존재하면
 			else {
-				// session 에 지갑주소 등록
-				req.session.address = rows[0].address;
-
 				res.json({
 					"achievement": responseAchievment,
 					"currentUser": {
@@ -250,10 +244,10 @@ router.post('/api/verify', async (req, res, next) => {
 					// db에 구매내역 기록
 					db.conn.query('INSERT INTO users (phoneNumber, quantity, place, round) VALUES (?, ?, ?, ?)', [req.body.phoneNumber, req.body.purchaseQuantity, req.body.branch, round], (err, rows, fields) => {
 						if (!err) {
-							console.log(req.session)
-							console.log(req.session.address)
+							// get wallet address
+							let address = await getWalletAddress(req.body.phoneNumber)
 							// chain에 구매내역 기록
-							chain.updateRecord(req.session.address, round, req.body.purchaseQuantity)
+							chain.updateRecord(address, round, req.body.purchaseQuantity)
 							// 기록 후 지금까지의 구매 수량 출력
 							db.conn.query('SELECT SUM(quantity) AS sumQuantities FROM users WHERE phoneNumber=? GROUP BY round', [req.body.phoneNumber], async (err, rows, fields) => {
 								if (!err) {
