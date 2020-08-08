@@ -11,6 +11,7 @@ const chain = require('../../chain');
 /* GET home page. */
 router.get('/', function (req, res, next) {
 	res.sendFile(path.join(__dirname, "../public", "index.html"));
+	db.conn.connect();
 });
 
 /* 게이지 새로고침 */
@@ -250,8 +251,7 @@ router.post('/api/verify', async (req, res, next) => {
 					db.conn.query('INSERT INTO users (phoneNumber, quantity, place, round) VALUES (?, ?, ?, ?)', [req.body.phoneNumber, req.body.purchaseQuantity, req.body.branch, round], (err, rows, fields) => {
 						if (!err) {
 							// chain에 구매내역 기록
-							chain.updateRecord(req.session.address, round, req.body,purchaseQuantity)
-
+							chain.updateRecord(req.session.address, round, req.body.purchaseQuantity)
 							// 기록 후 지금까지의 구매 수량 출력
 							db.conn.query('SELECT SUM(quantity) AS sumQuantities FROM users WHERE phoneNumber=? GROUP BY round', [req.body.phoneNumber], async (err, rows, fields) => {
 								if (!err) {
@@ -651,7 +651,7 @@ async function getAllAchievement(round) {
 			if (!err) {
 				if (round == 1) {
 					//resolve((rows[0].sumQuantities / 4862).toFixed(4))
-					resolve((rows[0].sumQuantities / 338).toFixed(4))
+					resolve((rows[0].sumQuantities / 10).toFixed(4))
 				}
 				else if (round == 2) {
 					resolve((rows[0].sumQuantities / 5968).toFixed(4))
@@ -807,7 +807,7 @@ async function mintPlusCoupon(round) {
 				} else {
 					for (let i = 0; i < rows.length; i++) {
 						// nft 발급
-						let address = await getWalletAddress(rows[i].phoneNumber);
+						let address = getWalletAddress(rows[i].phoneNumber);
 						let cutAddress = address.substring(2, 42);
 						let tokenId = parseInt(rows[i].phoneNumber + '1')
 						chain.mintToken(cutAddress, tokenId, round, 'firstRoundPlus')
@@ -831,7 +831,7 @@ async function mintPlusCoupon(round) {
 				} else {
 					for (let i = 0; i < rows.length; i++) {
 						// nft 발급
-						let address = await getWalletAddress(rows[i].phoneNumber);
+						let address = getWalletAddress(rows[i].phoneNumber);
 						let cutAddress = address.substring(2, 42);
 						let tokenId = parseInt(rows[i].phoneNumber + '3')
 						chain.mintToken(cutAddress, tokenId, round, 'secondRoundPlus')
@@ -861,7 +861,7 @@ async function mintFreeCoupon(round) {
 
 			for (let i = 0; i < roundOneRanker.length; i++) {
 				// nft 발급
-				let address = await getWalletAddress(roundOneRanker[i].phoneNumber);
+				let address = getWalletAddress(roundOneRanker[i].phoneNumber);
 				let cutAddress = address.substring(2, 42);
 				let tokenId = parseInt(roundOneRanker[i].phoneNumber + '2')
 				chain.mintToken(cutAddress, tokenId, round, 'firstRoundFree')
@@ -881,7 +881,7 @@ async function mintFreeCoupon(round) {
 
 			for (let j = 0; j < roundTwoRanker.length; j++) {
 				// nft 발급
-				let address = await getWalletAddress(roundTwoRanker[i].phoneNumber);
+				let address = getWalletAddress(roundTwoRanker[i].phoneNumber);
 				let cutAddress = address.substring(2, 42);
 				let tokenId = parseInt(roundTwoRanker[i].phoneNumber + '4')
 				chain.mintToken(cutAddress, tokenId, round, 'secondRoundFree')
