@@ -781,10 +781,11 @@ async function mintPlusCoupon(round) {
 					for (let i = 0; i < rows.length; i++) {
 						// nft 발급
 						let address = getWalletAddress(rows[i].phoneNumber);
-						console.log('address \n', address)
-						let cutAddress = address.substring(2, 42);
-						let tokenId = parseInt(rows[i].phoneNumber + '1')
-						chain.mintToken(cutAddress, tokenId, round, 'firstRoundPlus')
+						address.then((result) => {
+							let cutAddress = result.substring(2, 42);
+							let tokenId = parseInt(rows[i].phoneNumber + '1')
+							chain.mintToken(cutAddress, tokenId, round, 'firstRoundPlus')
+						})
 
 						db.conn.query('UPDATE users SET token1_plus="unused" WHERE token1_plus is null AND phoneNumber=?', [rows[i].phoneNumber], (err, result, fields) => {
 							if (err) {
