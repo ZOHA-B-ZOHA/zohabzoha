@@ -250,6 +250,8 @@ router.post('/api/verify', async (req, res, next) => {
 					// db에 구매내역 기록
 					db.conn.query('INSERT INTO users (phoneNumber, quantity, place, round) VALUES (?, ?, ?, ?)', [req.body.phoneNumber, req.body.purchaseQuantity, req.body.branch, round], (err, rows, fields) => {
 						if (!err) {
+							console.log(req.session)
+							console.log(req.session.address)
 							// chain에 구매내역 기록
 							chain.updateRecord(req.session.address, round, req.body.purchaseQuantity)
 							// 기록 후 지금까지의 구매 수량 출력
