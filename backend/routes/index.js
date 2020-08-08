@@ -787,7 +787,7 @@ async function getWalletAddress(phoneNumber) {
 	return new Promise((resolve, reject) => {
 		db.conn.query('SELECT address FROM wallet WHERE phoneNumber=?', [phoneNumber], (err, rows, fields) => {
 			if(!err) {
-				resolve(rows[0]);
+				resolve(rows[0].address);
 			} else {
 				reject('get wallet address error db ', err)
 			}
@@ -809,7 +809,7 @@ async function mintPlusCoupon(round) {
 						// nft 발급
 						let address = getWalletAddress(rows[i].phoneNumber);
 						console.log('address \n', address)
-						let cutAddress = address.toString().substring(2, 42);
+						let cutAddress = address.substring(2, 42);
 						let tokenId = parseInt(rows[i].phoneNumber + '1')
 						chain.mintToken(cutAddress, tokenId, round, 'firstRoundPlus')
 
@@ -834,7 +834,7 @@ async function mintPlusCoupon(round) {
 						// nft 발급
 						let address = getWalletAddress(rows[i].phoneNumber);
 						console.log('address \n', address)
-						let cutAddress = address.toString().substring(2, 42);
+						let cutAddress = address.substring(2, 42);
 						let tokenId = parseInt(rows[i].phoneNumber + '3')
 						chain.mintToken(cutAddress, tokenId, round, 'secondRoundPlus')
 						
@@ -865,7 +865,7 @@ async function mintFreeCoupon(round) {
 				// nft 발급
 				let address = getWalletAddress(roundOneRanker[i].phoneNumber);
 				console.log('address \n', address)
-				let cutAddress = address.toString().substring(2, 42);
+				let cutAddress = address.substring(2, 42);
 				let tokenId = parseInt(roundOneRanker[i].phoneNumber + '2')
 				chain.mintToken(cutAddress, tokenId, round, 'firstRoundFree')
 				
@@ -886,7 +886,7 @@ async function mintFreeCoupon(round) {
 				// nft 발급
 				let address = getWalletAddress(roundTwoRanker[i].phoneNumber);
 				console.log('address \n', address)
-				let cutAddress = address.toString().substring(2, 42);
+				let cutAddress = address.substring(2, 42);
 				let tokenId = parseInt(roundTwoRanker[i].phoneNumber + '4')
 				chain.mintToken(cutAddress, tokenId, round, 'secondRoundFree')
 
