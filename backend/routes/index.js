@@ -358,6 +358,9 @@ router.post('/api/rewards', async (req, res, next) => {
 	// 쿠폰 기간 체크
 	let couponDate = await calculateCouponDate();
 
+	await mintFreeCoupon(1);
+	await mintPlusCoupon(1);
+
 	if (couponDate == 'outOfOrder' || couponDate == 2) {
 		// 쿠폰 만료 기입
 		await insertExpired(couponDate);
