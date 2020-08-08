@@ -419,10 +419,12 @@ router.post('/api/redeem', async (req, res, next) => {
 			//check status
 			let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
 			res.json({
-				"firstRoundPlus": tokenStatus[0].token1_plus,
-				"firstRoundFree": tokenStatus[0].token1_free,
-				"secondRoundPlus": tokenStatus[0].token2_plus,
-				"secondRoundFree": tokenStatus[0].token2_free
+				rewards: {
+					"firstRoundPlus": tokenStatus[0].token1_plus,
+					"firstRoundFree": tokenStatus[0].token1_free,
+					"secondRoundPlus": tokenStatus[0].token2_plus,
+					"secondRoundFree": tokenStatus[0].token2_free
+				}
 			})
 		}
 		// 1라운드 쿠폰만 사용가능하면
@@ -443,10 +445,12 @@ router.post('/api/redeem', async (req, res, next) => {
 					//check status
 					let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
 					res.json({
-						"firstRoundPlus": tokenStatus[0].token1_plus,
-						"firstRoundFree": tokenStatus[0].token1_free,
-						"secondRoundPlus": tokenStatus[0].token2_plus,
-						"secondRoundFree": tokenStatus[0].token2_free
+						rewards: {
+							"firstRoundPlus": tokenStatus[0].token1_plus,
+							"firstRoundFree": tokenStatus[0].token1_free,
+							"secondRoundPlus": tokenStatus[0].token2_plus,
+							"secondRoundFree": tokenStatus[0].token2_free
+						}
 					})
 				}
 				// use round 1 free
@@ -463,10 +467,12 @@ router.post('/api/redeem', async (req, res, next) => {
 					//check status
 					let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
 					res.json({
-						"firstRoundPlus": tokenStatus[0].token1_plus,
-						"firstRoundFree": tokenStatus[0].token1_free,
-						"secondRoundPlus": tokenStatus[0].token2_plus,
-						"secondRoundFree": tokenStatus[0].token2_free
+						rewards: {
+							"firstRoundPlus": tokenStatus[0].token1_plus,
+							"firstRoundFree": tokenStatus[0].token1_free,
+							"secondRoundPlus": tokenStatus[0].token2_plus,
+							"secondRoundFree": tokenStatus[0].token2_free
+						}
 					})
 				}
 	
@@ -476,10 +482,12 @@ router.post('/api/redeem', async (req, res, next) => {
 				//check status
 				let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
 				res.json({
-					"firstRoundPlus": tokenStatus[0].token1_plus,
-					"firstRoundFree": tokenStatus[0].token1_free,
-					"secondRoundPlus": tokenStatus[0].token2_plus,
-					"secondRoundFree": tokenStatus[0].token2_free
+					rewards: {
+						"firstRoundPlus": tokenStatus[0].token1_plus,
+						"firstRoundFree": tokenStatus[0].token1_free,
+						"secondRoundPlus": tokenStatus[0].token2_plus,
+						"secondRoundFree": tokenStatus[0].token2_free
+					}
 				})
 			}
 		}
@@ -499,10 +507,12 @@ router.post('/api/redeem', async (req, res, next) => {
 				//check status
 				let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
 				res.json({
-					"firstRoundPlus": tokenStatus[0].token1_plus,
-					"firstRoundFree": tokenStatus[0].token1_free,
-					"secondRoundPlus": tokenStatus[0].token2_plus,
-					"secondRoundFree": tokenStatus[0].token2_free
+					rewards: {
+						"firstRoundPlus": tokenStatus[0].token1_plus,
+						"firstRoundFree": tokenStatus[0].token1_free,
+						"secondRoundPlus": tokenStatus[0].token2_plus,
+						"secondRoundFree": tokenStatus[0].token2_free
+					}
 				})
 			}
 			// 1라운드 free coupon 사용
@@ -520,10 +530,12 @@ router.post('/api/redeem', async (req, res, next) => {
 				//check status
 				let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
 				res.json({
-					"firstRoundPlus": tokenStatus[0].token1_plus,
-					"firstRoundFree": tokenStatus[0].token1_free,
-					"secondRoundPlus": tokenStatus[0].token2_plus,
-					"secondRoundFree": tokenStatus[0].token2_free
+					rewards: {
+						"firstRoundPlus": tokenStatus[0].token1_plus,
+						"firstRoundFree": tokenStatus[0].token1_free,
+						"secondRoundPlus": tokenStatus[0].token2_plus,
+						"secondRoundFree": tokenStatus[0].token2_free
+					}
 				})
 			}
 			// 2라운드 plus coupon 사용
@@ -541,10 +553,12 @@ router.post('/api/redeem', async (req, res, next) => {
 				//check status
 				let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
 				res.json({
-					"firstRoundPlus": tokenStatus[0].token1_plus,
-					"firstRoundFree": tokenStatus[0].token1_free,
-					"secondRoundPlus": tokenStatus[0].token2_plus,
-					"secondRoundFree": tokenStatus[0].token2_free
+					rewards: {
+						"firstRoundPlus": tokenStatus[0].token1_plus,
+						"firstRoundFree": tokenStatus[0].token1_free,
+						"secondRoundPlus": tokenStatus[0].token2_plus,
+						"secondRoundFree": tokenStatus[0].token2_free
+					}
 				})
 			}
 			// 2라운드 free coupon 사용
@@ -562,10 +576,12 @@ router.post('/api/redeem', async (req, res, next) => {
 				//check status
 				let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
 				res.json({
-					"firstRoundPlus": tokenStatus[0].token1_plus,
-					"firstRoundFree": tokenStatus[0].token1_free,
-					"secondRoundPlus": tokenStatus[0].token2_plus,
-					"secondRoundFree": tokenStatus[0].token2_free
+					rewards: {
+						"firstRoundPlus": tokenStatus[0].token1_plus,
+						"firstRoundFree": tokenStatus[0].token1_free,
+						"secondRoundPlus": tokenStatus[0].token2_plus,
+						"secondRoundFree": tokenStatus[0].token2_free
+					}
 				})
 			}
 		}
@@ -589,10 +605,12 @@ router.post('/api/redeem', async (req, res, next) => {
 					//check status
 					let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
 					res.json({
-						"firstRoundPlus": tokenStatus[0].token1_plus,
-						"firstRoundFree": tokenStatus[0].token1_free,
-						"secondRoundPlus": tokenStatus[0].token2_plus,
-						"secondRoundFree": tokenStatus[0].token2_free
+						rewards: {
+							"firstRoundPlus": tokenStatus[0].token1_plus,
+							"firstRoundFree": tokenStatus[0].token1_free,
+							"secondRoundPlus": tokenStatus[0].token2_plus,
+							"secondRoundFree": tokenStatus[0].token2_free
+						}
 					})
 				}
 				// 2라운드 free coupon 사용
@@ -610,10 +628,12 @@ router.post('/api/redeem', async (req, res, next) => {
 					//check status
 					let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
 					res.json({
-						"firstRoundPlus": tokenStatus[0].token1_plus,
-						"firstRoundFree": tokenStatus[0].token1_free,
-						"secondRoundPlus": tokenStatus[0].token2_plus,
-						"secondRoundFree": tokenStatus[0].token2_free
+						rewards: {
+							"firstRoundPlus": tokenStatus[0].token1_plus,
+							"firstRoundFree": tokenStatus[0].token1_free,
+							"secondRoundPlus": tokenStatus[0].token2_plus,
+							"secondRoundFree": tokenStatus[0].token2_free
+						}
 					})
 				}
 	
@@ -626,10 +646,12 @@ router.post('/api/redeem', async (req, res, next) => {
 				//check status
 				let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
 				res.json({
-					"firstRoundPlus": tokenStatus[0].token1_plus,
-					"firstRoundFree": tokenStatus[0].token1_free,
-					"secondRoundPlus": tokenStatus[0].token2_plus,
-					"secondRoundFree": tokenStatus[0].token2_free
+					rewards: {
+						"firstRoundPlus": tokenStatus[0].token1_plus,
+						"firstRoundFree": tokenStatus[0].token1_free,
+						"secondRoundPlus": tokenStatus[0].token2_plus,
+						"secondRoundFree": tokenStatus[0].token2_free
+					}
 				})
 			}
 		}
@@ -942,7 +964,7 @@ async function calculateDate() {
 	return new Promise((resolve, reject) => {
 		if (moment().isBetween('2020-08-05', '2020-08-09', 'date', '[]'/*'2020-08-10', '2020-08-14', 'date', '[]'*/) == true) {
 			resolve(1);
-		} else if (moment().isBetween('2020-08-18', '2020-08-24', 'date', '[]') == true) {
+		} else if (moment().isBetween('2020-08-10', '2020-08-11', 'date', '[]' /*'2020-08-18', '2020-08-24', 'date', '[]'*/) == true) {
 			resolve(2);
 		} else {
 			resolve('outOfOrder');
@@ -955,9 +977,9 @@ async function calculateCouponDate() {
 	return new Promise((resolve, reject) => {
 		if (moment().isBetween('2020-08-05', '2020-08-09', 'date', '[]'/*'2020-08-18', '2020-08-24', 'date', '[]'*/) == true) {
 			resolve(1);
-		} else if (moment().isBetween('2020-08-25', '2020-08-31', 'date', '[]') == true) {
+		} else if (moment().isBetween('2020-08-10', '2020-08-10', 'date', '[]' /*'2020-08-25', '2020-08-31', 'date', '[]'*/) == true) {
 			resolve(12);
-		} else if (moment().isBetween('2020-08-011', '2020-08-12', 'date', '[]' /*'2020-09-01', '2020-09-08', 'date', '[]'*/) == true) {
+		} else if (moment().isBetween('2020-08-11', '2020-08-12', 'date', '[]' /*'2020-09-01', '2020-09-08', 'date', '[]'*/) == true) {
 			resolve(2);
 		} else {
 			resolve('outOfOrder');
