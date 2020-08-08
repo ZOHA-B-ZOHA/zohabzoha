@@ -242,7 +242,7 @@ router.post('/api/verify', async (req, res, next) => {
 				// qr code 값이 맞으면
 				if (req.body.verificationCode == config.auth.qrCodePassword) {
 					// db에 구매내역 기록
-					db.conn.query('INSERT INTO users (phoneNumber, quantity, place, round) VALUES (?, ?, ?, ?)', [req.body.phoneNumber, req.body.purchaseQuantity, req.body.branch, round], (err, rows, fields) => {
+					db.conn.query('INSERT INTO users (phoneNumber, quantity, place, round) VALUES (?, ?, ?, ?)', [req.body.phoneNumber, req.body.purchaseQuantity, req.body.branch, round], async (err, rows, fields) => {
 						if (!err) {
 							// get wallet address
 							let address = await getWalletAddress(req.body.phoneNumber)
