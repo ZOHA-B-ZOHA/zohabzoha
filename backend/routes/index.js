@@ -408,6 +408,7 @@ router.post('/api/redeem', async (req, res, next) => {
 	}
 	// 1라운드 쿠폰만 사용가능하면
 	else if (couponDate == 1) {
+		// 1라운드 쿠폰이면
 		if (req.body.rewardType == 'firstRoundPlus' || req.body.rewardType == 'firstRoundFree') {
 			// use round 1 plus
 			if (req.body.rewardType == 'firstRoundPlus') {
@@ -451,6 +452,7 @@ router.post('/api/redeem', async (req, res, next) => {
 			}
 
 		}
+		// 2라운드 쿠폰이면
 		else {
 			//check status
 			let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
@@ -550,6 +552,7 @@ router.post('/api/redeem', async (req, res, next) => {
 	}
 	// 2 라운드 쿠폰만 사용가능하면
 	else if (couponDate == 2) {
+		// 2라운드 쿠폰이면
 		if (req.body.rewardType == 'secondRoundPlus' || req.body.rewardType == 'secondRoundFree') {
 
 			// 2라운드 plus coupon 사용
@@ -596,6 +599,7 @@ router.post('/api/redeem', async (req, res, next) => {
 			}
 
 		}
+		// 1라운드 쿠폰이면
 		else {
 			// 1차 쿠폰 만료
 			await insertExpired(couponDate);
@@ -926,7 +930,7 @@ async function calculateDate() {
 /* 쿠폰 기간 계산 */
 async function calculateCouponDate() {
 	return new Promise((resolve, reject) => {
-		if (moment().isBetween('2020-08-05', '2020-08-09', 'date', '[]'/*'2020-08-18', '2020-08-24', 'date', '[]'*/) == true) {
+		if (moment().isBetween('2020-08-05', '2020-08-08', 'date', '[]'/*'2020-08-18', '2020-08-24', 'date', '[]'*/) == true) {
 			resolve(1);
 		} else if (moment().isBetween('2020-08-25', '2020-08-31', 'date', '[]') == true) {
 			resolve(12);
