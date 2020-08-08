@@ -361,6 +361,7 @@ router.post('/api/rewards', async (req, res, next) => {
 	if (couponDate == 'outOfOrder' || couponDate == 2) {
 		// 쿠폰 만료 기입
 		await insertExpired(couponDate);
+		console.log('expired date \n', couponDate)
 		// 쿠폰기간 체크
 		let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
 		res.json({
@@ -375,6 +376,7 @@ router.post('/api/rewards', async (req, res, next) => {
 	else if (couponDate == 1 || couponDate == 12) {
 		// 쿠폰기간 체크
 		let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
+		console.log('can use date \n', couponDate)
 		res.json({
 			rewards: {
 				"firstRoundPlus": tokenStatus[0].token1_plus,
