@@ -357,6 +357,8 @@ router.post('/api/verify', async (req, res, next) => {
 router.post('/api/rewards', async (req, res, next) => {
 	// 쿠폰 기간 체크
 	let couponDate = await calculateCouponDate();
+	let today = moment();
+	console.log(today)
 
 	if (couponDate == 'outOfOrder' || couponDate == 2) {
 		// 쿠폰 만료 기입
