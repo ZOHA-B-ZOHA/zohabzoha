@@ -358,9 +358,6 @@ router.post('/api/rewards', async (req, res, next) => {
 	// 쿠폰 기간 체크
 	let couponDate = await calculateCouponDate();
 
-	await mintFreeCoupon(1);
-	await mintPlusCoupon(1);
-
 	if (couponDate == 'outOfOrder' || couponDate == 2) {
 		// 쿠폰 만료 기입
 		await insertExpired(couponDate);
@@ -807,10 +804,11 @@ async function mintPlusCoupon(round) {
 					for (let i = 0; i < rows.length; i++) {
 						// nft 발급
 						let address = getWalletAddress(rows[i].phoneNumber);
-						console.log('address \n', address)
-						let cutAddress = address.substring(2, 42);
-						let tokenId = parseInt(rows[i].phoneNumber + '3')
-						chain.mintToken(cutAddress, tokenId, round, 'secondRoundPlus')
+						address.then((result) => {
+							let cutAddress = result.substring(2, 42);
+							let tokenId = parseInt(rows[i].phoneNumber + '3')
+							chain.mintToken(cutAddress, tokenId, round, 'secondRoundPlus')
+						})
 						
 						db.conn.query('UPDATE users SET token2_plus="unused" WHERE token2_plus is null AND phoneNumber=?', [rows[i].phoneNumber], (err, result, fields) => {
 							if (err) {
@@ -860,10 +858,11 @@ async function mintFreeCoupon(round) {
 			for (let j = 0; j < roundTwoRanker.length; j++) {
 				// nft 발급
 				let address = getWalletAddress(roundTwoRanker[i].phoneNumber);
-				console.log('address \n', address)
-				let cutAddress = address.substring(2, 42);
-				let tokenId = parseInt(roundTwoRanker[i].phoneNumber + '4')
-				chain.mintToken(cutAddress, tokenId, round, 'secondRoundFree')
+				address.then((result) => {
+					let cutAddress = result.substring(2, 42);
+					let tokenId = parseInt(roundTwoRanker[i].phoneNumber + '4')
+					chain.mintToken(cutAddress, tokenId, round, 'secondRoundFree')
+				})
 
 				db.conn.query('UPDATE users SET token2_free="unused" WHERE token2_free is null AND phoneNumber=?', [roundTwoRanker[j].phoneNumber], (err, rows, fields) => {
 					if (err) {
@@ -916,7 +915,7 @@ async function insertExpired(couponDate) {
 /* 라운드 계산 */
 async function calculateDate() {
 	return new Promise((resolve, reject) => {
-		if (moment().isBetween('2020-08-05', '2020-08-08', 'date', '[]'/*'2020-08-10', '2020-08-14', 'date', '[]'*/) == true) {
+		if (moment().isBetween('2020-08-05', '2020-08-09', 'date', '[]'/*'2020-08-10', '2020-08-14', 'date', '[]'*/) == true) {
 			resolve(1);
 		} else if (moment().isBetween('2020-08-18', '2020-08-24', 'date', '[]') == true) {
 			resolve(2);
@@ -929,7 +928,7 @@ async function calculateDate() {
 /* 쿠폰 기간 계산 */
 async function calculateCouponDate() {
 	return new Promise((resolve, reject) => {
-		if (moment().isBetween('2020-08-05', '2020-08-08', 'date', '[]'/*'2020-08-18', '2020-08-24', 'date', '[]'*/) == true) {
+		if (moment().isBetween('2020-08-05', '2020-08-09', 'date', '[]'/*'2020-08-18', '2020-08-24', 'date', '[]'*/) == true) {
 			resolve(1);
 		} else if (moment().isBetween('2020-08-25', '2020-08-31', 'date', '[]') == true) {
 			resolve(12);
