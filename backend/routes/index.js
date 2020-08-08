@@ -837,7 +837,9 @@ async function mintFreeCoupon(round) {
 			for (let i = 0; i < roundOneRanker.length; i++) {
 				// nft 발급
 				let address = getWalletAddress(roundOneRanker[i].phoneNumber);
-				console.log('address \n', address)
+				address.then((result) => {
+					console.log('address \n ', result)	
+				})
 				let cutAddress = address.substring(2, 42);
 				let tokenId = parseInt(roundOneRanker[i].phoneNumber + '2')
 				chain.mintToken(cutAddress, tokenId, round, 'firstRoundFree')
