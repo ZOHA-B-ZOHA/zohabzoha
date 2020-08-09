@@ -348,8 +348,8 @@ router.post('/api/verify', async (req, res, next) => {
 			else if (responseAchievment >= 1) {
 
 				// 쿠폰 발급하기
-				await mintFreeCoupon(round);
-				await mintPlusCoupon(round);
+				// await mintFreeCoupon(round);
+				// await mintPlusCoupon(round);
 				res.send("mission is complete")
 			}
 		}
@@ -897,7 +897,9 @@ async function mintFreeCoupon(round) {
 				let address = getWalletAddress(roundOneRanker[i].phoneNumber);
 				address.then((result) => {
 					let cutAddress = result.substring(2, 42);
+					console.log('cut address \n', cutAddress)
 					let tokenId = parseInt(roundOneRanker[i].phoneNumber + '2')
+					console.log('token id \n', tokenId)
 					chain.mintToken(cutAddress, tokenId, round, 'firstRoundFree')
 				})
 
