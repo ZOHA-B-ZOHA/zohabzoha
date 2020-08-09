@@ -265,8 +265,8 @@ router.post('/api/verify', async (req, res, next) => {
 								// round 2 user counts
 								let responseRoundTwoUserCounts = await getRoundTwoCounts(req.body.phoneNumber);
 
+								// 목표 달성하면
 								if (checkMission >= 1) {
-
 									// 쿠폰 발급
 									await mintFreeCoupon(round);
 									await mintPlusCoupon(round);
@@ -286,21 +286,39 @@ router.post('/api/verify', async (req, res, next) => {
 										});
 									}
 									else if (round == 2) {
-										res.json({
-											"achievement": checkMission,
-											"justEarned": true,
-											"purchaseCountNow": counts,
-											"purchaseQuantity": {
-												"firstRound": rows[0].sumQuantities,
-												"secondRound": rows[1].sumQuantities
-											},
-											"purchaseCount": {
-												"firstRound": responseRoundOneUserCounts,
-												"secoundRound": responseRoundTwoUserCounts
-											}
-										});
+										if (rows[0].sumQuantities == undefined) {
+											res.json({
+												"achievement": checkMission,
+												"justEarned": true,
+												"purchaseCountNow": counts,
+												"purchaseQuantity": {
+													"firstRound": 0,
+													"secondRound": rows[1].sumQuantities
+												},
+												"purchaseCount": {
+													"firstRound": responseRoundOneUserCounts,
+													"secoundRound": responseRoundTwoUserCounts
+												}
+											});
+										}
+										else {
+											res.json({
+												"achievement": checkMission,
+												"justEarned": true,
+												"purchaseCountNow": counts,
+												"purchaseQuantity": {
+													"firstRound": rows[0].sumQuantities,
+													"secondRound": rows[1].sumQuantities
+												},
+												"purchaseCount": {
+													"firstRound": responseRoundOneUserCounts,
+													"secoundRound": responseRoundTwoUserCounts
+												}
+											});
+										}
 									}
 								}
+								// 목표 달성 전이면
 								else {
 									if (round == 1) {
 										res.json({
@@ -319,19 +337,36 @@ router.post('/api/verify', async (req, res, next) => {
 
 									}
 									else if (round == 2) {
-										res.json({
-											"achievement": checkMission,
-											"justEarned": true,
-											"purchaseCountNow": counts,
-											"purchaseQuantity": {
-												"firstRound": rows[0].sumQuantities,
-												"secondRound": rows[1].sumQuantities
-											},
-											"purchaseCount": {
-												"firstRound": responseRoundOneUserCounts,
-												"secondRound": responseRoundTwoUserCounts
-											}
-										});
+										if (rows[0].sumQuantities == undefined) {
+											res.json({
+												"achievement": checkMission,
+												"justEarned": true,
+												"purchaseCountNow": counts,
+												"purchaseQuantity": {
+													"firstRound": 0,
+													"secondRound": rows[1].sumQuantities
+												},
+												"purchaseCount": {
+													"firstRound": responseRoundOneUserCounts,
+													"secondRound": responseRoundTwoUserCounts
+												}
+											});
+										}
+										else {
+											res.json({
+												"achievement": checkMission,
+												"justEarned": true,
+												"purchaseCountNow": counts,
+												"purchaseQuantity": {
+													"firstRound": rows[0].sumQuantities,
+													"secondRound": rows[1].sumQuantities
+												},
+												"purchaseCount": {
+													"firstRound": responseRoundOneUserCounts,
+													"secondRound": responseRoundTwoUserCounts
+												}
+											});
+										}
 									}
 								}
 							}
@@ -970,9 +1005,9 @@ async function insertExpired(couponDate) {
 /* 라운드 계산 */
 async function calculateDate() {
 	return new Promise((resolve, reject) => {
-		if (moment().isBetween('2020-08-05', '2020-08-08', 'date', '[]'/*'2020-08-10', '2020-08-14', 'date', '[]'*/) == true) {
+		if (moment().isBetween('2020-08-05', '2020-08-09', 'date', '[]'/*'2020-08-10', '2020-08-14', 'date', '[]'*/) == true) {
 			resolve(1);
-		} else if (moment().isBetween('2020-08-09', '2020-08-11', 'date', '[]' /*'2020-08-18', '2020-08-24', 'date', '[]'*/) == true) {
+		} else if (moment().isBetween('2020-08-10', '2020-08-11', 'date', '[]' /*'2020-08-18', '2020-08-24', 'date', '[]'*/) == true) {
 			resolve(2);
 		} else {
 			resolve('outOfOrder');
