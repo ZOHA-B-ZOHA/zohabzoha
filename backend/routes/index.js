@@ -107,7 +107,7 @@ router.post('/api/authenticate', async (req, res, next) => {
 						"phoneNumber": req.body.phoneNumber,
 						"purchaseCount": {
 							"firstRound": responseRoundOneUserCounts,
-							"seconRound": responseRoundTwoUserCounts
+							"secondRound": responseRoundTwoUserCounts
 						},
 						"purchaseQuantity": {
 							"firstRound": responseRoundOneUserInfo,
@@ -282,7 +282,7 @@ router.post('/api/verify', async (req, res, next) => {
 								},
 								"purchaseCount": {
 									"firstRound": responseRoundOneUserCounts,
-									"secoundRound": responseRoundTwoUserCounts
+									"secondRound": responseRoundTwoUserCounts
 								}
 							});
 						}
