@@ -246,8 +246,10 @@ router.post('/api/verify', async (req, res, next) => {
 
 			// 목표치 달성 전이면
 			if (responseAchievment < 1) {
+				console.log('req.body \n', req.body)
 				// qr code 값이 맞으면
 				if (req.body.verificationCode == config.auth.qrCodePassword) {
+					console.log('되라 제바아알')
 					// db에 구매내역 기록
 					db.conn.query('INSERT INTO users (phoneNumber, quantity, place, round) VALUES (?, ?, ?, ?)', [req.body.phoneNumber, req.body.purchaseQuantity, req.body.branch, round], async (err, rows, fields) => {
 						if (!err) {
