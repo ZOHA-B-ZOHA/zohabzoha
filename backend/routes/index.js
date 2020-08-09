@@ -248,7 +248,7 @@ router.post('/api/verify', async (req, res, next) => {
 			if (responseAchievment < 1) {
 				console.log('req.body \n', req.body)
 				// qr code 값이 맞으면
-				if (req.body.verificationCode == config.auth.qrCodePassword) {
+				// if (req.body.verificationCode == config.auth.qrCodePassword) {
 					console.log('되라 제바아알')
 					// db에 구매내역 기록
 					db.conn.query('INSERT INTO users (phoneNumber, quantity, place, round) VALUES (?, ?, ?, ?)', [req.body.phoneNumber, req.body.purchaseQuantity, req.body.branch, round], async (err, rows, fields) => {
@@ -350,10 +350,10 @@ router.post('/api/verify', async (req, res, next) => {
 							console.log('insert qunatities error ', err);
 						}
 					});
-				}
-				else {
-					res.json({ "msg": 'invalid password' });
-				}
+				// }
+				// else {
+				// 	res.json({ "msg": 'invalid password' });
+				// }
 			}
 			else if (responseAchievment >= 1) {
 
