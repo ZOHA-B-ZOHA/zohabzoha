@@ -641,11 +641,11 @@ async function getAllAchievement(round) {
 			if (!err) {
 				if (round == 1) {
 					//resolve((rows[0].sumQuantities / 4862).toFixed(4))
-					resolve((rows[0].sumQuantities / 20).toFixed(4))
+					resolve((rows[0].sumQuantities / 30).toFixed(4))
 				}
 				else if (round == 2) {
 					// resolve((rows[0].sumQuantities / 5968).toFixed(4))
-					resolve((rows[0].sumQuantities / 20).toFixed(4))
+					resolve((rows[0].sumQuantities / 30).toFixed(4))
 				}
 				else if (round == 'outOfOrder') {
 					resolve('event is outdated')
@@ -876,10 +876,10 @@ async function mintFreeCoupon(round) {
 
 			for (let j = 0; j < roundTwoRanker.length; j++) {
 				// nft 발급
-				let address = getWalletAddress(roundTwoRanker[i].phoneNumber);
+				let address = getWalletAddress(roundTwoRanker[j].phoneNumber);
 				address.then((result) => {
 					let cutAddress = result.substring(2, 42);
-					let tokenId = parseInt(roundTwoRanker[i].phoneNumber + '4')
+					let tokenId = parseInt(roundTwoRanker[j].phoneNumber + '4')
 					chain.mintToken(cutAddress, tokenId, round, 'secondRoundFree')
 				})
 
