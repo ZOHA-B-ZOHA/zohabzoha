@@ -807,7 +807,7 @@ async function getRoundTwoQuantities(phoneNumber) {
 /* 1라운드 랭킹 */
 async function getRoundOneRanking() {
 	return new Promise((resolve, reject) => {
-		db.conn.query('SELECT sumQuantities, phoneNumber, ranking FROM(SELECT sumQuantities, phoneNumber, (@rank:=IF(@last > sumQuantities, @rank:=@rank+1, @rank)) AS ranking, (@last:=sumQuantities) FROM (SELECT phoneNumber, SUM(quantity) AS sumQuantities, round FROM users WHERE round=1 GROUP BY phoneNumber)t, (SELECT @rank:=1, @last:=0) AS b ORDER BY sumQuantities DESC)n WHERE ranking < 4;', (err, rows, fields) => {
+		db.conn.query('SELECT sumQuantities, phoneNumber, ranking FROM(SELECT sumQuantities, phoneNumber, (@rank:=IF(@last > sumQuantities, @rank:=@rank+1, @rank)) AS ranking, (@last:=sumQuantities) FROM (SELECT phoneNumber, SUM(quantity) AS sumQuantities, round FROM users WHERE round=1 GROUP BY phoneNumber)t, (SELECT @rank:=1, @last:=0) AS b ORDER BY sumQuantities DESC)n WHERE ranking < 4', (err, rows, fields) => {
 			if (!err) {
 				resolve(rows);
 			} else {
@@ -821,7 +821,7 @@ async function getRoundOneRanking() {
 /* 2라운드 랭킹 */
 async function getRoundTwoRanking() {
 	return new Promise((resolve, reject) => {
-		db.conn.query('SELECT sumQuantities, phoneNumber, ranking FROM(SELECT sumQuantities, phoneNumber, (@rank:=IF(@last > sumQuantities, @rank:=@rank+1, @rank)) AS ranking, (@last:=sumQuantities) FROM (SELECT phoneNumber, SUM(quantity) AS sumQuantities, round FROM users WHERE round=2 GROUP BY phoneNumber)t, (SELECT @rank:=1, @last:=0) AS b ORDER BY sumQuantities DESC)n WHERE ranking < 4;', (err, rows, fields) => {
+		db.conn.query('SELECT sumQuantities, phoneNumber, ranking FROM(SELECT sumQuantities, phoneNumber, (@rank:=IF(@last > sumQuantities, @rank:=@rank+1, @rank)) AS ranking, (@last:=sumQuantities) FROM (SELECT phoneNumber, SUM(quantity) AS sumQuantities, round FROM users WHERE round=2 GROUP BY phoneNumber)t, (SELECT @rank:=1, @last:=0) AS b ORDER BY sumQuantities DESC)n WHERE ranking < 4', (err, rows, fields) => {
 			if (!err) {
 				resolve(rows);
 			} else {
