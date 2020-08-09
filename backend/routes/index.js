@@ -361,37 +361,59 @@ router.post('/api/verify', async (req, res, next) => {
 /* 해당 유저의 토큰 목록을 받아옴 */
 router.post('/api/rewards', async (req, res, next) => {
 	try {
-		// 쿠폰 기간 체크
+		// 쿠폰기간 체크
 		let couponDate = await calculateCouponDate();
 
 		if (couponDate == 'outOfOrder' || couponDate == 2) {
 			// 쿠폰 만료 기입
 			await insertExpired(couponDate);
 
-			// 쿠폰기간 체크
+			// 유저 쿠폰토큰 상태 쿼리
 			let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
-			res.json({
-				rewards: {
-					"firstRoundPlus": tokenStatus[0].token1_plus,
-					"firstRoundFree": tokenStatus[0].token1_free,
-					"secondRoundPlus": tokenStatus[0].token2_plus,
-					"secondRoundFree": tokenStatus[0].token2_free
-				}
-			})
+			if (tokenStatus[0] == undefined) {
+				res.json({
+					rewards: {
+						"firstRoundPlus": null,
+						"firstRoundFree": null,
+						"secondRoundPlus": null,
+						"secondRoundFree": null
+					}
+				})
+			}
+			else {
+				res.json({
+					rewards: {
+						"firstRoundPlus": tokenStatus[0].token1_plus,
+						"firstRoundFree": tokenStatus[0].token1_free,
+						"secondRoundPlus": tokenStatus[0].token2_plus,
+						"secondRoundFree": tokenStatus[0].token2_free
+					}
+				})
+			}
 		}
 		else if (couponDate == 1 || couponDate == 12) {
-			// 쿠폰기간 체크
+			// 유저 쿠폰토큰 상태 쿼리
 			let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
-			console.log(tokenStatus[0])
-			console.log(req.body)
-			res.json({
-				rewards: {
-					"firstRoundPlus": tokenStatus[0].token1_plus,
-					"firstRoundFree": tokenStatus[0].token1_free,
-					"secondRoundPlus": tokenStatus[0].token2_plus,
-					"secondRoundFree": tokenStatus[0].token2_free
-				}
-			})
+			if (tokenStatus[0] == undefined) {
+				res.json({
+					rewards: {
+						"firstRoundPlus": null,
+						"firstRoundFree": null,
+						"secondRoundPlus": null,
+						"secondRoundFree": null
+					}
+				})
+			}
+			else {
+				res.json({
+					rewards: {
+						"firstRoundPlus": tokenStatus[0].token1_plus,
+						"firstRoundFree": tokenStatus[0].token1_free,
+						"secondRoundPlus": tokenStatus[0].token2_plus,
+						"secondRoundFree": tokenStatus[0].token2_free
+					}
+				})
+			}
 		}
 	}
 	catch (e) {
