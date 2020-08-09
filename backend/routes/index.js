@@ -251,8 +251,6 @@ router.post('/api/verify', async (req, res, next) => {
 					if (!err) {
 						// get wallet address
 						let address = await getWalletAddress(req.body.phoneNumber)
-						console.log(address)
-						console.log(typeof (address))
 						// chain에 구매내역 기록
 						chain.updateRecord(address, round, req.body.purchaseQuantity)
 						// 기록 후 지금까지의 구매 수량 출력
@@ -666,7 +664,7 @@ async function getAllAchievement(round) {
 			if (!err) {
 				if (round == 1) {
 					//resolve((rows[0].sumQuantities / 4862).toFixed(4))
-					resolve((rows[0].sumQuantities / 20).toFixed(4))
+					resolve((rows[0].sumQuantities / 40).toFixed(4))
 				}
 				else if (round == 2) {
 					resolve((rows[0].sumQuantities / 5968).toFixed(4))
