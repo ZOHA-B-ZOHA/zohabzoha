@@ -383,6 +383,7 @@ router.post('/api/rewards', async (req, res, next) => {
 			// 쿠폰기간 체크
 			let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
 			console.log(tokenStatus[0])
+			console.log(req.body)
 			res.json({
 				rewards: {
 					"firstRoundPlus": tokenStatus[0].token1_plus,
