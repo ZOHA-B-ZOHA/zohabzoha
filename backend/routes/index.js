@@ -253,127 +253,55 @@ router.post('/api/verify', async (req, res, next) => {
 						let address = await getWalletAddress(req.body.phoneNumber)
 						// chain에 구매내역 기록
 						chain.updateRecord(address, round, req.body.purchaseQuantity)
-						// 기록 후 지금까지의 구매 수량 출력
-						db.conn.query('SELECT SUM(quantity) AS sumQuantities FROM users WHERE phoneNumber=? GROUP BY round', [req.body.phoneNumber], async (err, rows, fields) => {
-							if (!err) {
-								// 지금까지의 구매 횟수 출력
-								let counts = await getBuyingCounts(round, req.body.phoneNumber);
-								// 목표치 달성 다시 확인
-								let checkMission = await getAllAchievement(round);
-								// round 1 user counts
-								let responseRoundOneUserCounts = await getRoundOneCounts(req.body.phoneNumber);
-								// round 2 user counts
-								let responseRoundTwoUserCounts = await getRoundTwoCounts(req.body.phoneNumber);
+						// 지금까지의 구매 횟수 출력
+						let counts = await getBuyingCounts(round, req.body.phoneNumber);
+						// round 1 user quantities
+						let responseRoundOneQuantities = await getRoundOneQuantities(req.body.phoneNumber);
+						// round 2 user quantities
+						let responseRoundTwoQuantities = await getRoundTwoQuantities(req.body.phoneNumber);
+						// round 1 user counts
+						let responseRoundOneUserCounts = await getRoundOneCounts(req.body.phoneNumber);
+						// round 2 user counts
+						let responseRoundTwoUserCounts = await getRoundTwoCounts(req.body.phoneNumber);
+						// 목표치 달성 다시 확인
+						let checkMission = await getAllAchievement(round);
 
-								// 목표 달성하면
-								if (checkMission >= 1) {
-									// 쿠폰 발급
-									await mintFreeCoupon(round);
-									await mintPlusCoupon(round);
-									if (round == 1) {
-										res.json({
-											"achievement": checkMission,
-											"justEarned": true,
-											"purchaseCountNow": counts,
-											"purchaseQuantity": {
-												"firstRound": rows[0].sumQuantities,
-												"secondRound": 0
-											},
-											"purchaseCount": {
-												"firstRound": responseRoundOneUserCounts,
-												"secoundRound": responseRoundTwoUserCounts
-											}
-										});
-									}
-									else if (round == 2) {
-										if (rows[0].sumQuantities == undefined) {
-											res.json({
-												"achievement": checkMission,
-												"justEarned": true,
-												"purchaseCountNow": counts,
-												"purchaseQuantity": {
-													"firstRound": 0,
-													"secondRound": rows[1].sumQuantities
-												},
-												"purchaseCount": {
-													"firstRound": responseRoundOneUserCounts,
-													"secoundRound": responseRoundTwoUserCounts
-												}
-											});
-										}
-										else {
-											res.json({
-												"achievement": checkMission,
-												"justEarned": true,
-												"purchaseCountNow": counts,
-												"purchaseQuantity": {
-													"firstRound": rows[0].sumQuantities,
-													"secondRound": rows[1].sumQuantities
-												},
-												"purchaseCount": {
-													"firstRound": responseRoundOneUserCounts,
-													"secoundRound": responseRoundTwoUserCounts
-												}
-											});
-										}
-									}
-								}
-								// 목표 달성 전이면
-								else {
-									if (round == 1) {
-										res.json({
-											"achievement": checkMission,
-											"justEarned": true,
-											"purchaseCountNow": counts,
-											"purchaseQuantity": {
-												"firstRound": rows[0].sumQuantities,
-												"secondRound": 0
-											},
-											"purchaseCount": {
-												"firstRound": responseRoundOneUserCounts,
-												"secondRound": responseRoundTwoUserCounts
-											}
-										});
+						// 목표 달성하면
+						if (checkMission >= 1) {
+							// 쿠폰 발급
+							await mintFreeCoupon(round);
+							await mintPlusCoupon(round);
 
-									}
-									else if (round == 2) {
-										if (rows[0].sumQuantities == undefined) {
-											res.json({
-												"achievement": checkMission,
-												"justEarned": true,
-												"purchaseCountNow": counts,
-												"purchaseQuantity": {
-													"firstRound": 0,
-													"secondRound": rows[1].sumQuantities
-												},
-												"purchaseCount": {
-													"firstRound": responseRoundOneUserCounts,
-													"secondRound": responseRoundTwoUserCounts
-												}
-											});
-										}
-										else {
-											res.json({
-												"achievement": checkMission,
-												"justEarned": true,
-												"purchaseCountNow": counts,
-												"purchaseQuantity": {
-													"firstRound": rows[0].sumQuantities,
-													"secondRound": rows[1].sumQuantities
-												},
-												"purchaseCount": {
-													"firstRound": responseRoundOneUserCounts,
-													"secondRound": responseRoundTwoUserCounts
-												}
-											});
-										}
-									}
+							res.json({
+								"achievement": checkMission,
+								"justEarned": true,
+								"purchaseCountNow": counts,
+								"purchaseQuantity": {
+									"firstRound": responseRoundOneQuantities,
+									"secondRound": responseRoundTwoQuantities
+								},
+								"purchaseCount": {
+									"firstRound": responseRoundOneUserCounts,
+									"secoundRound": responseRoundTwoUserCounts
 								}
-							}
-							else {
-								console.log('check quantity error ', err);
-							}
-						});
+							});
+						}
+						// 목표 달성 전이면
+						else {
+							res.json({
+								"achievement": checkMission,
+								"justEarned": true,
+								"purchaseCountNow": counts,
+								"purchaseQuantity": {
+									"firstRound": responseRoundOneQuantities,
+									"secondRound": responseRoundTwoQuantities
+								},
+								"purchaseCount": {
+									"firstRound": responseRoundOneUserCounts,
+									"secondRound": responseRoundTwoUserCounts
+								}
+							});
+						}
 					}
 					else {
 						console.log('insert qunatities error ', err);
