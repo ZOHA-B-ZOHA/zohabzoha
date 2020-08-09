@@ -863,7 +863,7 @@ async function mintPlusCoupon(round) {
 
 		// db 값 unused로 변경
 		if (round == 1) {
-			db.conn.query('SELECT COUNT(quantity) AS counts, phoneNumber FROM users GROUP BY phoneNumber having counts >= 3', (err, rows, fields) => {
+			db.conn.query('SELECT COUNT(quantity) AS counts, phoneNumber FROM users where round=1 GROUP BY phoneNumber having counts >= 3', (err, rows, fields) => {
 				if (err) {
 					reject('get counts error ', err)
 				} else {
@@ -880,7 +880,7 @@ async function mintPlusCoupon(round) {
 							if (err) {
 								reject('insert round1 unused error ', err)
 							} else {
-								resolve(rows)
+								resolve(result)
 							}
 						})
 					}
@@ -888,7 +888,7 @@ async function mintPlusCoupon(round) {
 			})
 		}
 		else if (round == 2) {
-			db.conn.query('UPDATE users SET token2_plus = "unused" WHERE token2_plus is null AND quantity >=3', (err, rows, fields) => {
+			db.conn.query('SELECT COUNT(quantity) AS counts, phoneNumber FROM users where round=2 GROUP BY phoneNumber having counts >= 3', (err, rows, fields) => {
 				if (err) {
 					reject('insert round2 unused error ', err);
 				} else {
@@ -905,7 +905,7 @@ async function mintPlusCoupon(round) {
 							if (err) {
 								reject('insert round2 unused error ', err)
 							} else {
-								resolve(rows)
+								resolve(result)
 							}
 						})
 					}
