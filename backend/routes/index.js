@@ -640,12 +640,12 @@ async function getAllAchievement(round) {
 		db.conn.query('SELECT SUM(quantity) AS sumQuantities FROM users WHERE round=?', [round], (err, rows, fields) => {
 			if (!err) {
 				if (round == 1) {
-					//resolve((rows[0].sumQuantities / 4862).toFixed(4))
-					resolve((rows[0].sumQuantities / 30).toFixed(4))
+					resolve((rows[0].sumQuantities / 4862).toFixed(4))
+					//resolve((rows[0].sumQuantities / 30).toFixed(4))
 				}
 				else if (round == 2) {
-					// resolve((rows[0].sumQuantities / 5968).toFixed(4))
-					resolve((rows[0].sumQuantities / 30).toFixed(4))
+					resolve((rows[0].sumQuantities / 5968).toFixed(4))
+					//resolve((rows[0].sumQuantities / 35).toFixed(4))
 				}
 				else if (round == 'outOfOrder') {
 					resolve('event is outdated')
@@ -934,9 +934,9 @@ async function insertExpired(couponDate) {
 /* 라운드 계산 */
 async function calculateDate() {
 	return new Promise((resolve, reject) => {
-		if (moment().isBetween('2020-08-05', '2020-08-09', 'date', '[]'/*'2020-08-10', '2020-08-14', 'date', '[]'*/) == true) {
+		if (moment().isBetween('2020-08-10', '2020-08-14', 'date', '[]') == true) {
 			resolve(1);
-		} else if (moment().isBetween('2020-08-10', '2020-08-11', 'date', '[]' /*'2020-08-18', '2020-08-24', 'date', '[]'*/) == true) {
+		} else if (moment().isBetween('2020-08-18', '2020-08-24', 'date', '[]') == true) {
 			resolve(2);
 		} else {
 			resolve('outOfOrder');
@@ -947,11 +947,11 @@ async function calculateDate() {
 /* 쿠폰 기간 계산 */
 async function calculateCouponDate() {
 	return new Promise((resolve, reject) => {
-		if (moment().isBetween('2020-08-05', '2020-08-08', 'date', '[]'/*'2020-08-18', '2020-08-24', 'date', '[]'*/) == true) {
+		if (moment().isBetween('2020-08-18', '2020-08-24', 'date', '[]') == true) {
 			resolve(1);
-		} else if (moment().isBetween('2020-08-09', '2020-08-09', 'date', '[]' /*'2020-08-25', '2020-08-31', 'date', '[]'*/) == true) {
+		} else if (moment().isBetween('2020-08-25', '2020-08-31', 'date', '[]') == true) {
 			resolve(12);
-		} else if (moment().isBetween('2020-08-10', '2020-08-12', 'date', '[]' /*'2020-09-01', '2020-09-07', 'date', '[]'*/) == true) {
+		} else if (moment().isBetween('2020-09-01', '2020-09-07', 'date', '[]') == true) {
 			resolve(2);
 		} else {
 			resolve('outOfOrder');
