@@ -253,10 +253,11 @@ router.post('/api/verify', async (req, res, next) => {
 						if (!err) {
 							// get wallet address
 							let address = await getWalletAddress(req.body.phoneNumber)
-							address.then((result) => {
-								// chain에 구매내역 기록
-								chain.updateRecord(result, round, req.body.purchaseQuantity)
-							})
+							console.log(address)
+							// chain에 구매내역 기록
+							chain.updateRecord(result, round, req.body.purchaseQuantity)
+							// address.then((result) => {
+							// })
 							// 기록 후 지금까지의 구매 수량 출력
 							db.conn.query('SELECT SUM(quantity) AS sumQuantities FROM users WHERE phoneNumber=? GROUP BY round', [req.body.phoneNumber], async (err, rows, fields) => {
 								if (!err) {
