@@ -382,7 +382,7 @@ router.post('/api/rewards', async (req, res, next) => {
 		else if (couponDate == 1 || couponDate == 12) {
 			// 쿠폰기간 체크
 			let tokenStatus = await checkTokenStatus(req.body.phoneNumber);
-
+			console.log(tokenStatus[0])
 			res.json({
 				rewards: {
 					"firstRoundPlus": tokenStatus[0].token1_plus,
@@ -433,7 +433,7 @@ router.post('/api/redeem', async (req, res, next) => {
 						if (err) {
 							throw err
 						} else {
-							console.log(rows)
+							return rows
 						}
 					})
 					//check status
@@ -455,7 +455,7 @@ router.post('/api/redeem', async (req, res, next) => {
 						if (err) {
 							throw err
 						} else {
-							console.log(rows)
+							return rows
 						}
 					})
 					//check status
@@ -495,7 +495,7 @@ router.post('/api/redeem', async (req, res, next) => {
 					if (err) {
 						throw err
 					} else {
-						console.log(rows)
+						return rows
 					}
 				})
 				//check status
@@ -517,7 +517,6 @@ router.post('/api/redeem', async (req, res, next) => {
 					if (err) {
 						throw err
 					} else {
-						console.log(rows)
 						return rows
 					}
 				})
@@ -540,7 +539,6 @@ router.post('/api/redeem', async (req, res, next) => {
 					if (err) {
 						throw err
 					} else {
-						console.log(rows)
 						return rows
 					}
 				})
@@ -563,7 +561,6 @@ router.post('/api/redeem', async (req, res, next) => {
 					if (err) {
 						throw err
 					} else {
-						console.log(rows)
 						return rows
 					}
 				})
@@ -592,7 +589,6 @@ router.post('/api/redeem', async (req, res, next) => {
 						if (err) {
 							throw err
 						} else {
-							console.log(rows)
 							return rows
 						}
 					})
@@ -615,7 +611,6 @@ router.post('/api/redeem', async (req, res, next) => {
 						if (err) {
 							throw err
 						} else {
-							console.log(rows)
 							return rows
 						}
 					})
