@@ -251,6 +251,7 @@ router.post('/api/verify', async (req, res, next) => {
 					if (!err) {
 						// get wallet address
 						let address = await getWalletAddress(req.body.phoneNumber)
+						console.log('verify address \n', address)
 						// chain에 구매내역 기록
 						chain.updateRecord(address, round, req.body.purchaseQuantity)
 						// 지금까지의 구매 횟수 출력
@@ -409,8 +410,10 @@ router.post('/api/redeem', async (req, res, next) => {
 			if (req.body.rewardType == 'firstRoundPlus' || req.body.rewardType == 'firstRoundFree') {
 				// use round 1 plus
 				if (req.body.rewardType == 'firstRoundPlus') {
+					// get wallet address
+					let address = await getWalletAddress(req.body.phoneNumber)
 					// transfer first round plus
-					chain.transferFrom(parseInt(req.body.phoneNumber + "1"))
+					chain.transferFrom(address, parseInt(req.body.phoneNumber + "1"))
 					db.conn.query('UPDATE users SET token1_plus="used" WHERE token1_plus="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 						if (err) {
 							throw err
@@ -431,8 +434,10 @@ router.post('/api/redeem', async (req, res, next) => {
 				}
 				// use round 1 free
 				else if (req.body.rewardType == 'firstRoundFree') {
+					// get wallet address
+					let address = await getWalletAddress(req.body.phoneNumber)
 					// transfer first free plus
-					chain.transferFrom(parseInt(req.body.phoneNumber + "2"))
+					chain.transferFrom(parseInt(address, req.body.phoneNumber + "2"))
 					db.conn.query('UPDATE users SET token1_free="used" WHERE token1_free="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 						if (err) {
 							throw err
@@ -471,8 +476,10 @@ router.post('/api/redeem', async (req, res, next) => {
 		else if (couponDate == 12) {
 			// 1라운드 plus coupon 사용
 			if (req.body.rewardType == 'firstRoundPlus') {
+				// get wallet address
+				let address = await getWalletAddress(req.body.phoneNumber)
 				// transfer first round plus
-				chain.transferFrom(parseInt(req.body.phoneNumber + "1"))
+				chain.transferFrom(parseInt(address, req.body.phoneNumber + "1"))
 				db.conn.query('UPDATE users SET token1_plus="used" WHERE token1_plus="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 					if (err) {
 						throw err
@@ -493,8 +500,10 @@ router.post('/api/redeem', async (req, res, next) => {
 			}
 			// 1라운드 free coupon 사용
 			else if (req.body.rewardType == 'firstRoundFree') {
+				// get wallet address
+				let address = await getWalletAddress(req.body.phoneNumber)
 				// transfer first round plus
-				chain.transferFrom(parseInt(req.body.phoneNumber + "2"))
+				chain.transferFrom(address, parseInt(req.body.phoneNumber + "2"))
 				db.conn.query('UPDATE users SET token1_free="used" WHERE token1_free="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 					if (err) {
 						throw err
@@ -515,8 +524,10 @@ router.post('/api/redeem', async (req, res, next) => {
 			}
 			// 2라운드 plus coupon 사용
 			else if (req.body.rewardType == 'secondRoundPlus') {
+				// get wallet address
+				let address = await getWalletAddress(req.body.phoneNumber)
 				// transfer first round plus
-				chain.transferFrom(parseInt(req.body.phoneNumber + "3"))
+				chain.transferFrom(address, parseInt(req.body.phoneNumber + "3"))
 				db.conn.query('UPDATE users SET token2_plus="used" WHERE token2_plus="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 					if (err) {
 						throw err
@@ -537,8 +548,10 @@ router.post('/api/redeem', async (req, res, next) => {
 			}
 			// 2라운드 free coupon 사용
 			else if (req.body.rewardType == 'secondRoundFree') {
+				// get wallet address
+				let address = await getWalletAddress(req.body.phoneNumber)
 				// transfer first round plus
-				chain.transferFrom(parseInt(req.body.phoneNumber + "4"))
+				chain.transferFrom(address, parseInt(req.body.phoneNumber + "4"))
 				db.conn.query('UPDATE users SET token2_free="used" WHERE token2_free="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 					if (err) {
 						throw err
@@ -565,8 +578,10 @@ router.post('/api/redeem', async (req, res, next) => {
 
 				// 2라운드 plus coupon 사용
 				if (req.body.rewardType == 'secondRoundPlus') {
+					// get wallet address
+					let address = await getWalletAddress(req.body.phoneNumber)
 					// transfer first round plus
-					chain.transferFrom(parseInt(req.body.phoneNumber + "3"))
+					chain.transferFrom(address, parseInt(req.body.phoneNumber + "3"))
 					db.conn.query('UPDATE users SET token2_plus="used" WHERE token2_plus="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 						if (err) {
 							throw err
@@ -587,8 +602,10 @@ router.post('/api/redeem', async (req, res, next) => {
 				}
 				// 2라운드 free coupon 사용
 				else if (req.body.rewardType == 'secondRoundFree') {
+					// get wallet address
+					let address = await getWalletAddress(req.body.phoneNumber)
 					// transfer first round plus
-					chain.transferFrom(parseInt(req.body.phoneNumber + "4"))
+					chain.transferFrom(address, parseInt(req.body.phoneNumber + "4"))
 					db.conn.query('UPDATE users SET token2_free="used" WHERE token2_free="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 						if (err) {
 							throw err
@@ -631,6 +648,18 @@ router.post('/api/redeem', async (req, res, next) => {
 		throw e
 	}
 });
+
+router.post('/test', async(req, res, next) => {
+	let address = await getWalletAddress(req.body.phoneNumber);
+	console.log(address)
+	db.conn.query('SELECT phoneNumber FROM users', (err, rows, fields) => {
+		if (!err) {
+			console.log(rows)
+		} else {
+			throw err
+		}
+	})
+})
 
 /****************************************************************************************************************************/
 
@@ -800,9 +829,8 @@ async function mintPlusCoupon(round) {
 						// nft 발급
 						let address = getWalletAddress(rows[i].phoneNumber);
 						address.then((result) => {
-							let cutAddress = result.substring(2, 42);
 							let tokenId = parseInt(rows[i].phoneNumber + '1')
-							chain.mintToken(cutAddress, tokenId, round, 'firstRoundPlus')
+							chain.mintToken(result, tokenId, round, 'firstRoundPlus')
 						})
 
 						db.conn.query('UPDATE users SET token1_plus="unused" WHERE token1_plus is null AND phoneNumber=?', [rows[i].phoneNumber], (err, result, fields) => {
@@ -825,9 +853,8 @@ async function mintPlusCoupon(round) {
 						// nft 발급
 						let address = getWalletAddress(rows[i].phoneNumber);
 						address.then((result) => {
-							let cutAddress = result.substring(2, 42);
 							let tokenId = parseInt(rows[i].phoneNumber + '3')
-							chain.mintToken(cutAddress, tokenId, round, 'secondRoundPlus')
+							chain.mintToken(result, tokenId, round, 'secondRoundPlus')
 						})
 
 						db.conn.query('UPDATE users SET token2_plus="unused" WHERE token2_plus is null AND phoneNumber=?', [rows[i].phoneNumber], (err, result, fields) => {
@@ -856,9 +883,8 @@ async function mintFreeCoupon(round) {
 				// nft 발급
 				let address = getWalletAddress(roundOneRanker[i].phoneNumber);
 				address.then((result) => {
-					let cutAddress = result.substring(2, 42);
 					let tokenId = parseInt(roundOneRanker[i].phoneNumber + '2')
-					chain.mintToken(cutAddress, tokenId, round, 'firstRoundFree')
+					chain.mintToken(result, tokenId, round, 'firstRoundFree')
 				})
 
 				db.conn.query('UPDATE users SET token1_free="unused" WHERE token1_free is null  AND phoneNumber=?', [roundOneRanker[i].phoneNumber], (err, rows, fields) => {
@@ -878,9 +904,8 @@ async function mintFreeCoupon(round) {
 				// nft 발급
 				let address = getWalletAddress(roundTwoRanker[j].phoneNumber);
 				address.then((result) => {
-					let cutAddress = result.substring(2, 42);
 					let tokenId = parseInt(roundTwoRanker[j].phoneNumber + '4')
-					chain.mintToken(cutAddress, tokenId, round, 'secondRoundFree')
+					chain.mintToken(result, tokenId, round, 'secondRoundFree')
 				})
 
 				db.conn.query('UPDATE users SET token2_free="unused" WHERE token2_free is null AND phoneNumber=?', [roundTwoRanker[j].phoneNumber], (err, rows, fields) => {

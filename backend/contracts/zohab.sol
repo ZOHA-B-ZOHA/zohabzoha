@@ -4,10 +4,10 @@ import "./KIP17.sol";
 
 contract zohabToken is KIP17 {
     
-    mapping (string => incentiveList) roundOnePlusTokenList;
-    mapping (string => incentiveList) roundOneFreeTokenList;
-    mapping (string => incentiveList) roundTwoPlusTokenList;
-    mapping (string => incentiveList) roundTwoFreeTokenList;
+    mapping (address => incentiveList) roundOnePlusTokenList;
+    mapping (address => incentiveList) roundOneFreeTokenList;
+    mapping (address => incentiveList) roundTwoPlusTokenList;
+    mapping (address => incentiveList) roundTwoFreeTokenList;
     
     mapping (address => purchaseRecord) roundOneRecordList;
     mapping (address => purchaseRecord) roundTwoRecordList;
@@ -49,14 +49,14 @@ contract zohabToken is KIP17 {
         emit setRecordInList(_userAddress, round, count);
     }
     
-    function mintToken(string memory _userAddress, uint256 tokenId, uint24 round, string memory couponType) public {
+    function mintToken(address _userAddress, uint256 tokenId, uint24 round, string memory couponType) public {
         require(owner == msg.sender);
         string memory firstRoundPlus = 'firstRoundPlus';
         string memory firstRoundFree = 'firstRoundFree';
         string memory secondRoundPlus = 'secondRoundPlus';
         string memory secondRoundFree = 'secondRoundFree';
         
-        _mint(msg.sender, tokenId);
+        _mint(_userAddress, tokenId);
         
         if (round == 1) {
             if (keccak256(bytes(firstRoundPlus)) == keccak256(bytes(couponType))) {
@@ -72,7 +72,7 @@ contract zohabToken is KIP17 {
             }
         }
         
-        emit setTokenList(msg.sender, tokenId);
+        emit setTokenList(_userAddress, tokenId);
     }
     
     function getRecords(address _userAddress, uint24 round) public view returns(uint24) {
@@ -87,7 +87,7 @@ contract zohabToken is KIP17 {
         }
     }
     
-    function getTokenList(string memory _userAddress, uint24 round) public view returns(uint256, uint256) {
+    function getTokenList(address _userAddress, uint24 round) public view returns(uint256, uint256) {
         if (round == 1) {
             return (
                 roundOneFreeTokenList[_userAddress].tokenId,
