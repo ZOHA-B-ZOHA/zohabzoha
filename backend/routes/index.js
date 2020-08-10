@@ -404,8 +404,9 @@ router.post('/api/redeem', async (req, res, next) => {
 				if (req.body.rewardType == 'firstRoundPlus') {
 					// get wallet address
 					let address = await getWalletAddress(req.body.phoneNumber)
+					console.log('nft address \n', address)
 					// transfer first round plus
-					let transferNFT = chain.transferFrom(address, parseInt(req.body.phoneNumber + "1"))
+					let transferNFT = await chain.transferFrom(address, parseInt(req.body.phoneNumber + "1"))
 					console.log(transferNFT)
 					db.conn.query('UPDATE users SET token1_plus="used" WHERE token1_plus="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 						if (err) {
@@ -429,6 +430,7 @@ router.post('/api/redeem', async (req, res, next) => {
 				else if (req.body.rewardType == 'firstRoundFree') {
 					// get wallet address
 					let address = await getWalletAddress(req.body.phoneNumber)
+					console.log('nft address 2 \n', address)
 					// transfer first free plus
 					chain.transferFrom(parseInt(address, req.body.phoneNumber + "2"))
 					db.conn.query('UPDATE users SET token1_free="used" WHERE token1_free="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
