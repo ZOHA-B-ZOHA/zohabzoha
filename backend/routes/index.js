@@ -664,8 +664,8 @@ async function getAllAchievement(round) {
 		db.conn.query('SELECT SUM(quantity) AS sumQuantities FROM users WHERE round=?', [round], (err, rows, fields) => {
 			if (!err) {
 				if (round == 1) {
-					resolve((rows[0].sumQuantities / 4862).toFixed(4))
-					//resolve((rows[0].sumQuantities / 30).toFixed(4))
+					//resolve((rows[0].sumQuantities / 4862).toFixed(4))
+					resolve((rows[0].sumQuantities / 80).toFixed(4))
 				}
 				else if (round == 2) {
 					resolve((rows[0].sumQuantities / 5968).toFixed(4))
@@ -968,7 +968,7 @@ async function calculateDate() {
 /* 쿠폰 기간 계산 */
 async function calculateCouponDate() {
 	return new Promise((resolve, reject) => {
-		if (moment().isBetween('2020-08-18', '2020-08-24', 'date', '[]') == true) {
+		if (moment().isBetween('2020-08-11', '2020-08-12', 'date', '[]' /*'2020-08-18', '2020-08-24', 'date', '[]'*/) == true) {
 			resolve(1);
 		} else if (moment().isBetween('2020-08-25', '2020-08-31', 'date', '[]') == true) {
 			resolve(12);
