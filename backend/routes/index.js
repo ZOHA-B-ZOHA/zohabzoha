@@ -816,7 +816,6 @@ async function mintPlusCoupon(round) {
 						// nft 발급
 						let address = await getWalletAddress(rows[i].phoneNumber);
 						let tokenId = parseInt(rows[i].phoneNumber.slice(3, 11).concat('', '1'));
-						console.log('plus token id 1 ', tokenId)
 						chain.mintToken(address, tokenId, round, 'firstRoundPlus')
 
 						db.conn.query('UPDATE users SET token1_plus="unused" WHERE token1_plus is null AND phoneNumber=?', [rows[i].phoneNumber], (err, result, fields) => {
@@ -839,7 +838,6 @@ async function mintPlusCoupon(round) {
 						// nft 발급
 						let address = await getWalletAddress(rows[i].phoneNumber);
 						let tokenId = parseInt(rows[i].phoneNumber.slice(3, 11).concat('', '3'));
-						console.log('plus token id 3 ', tokenId)
 						chain.mintToken(address, tokenId, round, 'secondRoundPlus')
 
 						db.conn.query('UPDATE users SET token2_plus="unused" WHERE token2_plus is null AND phoneNumber=?', [rows[i].phoneNumber], (err, result, fields) => {
@@ -868,7 +866,6 @@ async function mintFreeCoupon(round) {
 				// nft 발급
 				let address = await getWalletAddress(roundOneRanker[i].phoneNumber);
 				let tokenId = parseInt(roundOneRanker[i].phoneNumber.slice(3, 11).concat('', '2'));
-				console.log('free token id 2 ', tokenId)
 				chain.mintToken(address, tokenId, round, 'firstRoundFree')
 
 				db.conn.query('UPDATE users SET token1_free="unused" WHERE token1_free is null  AND phoneNumber=?', [roundOneRanker[i].phoneNumber], (err, rows, fields) => {
@@ -888,7 +885,6 @@ async function mintFreeCoupon(round) {
 				// nft 발급
 				let address = await getWalletAddress(roundTwoRanker[j].phoneNumber);
 				let tokenId = parseInt(roundTwoRanker[i].phoneNumber.slice(3, 11).concat('', '4'));
-				console.log('free token id 4 ', tokenId)
 				chain.mintToken(address, tokenId, round, 'secondRoundFree')
 
 				db.conn.query('UPDATE users SET token2_free="unused" WHERE token2_free is null AND phoneNumber=?', [roundTwoRanker[j].phoneNumber], (err, rows, fields) => {
