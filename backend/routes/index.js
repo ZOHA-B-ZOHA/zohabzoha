@@ -62,7 +62,7 @@ router.post('/api/authenticate', async (req, res, next) => {
 		let responseRoundTwoUserCounts = await getRoundTwoCounts(req.body.phoneNumber);
 
 		// get wallet address
-		db.conn.query('SELECT address FROM wallet WHERE phoneNumber=?', [req.body.phoneNumber], async(err, rows, fields) => {
+		db.conn.query('SELECT address FROM wallet WHERE phoneNumber=?', [req.body.phoneNumber], async (err, rows, fields) => {
 			if (err) {
 				console.log('get wallet address error ', err);
 			}
@@ -663,7 +663,7 @@ async function getAllAchievement(round) {
 			if (!err) {
 				if (round == 1) {
 					//resolve((rows[0].sumQuantities / 4862).toFixed(4))
-					resolve((rows[0].sumQuantities / 120).toFixed(4))
+					resolve((rows[0].sumQuantities / 130).toFixed(4))
 				}
 				else if (round == 2) {
 					resolve((rows[0].sumQuantities / 5968).toFixed(4))
@@ -814,15 +814,15 @@ async function mintPlusCoupon(round) {
 
 		// db 값 unused로 변경
 		if (round == 1) {
-			db.conn.query('SELECT COUNT(quantity) AS counts, phoneNumber FROM users where round=1 GROUP BY phoneNumber having counts >= 3', async(err, rows, fields) => {
+			db.conn.query('SELECT COUNT(quantity) AS counts, phoneNumber FROM users where round=1 GROUP BY phoneNumber having counts >= 3', async (err, rows, fields) => {
 				if (err) {
 					reject('get counts error ', err)
 				} else {
 					for (let i = 0; i < rows.length; i++) {
 						// nft 발급
 						let address = await getWalletAddress(rows[i].phoneNumber);
-							let tokenId = parseInt(rows[i].phoneNumber + '1')
-							chain.mintToken(address, tokenId, round, 'firstRoundPlus')
+						let tokenId = parseInt(rows[i].phoneNumber + '1')
+						chain.mintToken(address, tokenId, round, 'firstRoundPlus')
 
 						db.conn.query('UPDATE users SET token1_plus="unused" WHERE token1_plus is null AND phoneNumber=?', [rows[i].phoneNumber], (err, result, fields) => {
 							if (err) {
@@ -836,15 +836,15 @@ async function mintPlusCoupon(round) {
 			})
 		}
 		else if (round == 2) {
-			db.conn.query('SELECT COUNT(quantity) AS counts, phoneNumber FROM users where round=2 GROUP BY phoneNumber having counts >= 3', async(err, rows, fields) => {
+			db.conn.query('SELECT COUNT(quantity) AS counts, phoneNumber FROM users where round=2 GROUP BY phoneNumber having counts >= 3', async (err, rows, fields) => {
 				if (err) {
 					reject('insert round2 unused error ', err);
 				} else {
 					for (let i = 0; i < rows.length; i++) {
 						// nft 발급
 						let address = await getWalletAddress(rows[i].phoneNumber);
-							let tokenId = parseInt(rows[i].phoneNumber + '3')
-							chain.mintToken(address, tokenId, round, 'secondRoundPlus')
+						let tokenId = parseInt(rows[i].phoneNumber + '3')
+						chain.mintToken(address, tokenId, round, 'secondRoundPlus')
 
 						db.conn.query('UPDATE users SET token2_plus="unused" WHERE token2_plus is null AND phoneNumber=?', [rows[i].phoneNumber], (err, result, fields) => {
 							if (err) {
@@ -871,9 +871,9 @@ async function mintFreeCoupon(round) {
 			for (let i = 0; i < roundOneRanker.length; i++) {
 				// nft 발급
 				let address = await getWalletAddress(roundOneRanker[i].phoneNumber);
-					let tokenId = parseInt(roundOneRanker[i].phoneNumber + '2')
-					let coupon = await chain.mintToken(address, tokenId, round, 'firstRoundFree')
-					console.log('되라아앙아아아잉 \n', coupon)
+				let tokenId = parseInt(roundOneRanker[i].phoneNumber + '2')
+				let coupon = await chain.mintToken(address, tokenId, round, 'firstRoundFree')
+				console.log('되라아앙아아아잉 \n', coupon)
 
 				db.conn.query('UPDATE users SET token1_free="unused" WHERE token1_free is null  AND phoneNumber=?', [roundOneRanker[i].phoneNumber], (err, rows, fields) => {
 					if (err) {
@@ -891,8 +891,8 @@ async function mintFreeCoupon(round) {
 			for (let j = 0; j < roundTwoRanker.length; j++) {
 				// nft 발급
 				let address = await getWalletAddress(roundTwoRanker[j].phoneNumber);
-					let tokenId = parseInt(roundTwoRanker[j].phoneNumber + '4')
-					chain.mintToken(address, tokenId, round, 'secondRoundFree')
+				let tokenId = parseInt(roundTwoRanker[j].phoneNumber + '4')
+				chain.mintToken(address, tokenId, round, 'secondRoundFree')
 
 				db.conn.query('UPDATE users SET token2_free="unused" WHERE token2_free is null AND phoneNumber=?', [roundTwoRanker[j].phoneNumber], (err, rows, fields) => {
 					if (err) {
