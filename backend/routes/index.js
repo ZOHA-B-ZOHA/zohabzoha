@@ -994,7 +994,7 @@ const creatingWalletOptions = {
 	url: 'https://wallet-api.beta.klaytn.io/v2/account',
 	headers: {
 		'Content-type': 'application/json',
-		'x-krn': 'krn:1001:wallet:116:account:default',
+		'x-krn': 'krn:8217:wallet:116:account:default',
 		'Authorization': 'Basic ' + config.auth.kasAuth
 	}
 };
