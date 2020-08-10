@@ -403,11 +403,10 @@ router.post('/api/redeem', async (req, res, next) => {
 				// use round 1 plus
 				if (req.body.rewardType == 'firstRoundPlus') {
 					// get wallet address
-					let address = await getWalletAddress(req.body.phoneNumber)
-					console.log('nft address \n', address)
+					//let address = await getWalletAddress(req.body.phoneNumber)
 					// transfer first round plus
-					let transferNFT = await chain.transferFrom(address, parseInt(req.body.phoneNumber + "1"))
-					console.log(transferNFT)
+					//let transferNFT = await chain.transferFrom(address, parseInt(req.body.phoneNumber + "1"))
+
 					db.conn.query('UPDATE users SET token1_plus="used" WHERE token1_plus="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 						if (err) {
 							throw err
@@ -429,10 +428,10 @@ router.post('/api/redeem', async (req, res, next) => {
 				// use round 1 free
 				else if (req.body.rewardType == 'firstRoundFree') {
 					// get wallet address
-					let address = await getWalletAddress(req.body.phoneNumber)
-					console.log('nft address 2 \n', address)
+					//let address = await getWalletAddress(req.body.phoneNumber)
 					// transfer first free plus
-					chain.transferFrom(parseInt(address, req.body.phoneNumber + "2"))
+					//chain.transferFrom(parseInt(address, req.body.phoneNumber + "2"))
+
 					db.conn.query('UPDATE users SET token1_free="used" WHERE token1_free="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 						if (err) {
 							throw err
@@ -472,9 +471,10 @@ router.post('/api/redeem', async (req, res, next) => {
 			// 1라운드 plus coupon 사용
 			if (req.body.rewardType == 'firstRoundPlus') {
 				// get wallet address
-				let address = await getWalletAddress(req.body.phoneNumber)
+				//let address = await getWalletAddress(req.body.phoneNumber)
 				// transfer first round plus
-				chain.transferFrom(parseInt(address, req.body.phoneNumber + "1"))
+				//chain.transferFrom(parseInt(address, req.body.phoneNumber + "1"))
+
 				db.conn.query('UPDATE users SET token1_plus="used" WHERE token1_plus="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 					if (err) {
 						throw err
@@ -496,9 +496,10 @@ router.post('/api/redeem', async (req, res, next) => {
 			// 1라운드 free coupon 사용
 			else if (req.body.rewardType == 'firstRoundFree') {
 				// get wallet address
-				let address = await getWalletAddress(req.body.phoneNumber)
+				//let address = await getWalletAddress(req.body.phoneNumber)
 				// transfer first round plus
-				chain.transferFrom(address, parseInt(req.body.phoneNumber + "2"))
+				//chain.transferFrom(address, parseInt(req.body.phoneNumber + "2"))
+
 				db.conn.query('UPDATE users SET token1_free="used" WHERE token1_free="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 					if (err) {
 						throw err
@@ -520,9 +521,10 @@ router.post('/api/redeem', async (req, res, next) => {
 			// 2라운드 plus coupon 사용
 			else if (req.body.rewardType == 'secondRoundPlus') {
 				// get wallet address
-				let address = await getWalletAddress(req.body.phoneNumber)
+				//let address = await getWalletAddress(req.body.phoneNumber)
 				// transfer first round plus
-				chain.transferFrom(address, parseInt(req.body.phoneNumber + "3"))
+				//chain.transferFrom(address, parseInt(req.body.phoneNumber + "3"))
+
 				db.conn.query('UPDATE users SET token2_plus="used" WHERE token2_plus="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 					if (err) {
 						throw err
@@ -544,9 +546,10 @@ router.post('/api/redeem', async (req, res, next) => {
 			// 2라운드 free coupon 사용
 			else if (req.body.rewardType == 'secondRoundFree') {
 				// get wallet address
-				let address = await getWalletAddress(req.body.phoneNumber)
+				//let address = await getWalletAddress(req.body.phoneNumber)
 				// transfer first round plus
-				chain.transferFrom(address, parseInt(req.body.phoneNumber + "4"))
+				// chain.transferFrom(address, parseInt(req.body.phoneNumber + "4"))
+
 				db.conn.query('UPDATE users SET token2_free="used" WHERE token2_free="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 					if (err) {
 						throw err
@@ -574,9 +577,10 @@ router.post('/api/redeem', async (req, res, next) => {
 				// 2라운드 plus coupon 사용
 				if (req.body.rewardType == 'secondRoundPlus') {
 					// get wallet address
-					let address = await getWalletAddress(req.body.phoneNumber)
+					//let address = await getWalletAddress(req.body.phoneNumber)
 					// transfer first round plus
-					chain.transferFrom(address, parseInt(req.body.phoneNumber + "3"))
+					// chain.transferFrom(address, parseInt(req.body.phoneNumber + "3"))
+
 					db.conn.query('UPDATE users SET token2_plus="used" WHERE token2_plus="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 						if (err) {
 							throw err
@@ -598,9 +602,10 @@ router.post('/api/redeem', async (req, res, next) => {
 				// 2라운드 free coupon 사용
 				else if (req.body.rewardType == 'secondRoundFree') {
 					// get wallet address
-					let address = await getWalletAddress(req.body.phoneNumber)
+					// let address = await getWalletAddress(req.body.phoneNumber)
 					// transfer first round plus
-					chain.transferFrom(address, parseInt(req.body.phoneNumber + "4"))
+					// chain.transferFrom(address, parseInt(req.body.phoneNumber + "4"))
+
 					db.conn.query('UPDATE users SET token2_free="used" WHERE token2_free="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 						if (err) {
 							throw err
@@ -644,18 +649,6 @@ router.post('/api/redeem', async (req, res, next) => {
 	}
 });
 
-router.post('/test', async (req, res, next) => {
-	let address = await getWalletAddress(req.body.phoneNumber);
-	console.log(address)
-	db.conn.query('SELECT phoneNumber FROM users', (err, rows, fields) => {
-		if (!err) {
-			console.log(rows)
-		} else {
-			throw err
-		}
-	})
-})
-
 /****************************************************************************************************************************/
 
 /* 현재 총 잔 수 */
@@ -665,7 +658,7 @@ async function getAllAchievement(round) {
 			if (!err) {
 				if (round == 1) {
 					//resolve((rows[0].sumQuantities / 4862).toFixed(4))
-					resolve((rows[0].sumQuantities / 130).toFixed(4))
+					resolve((rows[0].sumQuantities / 100).toFixed(4))
 				}
 				else if (round == 2) {
 					resolve((rows[0].sumQuantities / 5968).toFixed(4))
@@ -823,7 +816,8 @@ async function mintPlusCoupon(round) {
 					for (let i = 0; i < rows.length; i++) {
 						// nft 발급
 						let address = await getWalletAddress(rows[i].phoneNumber);
-						let tokenId = parseInt(rows[i].phoneNumber + '1')
+						let tokenId = parseInt(rows[i].phoneNumber.slice(3, 11).concat('', '1'));
+						console.log('plus token id ', tokenId)
 						chain.mintToken(address, tokenId, round, 'firstRoundPlus')
 
 						db.conn.query('UPDATE users SET token1_plus="unused" WHERE token1_plus is null AND phoneNumber=?', [rows[i].phoneNumber], (err, result, fields) => {
@@ -873,9 +867,10 @@ async function mintFreeCoupon(round) {
 			for (let i = 0; i < roundOneRanker.length; i++) {
 				// nft 발급
 				let address = await getWalletAddress(roundOneRanker[i].phoneNumber);
-				let tokenId = parseInt(roundOneRanker[i].phoneNumber + '2')
-				let coupon = await chain.mintToken(address, tokenId, round, 'firstRoundFree')
-				console.log('되라아앙아아아잉 \n', coupon)
+				//let tokenId = parseInt(roundOneRanker[i].phoneNumber + '2')
+				let tokenId = parseInt(rows[i].phoneNumber.slice(3, 11).concat('', '2'));
+				console.log('free token id ', tokenId)
+				chain.mintToken(address, tokenId, round, 'firstRoundFree')
 
 				db.conn.query('UPDATE users SET token1_free="unused" WHERE token1_free is null  AND phoneNumber=?', [roundOneRanker[i].phoneNumber], (err, rows, fields) => {
 					if (err) {
