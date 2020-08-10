@@ -867,7 +867,7 @@ async function mintFreeCoupon(round) {
 			for (let i = 0; i < roundOneRanker.length; i++) {
 				// nft 발급
 				let address = await getWalletAddress(roundOneRanker[i].phoneNumber);
-				let tokenId = parseInt(rows[i].phoneNumber.slice(3, 11).concat('', '2'));
+				let tokenId = parseInt(roundOneRanker[i].phoneNumber.slice(3, 11).concat('', '2'));
 				console.log('free token id 2 ', tokenId)
 				chain.mintToken(address, tokenId, round, 'firstRoundFree')
 
@@ -887,7 +887,7 @@ async function mintFreeCoupon(round) {
 			for (let j = 0; j < roundTwoRanker.length; j++) {
 				// nft 발급
 				let address = await getWalletAddress(roundTwoRanker[j].phoneNumber);
-				let tokenId = parseInt(rows[i].phoneNumber.slice(3, 11).concat('', '4'));
+				let tokenId = parseInt(roundTwoRanker[i].phoneNumber.slice(3, 11).concat('', '4'));
 				console.log('free token id 4 ', tokenId)
 				chain.mintToken(address, tokenId, round, 'secondRoundFree')
 
