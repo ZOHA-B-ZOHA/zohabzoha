@@ -242,12 +242,10 @@ router.post('/api/verify', async (req, res, next) => {
 				// db에 구매내역 기록
 				db.conn.query('INSERT INTO users (phoneNumber, quantity, place, round) VALUES (?, ?, ?, ?)', [req.body.phoneNumber, req.body.purchaseQuantity, req.body.branch, round], async (err, rows, fields) => {
 					if (!err) {
-						// get wallet address
+						// get wallet address('0x' 형태로 잘 나옴)
 						let address = await getWalletAddress(req.body.phoneNumber)
-						console.log('verify address \n', address)
 						// chain에 구매내역 기록
-						let updateRecord = chain.updateRecord(address, round, req.body.purchaseQuantity)
-						console.log('update record', updateRecord)
+						chain.updateRecord(address, round, req.body.purchaseQuantity)
 						// 지금까지의 구매 횟수 출력
 						let counts = await getBuyingCounts(round, req.body.phoneNumber);
 						// round 1 user quantities
@@ -665,7 +663,7 @@ async function getAllAchievement(round) {
 			if (!err) {
 				if (round == 1) {
 					//resolve((rows[0].sumQuantities / 4862).toFixed(4))
-					resolve((rows[0].sumQuantities / 90).toFixed(4))
+					resolve((rows[0].sumQuantities / 120).toFixed(4))
 				}
 				else if (round == 2) {
 					resolve((rows[0].sumQuantities / 5968).toFixed(4))
@@ -823,10 +821,8 @@ async function mintPlusCoupon(round) {
 					for (let i = 0; i < rows.length; i++) {
 						// nft 발급
 						let address = await getWalletAddress(rows[i].phoneNumber);
-						address.then((result) => {
 							let tokenId = parseInt(rows[i].phoneNumber + '1')
-							chain.mintToken(result, tokenId, round, 'firstRoundPlus')
-						})
+							chain.mintToken(address, tokenId, round, 'firstRoundPlus')
 
 						db.conn.query('UPDATE users SET token1_plus="unused" WHERE token1_plus is null AND phoneNumber=?', [rows[i].phoneNumber], (err, result, fields) => {
 							if (err) {
@@ -847,10 +843,8 @@ async function mintPlusCoupon(round) {
 					for (let i = 0; i < rows.length; i++) {
 						// nft 발급
 						let address = await getWalletAddress(rows[i].phoneNumber);
-						address.then((result) => {
 							let tokenId = parseInt(rows[i].phoneNumber + '3')
-							chain.mintToken(result, tokenId, round, 'secondRoundPlus')
-						})
+							chain.mintToken(address, tokenId, round, 'secondRoundPlus')
 
 						db.conn.query('UPDATE users SET token2_plus="unused" WHERE token2_plus is null AND phoneNumber=?', [rows[i].phoneNumber], (err, result, fields) => {
 							if (err) {
@@ -877,11 +871,9 @@ async function mintFreeCoupon(round) {
 			for (let i = 0; i < roundOneRanker.length; i++) {
 				// nft 발급
 				let address = await getWalletAddress(roundOneRanker[i].phoneNumber);
-				console.log('address promise? \n', address)
-				address.then((result) => {
 					let tokenId = parseInt(roundOneRanker[i].phoneNumber + '2')
-					chain.mintToken(result, tokenId, round, 'firstRoundFree')
-				})
+					let coupon = await chain.mintToken(address, tokenId, round, 'firstRoundFree')
+					console.log('되라아앙아아아잉 \n', coupon)
 
 				db.conn.query('UPDATE users SET token1_free="unused" WHERE token1_free is null  AND phoneNumber=?', [roundOneRanker[i].phoneNumber], (err, rows, fields) => {
 					if (err) {
@@ -899,10 +891,8 @@ async function mintFreeCoupon(round) {
 			for (let j = 0; j < roundTwoRanker.length; j++) {
 				// nft 발급
 				let address = await getWalletAddress(roundTwoRanker[j].phoneNumber);
-				address.then((result) => {
 					let tokenId = parseInt(roundTwoRanker[j].phoneNumber + '4')
-					chain.mintToken(result, tokenId, round, 'secondRoundFree')
-				})
+					chain.mintToken(address, tokenId, round, 'secondRoundFree')
 
 				db.conn.query('UPDATE users SET token2_free="unused" WHERE token2_free is null AND phoneNumber=?', [roundTwoRanker[j].phoneNumber], (err, rows, fields) => {
 					if (err) {
