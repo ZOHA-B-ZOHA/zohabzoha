@@ -62,7 +62,7 @@ router.post('/api/authenticate', async (req, res, next) => {
 		let responseRoundTwoUserCounts = await getRoundTwoCounts(req.body.phoneNumber);
 
 		// get wallet address
-		db.conn.query('SELECT address FROM wallet WHERE phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
+		db.conn.query('SELECT address FROM wallet WHERE phoneNumber=?', [req.body.phoneNumber], async(err, rows, fields) => {
 			if (err) {
 				console.log('get wallet address error ', err);
 			}
