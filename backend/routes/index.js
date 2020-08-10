@@ -69,33 +69,26 @@ router.post('/api/authenticate', async (req, res, next) => {
 			// 등록된 전화번호가 없으면
 			else if (rows[0] == null) {
 				// KAS로 wallet 생성
-				request(creatingWalletOptions, (error, response, body) => {
-					if (error) {
-						console.log('kas create wallet error ', error);
-					} else if (response.statusCode == 200) {
-						// db에 새 지갑주소 등록
-						db.conn.query('INSERT INTO wallet VALUES (?, ?, ?)', [req.body.phoneNumber, JSON.parse(body).result.address, JSON.parse(body).result.public_key], (err, rows, fields) => {
-							if (!err) {
-								res.json({
-									"achievement": responseAchievment,
-									"currentUser": {
-										"phoneNumber": req.body.phoneNumber,
-										"purchaseCount": {
-											"firstRound": responseRoundOneUserCounts,
-											"secondRound": responseRoundTwoUserCounts
-										},
-										"purchaseQuantity": {
-											"firstRound": responseRoundOneUserInfo,
-											"secondRound": responseRoundTwoUserInfo
-										}
-									}
-								});
-							} else {
-								console.log('set address error ', err);
+				let wallet = await createWalletWithKAS();
+				// db에 새 지갑주소 등록
+				db.conn.query('INSERT INTO wallet VALUES (?, ?, ?)', [req.body.phoneNumber, JSON.parse(wallet).result.address, JSON.parse(wallet).result.public_key], (err, rows, fields) => {
+					if (!err) {
+						res.json({
+							"achievement": responseAchievment,
+							"currentUser": {
+								"phoneNumber": req.body.phoneNumber,
+								"purchaseCount": {
+									"firstRound": responseRoundOneUserCounts,
+									"secondRound": responseRoundTwoUserCounts
+								},
+								"purchaseQuantity": {
+									"firstRound": responseRoundOneUserInfo,
+									"secondRound": responseRoundTwoUserInfo
+								}
 							}
 						});
 					} else {
-						console.log('please try again KAS');
+						console.log('set address error ', err);
 					}
 				});
 			}
@@ -253,7 +246,8 @@ router.post('/api/verify', async (req, res, next) => {
 						let address = await getWalletAddress(req.body.phoneNumber)
 						console.log('verify address \n', address)
 						// chain에 구매내역 기록
-						chain.updateRecord(address, round, req.body.purchaseQuantity)
+						let updateRecord = chain.updateRecord(address, round, req.body.purchaseQuantity)
+						console.log('update record', updateRecord)
 						// 지금까지의 구매 횟수 출력
 						let counts = await getBuyingCounts(round, req.body.phoneNumber);
 						// round 1 user quantities
@@ -413,7 +407,8 @@ router.post('/api/redeem', async (req, res, next) => {
 					// get wallet address
 					let address = await getWalletAddress(req.body.phoneNumber)
 					// transfer first round plus
-					chain.transferFrom(address, parseInt(req.body.phoneNumber + "1"))
+					let transferNFT = chain.transferFrom(address, parseInt(req.body.phoneNumber + "1"))
+					console.log(transferNFT)
 					db.conn.query('UPDATE users SET token1_plus="used" WHERE token1_plus="unused" AND phoneNumber=?', [req.body.phoneNumber], (err, rows, fields) => {
 						if (err) {
 							throw err
@@ -649,7 +644,7 @@ router.post('/api/redeem', async (req, res, next) => {
 	}
 });
 
-router.post('/test', async(req, res, next) => {
+router.post('/test', async (req, res, next) => {
 	let address = await getWalletAddress(req.body.phoneNumber);
 	console.log(address)
 	db.conn.query('SELECT phoneNumber FROM users', (err, rows, fields) => {
@@ -821,13 +816,13 @@ async function mintPlusCoupon(round) {
 
 		// db 값 unused로 변경
 		if (round == 1) {
-			db.conn.query('SELECT COUNT(quantity) AS counts, phoneNumber FROM users where round=1 GROUP BY phoneNumber having counts >= 3', (err, rows, fields) => {
+			db.conn.query('SELECT COUNT(quantity) AS counts, phoneNumber FROM users where round=1 GROUP BY phoneNumber having counts >= 3', async(err, rows, fields) => {
 				if (err) {
 					reject('get counts error ', err)
 				} else {
 					for (let i = 0; i < rows.length; i++) {
 						// nft 발급
-						let address = getWalletAddress(rows[i].phoneNumber);
+						let address = await getWalletAddress(rows[i].phoneNumber);
 						address.then((result) => {
 							let tokenId = parseInt(rows[i].phoneNumber + '1')
 							chain.mintToken(result, tokenId, round, 'firstRoundPlus')
@@ -845,13 +840,13 @@ async function mintPlusCoupon(round) {
 			})
 		}
 		else if (round == 2) {
-			db.conn.query('SELECT COUNT(quantity) AS counts, phoneNumber FROM users where round=2 GROUP BY phoneNumber having counts >= 3', (err, rows, fields) => {
+			db.conn.query('SELECT COUNT(quantity) AS counts, phoneNumber FROM users where round=2 GROUP BY phoneNumber having counts >= 3', async(err, rows, fields) => {
 				if (err) {
 					reject('insert round2 unused error ', err);
 				} else {
 					for (let i = 0; i < rows.length; i++) {
 						// nft 발급
-						let address = getWalletAddress(rows[i].phoneNumber);
+						let address = await getWalletAddress(rows[i].phoneNumber);
 						address.then((result) => {
 							let tokenId = parseInt(rows[i].phoneNumber + '3')
 							chain.mintToken(result, tokenId, round, 'secondRoundPlus')
@@ -881,7 +876,8 @@ async function mintFreeCoupon(round) {
 
 			for (let i = 0; i < roundOneRanker.length; i++) {
 				// nft 발급
-				let address = getWalletAddress(roundOneRanker[i].phoneNumber);
+				let address = await getWalletAddress(roundOneRanker[i].phoneNumber);
+				console.log('address promise? \n', address)
 				address.then((result) => {
 					let tokenId = parseInt(roundOneRanker[i].phoneNumber + '2')
 					chain.mintToken(result, tokenId, round, 'firstRoundFree')
@@ -902,7 +898,7 @@ async function mintFreeCoupon(round) {
 
 			for (let j = 0; j < roundTwoRanker.length; j++) {
 				// nft 발급
-				let address = getWalletAddress(roundTwoRanker[j].phoneNumber);
+				let address = await getWalletAddress(roundTwoRanker[j].phoneNumber);
 				address.then((result) => {
 					let tokenId = parseInt(roundTwoRanker[j].phoneNumber + '4')
 					chain.mintToken(result, tokenId, round, 'secondRoundFree')
@@ -983,6 +979,20 @@ async function calculateCouponDate() {
 		}
 	});
 };
+
+/* KAS 지갑 생성 */
+async function createWalletWithKAS() {
+	return new Promise((resolve, reject) => {
+		request(creatingWalletOptions, (error, response, body) => {
+			if (error) {
+				reject('kas error ', error)
+			}
+			else if (response.statusCode == 200) {
+				resolve(body)
+			}
+		})
+	})
+}
 
 /* 전화번호 암호화 */
 async function cipherPhoneNumber(phoneNumber) {
