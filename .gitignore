@@ -6,6 +6,7 @@ sessions/
 err.log
 out.log
 chain.js
+result.js
 keystore.json
 
 # local env files

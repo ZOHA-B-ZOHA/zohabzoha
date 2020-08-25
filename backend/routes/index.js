@@ -884,7 +884,7 @@ async function mintFreeCoupon(round) {
 			for (let j = 0; j < roundTwoRanker.length; j++) {
 				// nft 발급
 				let address = await getWalletAddress(roundTwoRanker[j].phoneNumber);
-				let tokenId = parseInt(roundTwoRanker[i].phoneNumber.slice(3, 11).concat('', '4'));
+				let tokenId = parseInt(roundTwoRanker[j].phoneNumber.slice(3, 11).concat('', '4'));
 				chain.mintToken(address, tokenId, round, 'secondRoundFree')
 
 				db.conn.query('UPDATE users SET token2_free="unused" WHERE token2_free is null AND phoneNumber=?', [roundTwoRanker[j].phoneNumber], (err, rows, fields) => {
@@ -938,9 +938,9 @@ async function insertExpired(couponDate) {
 /* 라운드 계산 */
 async function calculateDate() {
 	return new Promise((resolve, reject) => {
-		if (moment().isBetween('2020-08-10', '2020-08-14', 'date', '[]') == true) {
+		if (moment().isBetween('2020-08-10', '2020-08-17', 'date', '[]') == true) {
 			resolve(1);
-		} else if (moment().isBetween('2020-08-18', '2020-08-24', 'date', '[]') == true) {
+		} else if (moment().isBetween('2020-08-18', '2020-09-07', 'date', '[]') == true) {
 			resolve(2);
 		} else {
 			resolve('outOfOrder');

@@ -6,6 +6,7 @@ sessions/
 err.log
 out.log
 config/
+test.js
 
 # local env files
 .env.local
